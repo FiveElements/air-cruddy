@@ -1,0 +1,23 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+
+
+    Polymer.FireFormAjaxBehavior = {
+
+        ready: function() {
+            // Object that handles the ajax form submission request.
+            this._requestBot = document.createElement('iron-ajax');
+            this._requestBot.addEventListener('response', this._handleFormResponse.bind(this));
+            this._requestBot.addEventListener('error', this._handleFormError.bind(this));
+
+        },
+        _handleFormResponse: function (event) {
+            this.fire('iron-form-response', event.detail.response);
+        },
+        _handleFormError: function (event) {
+            this.fire('iron-form-error', event.detail);
+        }
+
+    };
+</script>

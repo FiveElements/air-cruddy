@@ -1,0 +1,33 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+
+
+    Polymer.FireFormDataInitialisationBehavior = {
+
+        properties: {
+            data: {
+                type: Object,
+                value: this.createEmptyEntity()
+            }
+        },
+
+        // --- Entity Create
+        // --- ---------------------
+        createEmptyEntity: function () {
+            return {
+                _id: undefined,
+                _version: undefined,
+                _source: {}
+            };
+        },
+
+
+        // --- Data Observer
+        // --- ---------------------
+        dataSnapshot: function () {
+            this.dataOri = JSON.parse(JSON.stringify(this.data));
+        }
+
+    };
+</script>
