@@ -1,5 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 
+<link rel="import" href="fire-form-logic-behaviour.html">
 <link rel="import" href="fire-form-data-initialisation-behaviour.html">
 <link rel="import" href="fire-form-serialization-behaviour.html">
 <link rel="import" href="fire-form-validator-behaviour.html">
@@ -75,6 +76,7 @@ Attribute available:
             is: 'fire-form',
 
             behaviors: [
+                Polymer.FireFormLogicBehavior,
                 Polymer.FireFormDataInitialisationBehavior,
                 Polymer.FireFormValidatorBehavior,
                 Polymer.FireFormSerializaionBehavior,
