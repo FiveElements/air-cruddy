@@ -1,0 +1,39 @@
+{
+  "name": "fire-form",
+  "version": "0.0.1",
+  "description": "Node Js Http Server",
+  "private": true,
+  "main": "src/index.js",
+  "scripts": {
+    "npmdeps": "npm-check-updates",
+    "start": "node  --harmony src/index.js"
+  },
+  "dependencies": {
+    "bell": "^2.7.1",
+    "boom": "^2.7.1",
+    "confidence": "^1.1.0",
+    "glib": "0.0.3",
+    "good": "^6.1.2",
+    "good-console": "^5.0.0",
+    "hapi": "^8.4.0",
+    "hkp-client": "0.0.2",
+    "hoek": "^2.13.0",
+    "joi": "^6.4.1",
+    "kbpgp": "^2.0.10",
+    "lodash": "^3.8.0"
+  },
+  "devDependencies": {
+    "del": "^1.1.1",
+    "gulp": "^3.8.11",
+    "gulp-cached": "^1.1.0",
+    "gulp-changed": "^1.2.1",
+    "gulp-debug": "^2.0.1",
+    "gulp-install": "^0.4.0",
+    "gulp-jshint": "^1.10.0",
+    "gulp-livereload": "^3.8.0",
+    "gulp-nodemon": "^2.0.3",
+    "gulp-load-plugins": "^0.10.0",
+    "gulp-shell": "^0.4.1",
+    "jshint-stylish": "^1.0.2"
+  }
+}

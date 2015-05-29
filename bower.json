@@ -12,6 +12,17 @@
     "polymer",
     "crud"
   ],
+  "ignore": [
+    "index.html",
+    "demo**/**",
+    ".jshintrc",
+    ".editorconfig",
+    ".bowerrc",
+    ".git*",
+    "package.json",
+    "gulpfile.js",
+    "test"
+  ],
   "dependencies": {
     "polymer": "Polymer/polymer#^1.0.0"
   },

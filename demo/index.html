@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+
+    <title>fire-form</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../fire-form.html">
+    <link rel="import" href="../../iron-image/iron-image.html">
+    <link rel="import" href="../../paper-styles/classes/typography.html">
+    <link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
+    <link rel="stylesheet" href="../../paper-styles/demo.css">
+    <style>
+        iron-image {
+            background-color: lightgray;
+            margin: 1em;
+        }
+    </style>
+</head>
+<body>
+
+<template is="dom-bind">
+    <iron-ajax auto url="//gdata.youtube.com/feeds/api/videos/"
+               params='{"alt":"json", "q":"polymer"}'
+               handle-as="json" last-response="{{ajaxResponse}}"></iron-ajax>
+    <h1>Video Feed</h1>
+    <section class="flex layout horizontal wrap">
+        <template is="dom-repeat" items="[[ajaxResponse.feed.entry]]">
+            <a href="[[item.link.0.href]]" target="_blank">
+                <iron-image src="[[item.media$group.media$thumbnail.0.url]]" width="256" height="256" sizing="cover" preload fade></iron-image>
+            </a>
+        </template>
+    </section>
+</template>
+
+</body>
+</html>
