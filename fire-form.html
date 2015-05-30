@@ -10,29 +10,31 @@
 
 The `fire-form` provides lightweight way to implement all CRUD (Create, Retrieve, Update, Delete) Operations on an REST Api with all the expected services :
  - Validation
- - Conflict Resolution on 409.
+ - Conflict Resolution on 409
  - Auto Save Feature
 
- Example:
-  <fire-form data="{{data}}" entityid="{{entityid}}" endpoint="/s/users" autosave >
-      <section>
+
+
+
+    <fire-form entity-id="{{entityid}}" data="{{data}}" endpoint="/s/users" autosave>
+        <section>
         <paper-input-decorator floatingLabel label="First name" autoValidate>
           <input is="core-input" value="{{ data._source.firstname}}" required>
         </paper-input-decorator>
       </section>
-  </fire-form>
+    </fire-form>
 
 ### Server Data Format
 Example of Get Entity Server Format:
+
     { _id: "AAApkZAAOAAAQYEAAJ",
+      _version: 1,
       _index: "users",
+      _type: "user",
       _source: {
         firstname: "NICOLE",
         lastname: "ABBO"
-      },
-      _type: "user",
-      _version: 1,
-      found: true
+      }
     }
 
 

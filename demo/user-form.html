@@ -1,0 +1,60 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<link rel="import" href="../fire-form.html">
+<link rel="import" href="../../paper-input/paper-input.html">
+<!--
+
+The `user-form` provides  
+
+@group Demo Elements
+@element user-form
+@demo demo/index.html
+-->
+
+<dom-module id="user-form">
+
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+    <template>
+        <fire-form>
+            <paper-input name="name" label="Name" required></paper-input>
+            <paper-input name="animal" label="Favourite animal" required></paper-input>
+            <br>
+
+            <input type="checkbox" name="food" value="donuts" checked> I like donuts<br>
+            <input type="checkbox" name="food" value="pizza"> I like pizza<br>
+            <br>
+
+            <input type="radio" name="color" value="red" checked>Red<br>
+            <input type="radio" name="color" value="blue" checked>Blue<br>
+            <input type="radio" name="color" value="green">Green<br>
+
+            <br>
+            <label>Browsers</label>
+            <input list="browsers" name="browsers">
+            <datalist id="browsers">
+                <option value="Internet Explorer">
+                <option value="Firefox">
+                <option value="Chrome">
+                <option value="Opera">
+                <option value="Safari">
+            </datalist>
+        </fire-form>
+    </template>
+</dom-module>
+
+<script>
+    (function () {
+        'use strict';
+
+        Polymer({
+            is: 'user-form',
+
+            properties: {}
+
+        });
+    })();
+</script>
