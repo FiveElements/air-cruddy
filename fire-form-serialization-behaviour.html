@@ -8,25 +8,33 @@
      */
     Polymer.FireFormSerializaionBehavior = {
 
-        _serialisationClone: function () {
 
+        _serializeStringify: function (data) {
+            if (data) {
+                return JSON.stringify(data);
+            }
+            return null;
         },
-        _serialisationDiff: function (data) {
-
+        _serializeEncrypt: function (data) {
+            return data;
         },
-        _serialisationStringify: function (data) {
-
-        },
-        _serialisationEncrypt: function (data) {
-
-        },
-        serialisation: function () {
-
+        serialize: function () {
+            var dataAsString =  this._serializeStringify(this.data);
+            return dataAsString;
         },
 
         // -- Deserialisation
         // --- ---------------------
-        deserialisation: function (data) {
+        _deserializeStringify: function (data) {
+            if (data) {
+                return JSON.parse(data);
+            }
+            return null;
+        },
+        _deserializeDecrypt: function (data) {
+            return data;
+        },
+        deserialize: function (data) {
             this.setData(data);
         }
     };

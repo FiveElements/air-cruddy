@@ -93,10 +93,12 @@
 
         // --- External Apis
         // --- ---------------------
-        deserialisation: function (data) {
+        deserialize: function (data) {
           throw new Error('Not Implemented');
         },
-
+        serialize: function (data) {
+            throw new Error('Not Implemented');
+        },
 
 
         // --- Entity GET
@@ -112,7 +114,7 @@
 
         _handleGetResponse: function (event) {
             var response = event.detail.response;
-            this.deserialisation( response);
+            this.deserialize( response);
             this.fire('fire-form-get-response', response);
         },
         _handleGetError: function (event, detail) {
