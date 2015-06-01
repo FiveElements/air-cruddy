@@ -19,7 +19,7 @@ The `user-form` provides
         }
     </style>
     <template>
-        <fire-form>
+        <fire-form entity-id="{{userId}}">
             <paper-input name="name" label="Name" required></paper-input>
             <paper-input name="animal" label="Favourite animal" required></paper-input>
             <br>
@@ -53,7 +53,9 @@ The `user-form` provides
         Polymer({
             is: 'user-form',
 
-            properties: {}
+            properties: {
+                userId: String
+            }
 
         });
     })();
