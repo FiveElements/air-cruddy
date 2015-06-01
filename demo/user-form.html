@@ -1,14 +1,17 @@
 <link rel="import" href="../../polymer/polymer.html">
 
 <link rel="import" href="../fire-form.html">
+<link rel="import" href="../../iron-icon/iron-icon.html">
+<link rel="import" href="../../iron-icons/iron-icons.html">
+
 <link rel="import" href="../../paper-input/paper-input.html">
+<link rel="import" href="../../paper-button/paper-button.html">
 <!--
 
 The `user-form` provides  
 
 @group Demo Elements
 @element user-form
-@demo demo/index.html
 -->
 
 <dom-module id="user-form">
@@ -19,9 +22,21 @@ The `user-form` provides
         }
     </style>
     <template>
-        <fire-form entity-id="{{userId}}">
-            <paper-input name="name" label="Name" required></paper-input>
-            <paper-input name="animal" label="Favourite animal" required></paper-input>
+        <h1>Edit User Id <span>{{userId}}</span></h1>
+        <section>
+            <paper-button  on-tap="save">
+                <iron-icon icon="save"></iron-icon>
+                <span>Save</span>
+            </paper-button>
+            <paper-button  on-tap="createNewUser">
+                <iron-icon icon="add"></iron-icon>
+                <span>Create New User</span>
+            </paper-button>
+        </section>
+
+        <fire-form id="userCrud" endpoint="/s/users" entity-id="{{userId}}" data="{{data}}">
+            <paper-input label="Firstname" value="{{data._source.firstname}}" required></paper-input>
+            <paper-input label="Lastname" value="{{data._source.lastname}}" required></paper-input>
             <br>
 
             <input type="checkbox" name="food" value="donuts" checked> I like donuts<br>
@@ -54,7 +69,24 @@ The `user-form` provides
             is: 'user-form',
 
             properties: {
-                userId: String
+                userId: String,
+                data: {
+                    type: Object,
+                    value: {
+                        _id: null,
+                        _version: null,
+                        _source: {}
+                    },
+                    notity: true
+                }
+            },
+            save: function (event) {
+                this.$.userCrud.save();
+            }
+            ,
+            createNewUser: function() {
+                console.log('Create New User form');
+                this.set('userId', null);
             }
 
         });

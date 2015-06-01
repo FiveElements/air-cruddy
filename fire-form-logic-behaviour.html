@@ -8,28 +8,7 @@
      */
     Polymer.FireFormLogicBehavior = {
 
-         /**
-         * Called to submit the form.
-         */
-        submit: function(event) {
-            if (!this._validate()) {
-                return false;
-            }
-            var json = this.serialize();
-            this._requestBot.url = this.action;
-            this._requestBot.method = this.method;
-            this._requestBot.params = json;
-            if (this.method == 'POST') {
-                this._requestBot.body = JSON.stringify(json);
-            }
-            this._requestBot.generateRequest();
-            this.fire('fire-form-submit', json);
-            // Don't perform a page refresh.
-            if (event) {
-                event.preventDefault();
-            }
-            return false;
-        }
+
 
 
     };

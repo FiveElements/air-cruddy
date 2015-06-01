@@ -23,6 +23,7 @@
     "lodash": "^3.8.0"
   },
   "devDependencies": {
+    "aguid": "^1.0.3",
     "del": "^1.1.1",
     "gulp": "^3.8.11",
     "gulp-cached": "^1.1.0",
@@ -31,8 +32,8 @@
     "gulp-install": "^0.4.0",
     "gulp-jshint": "^1.10.0",
     "gulp-livereload": "^3.8.0",
-    "gulp-nodemon": "^2.0.3",
     "gulp-load-plugins": "^0.10.0",
+    "gulp-nodemon": "^2.0.3",
     "gulp-shell": "^0.4.1",
     "jshint-stylish": "^1.0.2"
   }

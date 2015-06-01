@@ -1,5 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+
 <script>
 
     /**
@@ -21,7 +23,12 @@
             /**
              * The Id of the Entity used for construct REST Url
              */
-            entityId: String,
+            entityId: {
+                type: String,
+                notify: true,
+                observer: '_entityIdChanged'
+            },
+
             /**
              * Computed entity Rest Url
              */
@@ -30,7 +37,7 @@
                 computed: '_computeEndpointEntityUrl(endpoint, entityId)'
             }
         },
-        ready: function () {
+        created: function () {
             // Object that handles the ajax form submission request.
             this._requestGet = this._createGetIronAjax();
             this._requestCreate = this._createCreateIronAjax();
@@ -83,6 +90,15 @@
             };
         },
 
+
+        // --- External Apis
+        // --- ---------------------
+        deserialisation: function (data) {
+          throw new Error('Not Implemented');
+        },
+
+
+
         // --- Entity GET
         // --- ---------------------
 
@@ -94,8 +110,10 @@
             this._requestGet.generateRequest();
         },
 
-        _handleGetResponse: function (event, detail) {
-            this.fire('fire-form-get-response', event.detail.response);
+        _handleGetResponse: function (event) {
+            var response = event.detail.response;
+            this.deserialisation( response);
+            this.fire('fire-form-get-response', response);
         },
         _handleGetError: function (event, detail) {
             var eventTest = this._extractErrorFromResponse(event, detail);
@@ -136,7 +154,7 @@
             this._requestCreate.generateRequest();
         },
 
-        _handleUpdateesponse: function (event) {
+        _handleUpdateResponse: function (event) {
             this.fire('fire-form-update-response', event.detail.response);
         },
         _handleUpdateError: function (event) {
