@@ -1,7 +1,7 @@
 {
-  "name": "fire-form",
+  "name": "fire-cruddy",
   "version": "0.0.1",
-  "description": "Node Js Http Server",
+  "description": "Crud WebComponent for managing all service Interaction with Http Server",
   "private": true,
   "main": "src/index.js",
   "scripts": {
