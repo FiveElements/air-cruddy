@@ -16,3 +16,6 @@ bower install
 ```shell
 gulp serve
 ``` 
+
+# Les Elementaires
+http://wiki.sorcellerie.net/Print.aspx?Page=Elementale-La-Magie

@@ -32,6 +32,11 @@ The `user-form` provides
                 <iron-icon icon="add"></iron-icon>
                 <span>Create New User</span>
             </paper-button>
+            <paper-button  on-tap="loadUser">
+                <iron-icon icon="user"></iron-icon>
+                <span>Load User</span>
+            </paper-button>
+
         </section>
 
         <fire-form id="userCrud" endpoint="/s/users" entity-id="{{userId}}" data="{{data}}">
@@ -87,6 +92,10 @@ The `user-form` provides
             createNewUser: function() {
                 console.log('Create New User form');
                 this.set('userId', null);
+            },
+            loadUser: function() {
+                console.log('Create New User form');
+                this.set('userId', '1');
             }
 
         });
