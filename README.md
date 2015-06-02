@@ -1,5 +1,5 @@
-# fire-cruddy
-The fire-cruddy element for CRUD operations with Http Server
+# air-cruddy
+The air-cruddy element for CRUD operations with Http Server
 
 ## Demo
 
@@ -15,4 +15,4 @@ bower install
 ### Run demo project
 ```shell
 gulp serve
-```shell
+``` 
