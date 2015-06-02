@@ -1,0 +1,122 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+
+    /**
+     * @demo demo/index.html
+     * @polymerBehavior
+     */
+    Polymer.AirCruddyDataInitialisationBehavior = {
+
+        properties: {
+            data: {
+                type: Object,
+                notify: true
+            },
+            dataOri: Object
+        },
+
+        // --- Logic Initialisation
+        // --- ---------------------
+        _entityIdChanged: function () {
+            if (this.entityId === null) {
+                // Blank case, no model to create
+                this.setData(null);
+            } else if (this.entityId === '' || this.entityId === 'new') {
+                // Create Model
+                this.createEmptyEntity();
+                console.log('_entityIdChanged create empty data ', this.data);
+            } else if (!this.data || !this.data._id || this.data._id !== this.entityId) {
+                // Update Mode
+                this.entityGet();
+                //  console.log('entityidChanged load data ', this.entityid);
+            }
+        },
+
+        // --- Apis
+        // --- ---------------------
+        save: function () {
+
+        },
+
+        // --- External Apis
+        // --- ---------------------
+        entityGet: function () {
+            throw new Error('Not Implemented');
+        },
+        entityUpdate: function () {
+            throw new Error('Not Implemented');
+        },
+        entitySave: function () {
+            throw new Error('Not Implemented');
+        },
+
+        // --- Entity Create
+        // --- ---------------------
+        createEmptyEntity: function () {
+            return {
+                _id: null,
+                _version: null,
+                _source: {}
+            };
+        },
+
+        setData: function (data) {
+            this.set('data', data);
+            this.dataSnapshot(data);
+        },
+        // --- Data Snapshot
+        // --- ---------------------
+        dataSnapshot: function (data) {
+            if (data) {
+                this.set('dataOri', JSON.parse(JSON.stringify(data)));
+            } else {
+                this.set('dataOri', null);
+            }
+        },
+
+        // --- Differential
+        // --- ---------------------
+
+        _isEmptyObj: function (obj) {
+            return (Object.getOwnPropertyNames(obj).length === 0);
+        },
+        _diffProperties: function (first, second, diffs) {
+            diffs = diffs || {};
+            // Compare ref to Object
+            for (var attr in second) {
+                if (Array.isArray(first[attr]) && Array.isArray(second[attr])) {
+                    // Bug in Array Comparaison
+                    // if (first[attr] !== second[attr]) {
+                    if (!this._isArrayEquals(first[attr], second[attr])) {
+                        diffs[attr] = second[attr];
+                    }
+                } else if (typeof first[attr] === 'object' && typeof second[attr] === 'object') { // Bug if property disapear
+                    // Check recursif
+                    var subDiffs = this._diffProperties(first[attr], second[attr], {});
+                    if (subDiffs) {
+                        diffs[attr] = subDiffs;
+                    }
+                } else if (first[attr] !== second[attr]) {
+                    diffs[attr] = second[attr];
+                }
+            }
+            return this._isEmptyObj(diffs) ? undefined : diffs;
+        },
+        _isArrayEquals: function (a, b) {
+            if (a.length() !== b.length()) {
+                return false;
+            }
+            if (a === b) {
+                return true;
+            }
+            var diff = a.filter(function (element, index) {
+                return a[index] !== b[index];
+            });
+            return diff.length() < 1;
+        }
+
+
+
+    };
+</script>

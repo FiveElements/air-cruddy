@@ -1,0 +1,219 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+
+<script>
+
+    /**
+     * @demo demo/index.html
+     * @polymerBehavior
+     */
+    Polymer.AirCruddyAjaxBehavior = {
+
+        properties: {
+            /**
+             * The base of all CRUD url to manage the REST entity.
+             * The Pattern to respect is :
+             * For getting : GET to url  {{endpoint}}/entityId
+             * For getting : POST to url {{endpoint}}
+             * For updating : PUT to url {{endpoint}}
+             * For deleting : DELETE to url {{endpoint}}
+             */
+            endpoint: String,
+            /**
+             * The Id of the Entity used for construct REST Url
+             */
+            entityId: {
+                type: String,
+                notify: true,
+                observer: '_entityIdChanged'
+            },
+
+            /**
+             * Computed entity Rest Url
+             */
+            entityUrl: {
+                type: String,
+                computed: '_computeEndpointEntityUrl(endpoint, entityId)'
+            }
+        },
+        created: function () {
+            // Object that handles the ajax form submission request.
+            this._requestGet = this._createGetIronAjax();
+            this._requestCreate = this._createCreateIronAjax();
+            this._requestUpdate = this._createUpdateIronAjax();
+            this._requestDelete = this._createDeleteIronAjax();
+        },
+
+        // --- Compute Properties
+        // --- ---------------------
+        _computeEndpointEntityUrl: function () {
+            return this.endpoint + '/' + this.entityId;
+        },
+
+        // --- Iron Ajax Initialisation
+        // --- ---------------------
+        _createIronAjax: function (type, verb) {
+            var requestBot = document.createElement('iron-ajax');
+            requestBot.method = verb || type.toUpperCase();
+            requestBot.addEventListener('response', this['_handle' + type + 'Response'].bind(this));
+            requestBot.addEventListener('error', this['_handle' + type + 'Error'].bind(this));
+            return requestBot;
+        },
+
+        _createGetIronAjax: function () {
+            return this._createIronAjax('Get' );
+        },
+        _createCreateIronAjax: function () {
+            return this._createIronAjax('Create', 'POST');
+        },
+        _createUpdateIronAjax: function () {
+            return  this._createIronAjax('Update', 'PUT');
+        },
+        _createDeleteIronAjax: function () {
+           return this._createIronAjax('Delete');
+        },
+
+
+        // --- Response Error Event
+        // --- ---------------------
+        _extractErrorFromResponse: function (event, detail) {
+            console.log('Bug handleSaveError detail.response (Not JSON) : ', detail.response, detail.xhr.response);
+            var resp = detail.response;
+
+            var status = resp.statusCode; /// detail.xhr.status;
+            var statusText = resp.response;//detail.xhr.statusText;
+            return {
+                response: resp,
+                status: status,
+                statusText: statusText
+            };
+        },
+
+
+        // --- External Apis
+        // --- ---------------------
+        deserialize: function (data) {
+          throw new Error('Not Implemented');
+        },
+        serialize: function (data) {
+            throw new Error('Not Implemented');
+        },
+
+
+        // --- Entity GET
+        // --- ---------------------
+
+        /**
+         * Called to request the get the entity from server.
+         */
+        entityGet: function (event) {
+            this._requestGet.url = this.entityUrl;
+            this._requestGet.generateRequest();
+        },
+
+        _handleGetResponse: function (event) {
+            var response = event.detail.response;
+            this.deserialize( response);
+            this.fire('fire-form-get-response', response);
+        },
+        _handleGetError: function (event, detail) {
+            var eventTest = this._extractErrorFromResponse(event, detail);
+            // Fire Event
+            this.fire('fire-form-error', eventTest);
+            this.fire('fire-form-get-error', eventTest);
+        },
+
+
+        // --- Entity Create
+        // --- ---------------------
+
+
+        _handleCreateResponse: function (event) {
+            this.fire('fire-form-create-response', event.detail.response);
+        },
+        _handleCreateError: function (event) {
+            var eventTest = this._extractErrorFromResponse(event, detail);
+            // Fire Event
+            this.fire('fire-form-error', eventTest);
+            this.fire('fire-form-create-error', eventTest);
+        },
+
+
+        // --- Update Create
+        // --- ---------------------
+
+
+        /**
+         * Called to request the update the entity to server.
+         */
+        entityUpdate: function (event) {
+            if (!this._validate()) {
+                return false;
+            }
+            this._requestCreate.url = this.entityUrl;
+            this._requestCreate.body = this.serialize();
+            this._requestCreate.generateRequest();
+        },
+
+        _handleUpdateResponse: function (event) {
+            this.fire('fire-form-update-response', event.detail.response);
+        },
+        _handleUpdateError: function (event) {
+            var eventTest = this._extractErrorFromResponse(event, detail);
+            // Fire Event
+            this.fire('fire-form-error', eventTest);
+            this.fire('fire-form-update-error', eventTest);
+        },
+
+        // --- Delete Create
+        // --- ---------------------
+
+
+        _handleDeleteResponse: function (event) {
+            this.fire('fire-form-delete-response', event.detail.response);
+        },
+        _handleDeleteError: function (event) {
+            var eventTest = this._extractErrorFromResponse(event, detail);
+            // Fire Event
+            this.fire('fire-form-error', eventTest);
+            this.fire('fire-form-delete-error', eventTest);
+        },
+
+        // --- External Api Use
+        // --- ---------------------
+        serialize: function () {
+            //return JSON.stringify(this.data);
+            throw new Error("Not Implemented !");
+        },
+
+        _validate: function () {
+            //return true;
+            throw new Error("Not Implemented !");
+        },
+
+        // --- Other
+        // --- ---------------------
+        /**
+         * Called to request the create the entity to server.
+         */
+        entityCreate: function (event) {
+            if (!this._validate()) {
+                return false;
+            }
+            this._requestCreate.url = this.endpoint;
+            this._requestCreate.body = this.serialize();
+            this._requestCreate.generateRequest();
+        },
+
+        /**
+         * Called to request the delete the entity to server.
+         */
+        entityDelete: function (event) {
+            this._requestCreate.url = this.entityUrl;
+            this._requestCreate.body = this.serialize();
+            this._requestCreate.generateRequest();
+        }
+
+    };
+</script>

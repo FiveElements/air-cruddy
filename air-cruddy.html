@@ -1,0 +1,92 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="air-cruddy-logic-behaviour.html">
+<link rel="import" href="air-cruddy-data-initialisation-behaviour.html">
+<link rel="import" href="air-cruddy-serialization-behaviour.html">
+<link rel="import" href="air-cruddy-validator-behaviour.html">
+<link rel="import" href="air-cruddy-ajax-behaviour.html">
+
+<!--
+
+The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retrieve, Update, Delete) Operations on an REST Api with all the expected services :
+ - Validation
+ - Conflict Resolution on 409
+ - Auto Save Feature
+
+
+
+
+    <air-cruddy entity-id="{{entityid}}" data="{{data}}" endpoint="/s/users" autosave>
+        <section>
+        <paper-input-decorator floatingLabel label="First name" autoValidate>
+          <input is="core-input" value="{{ data._source.firstname}}" required>
+        </paper-input-decorator>
+      </section>
+    </air-cruddy>
+
+### Server Data Format
+Example of Get Entity Server Format:
+
+    { _id: "AAApkZAAOAAAQYEAAJ",
+      _version: 1,
+      _index: "users",
+      _type: "user",
+      _source: {
+        firstname: "NICOLE",
+        lastname: "ABBO"
+      }
+    }
+
+
+
+### Validation
+TODO
+
+
+
+### Conflict Resolution
+When Save Error 409 is raised from server
+AutoSave
+---------
+Attribute available:
+ - autosave
+ - autocreate
+ - autoupdate
+
+@group Air Elements
+@element air-cruddy
+@demo demo/index.html
+-->
+
+<dom-module id="air-cruddy">
+
+    <style>
+        :host {
+            display: block;
+        }
+    </style>
+    <template>
+        <content></content>
+    </template>
+</dom-module>
+
+<script>
+    (function () {
+        'use strict';
+
+        Polymer({
+            is: 'air-cruddy',
+
+            behaviors: [
+         //       Polymer.AirCruddyLogicBehavior,
+                Polymer.AirCruddyDataInitialisationBehavior,
+                Polymer.AirCruddyAjaxBehavior,
+                Polymer.AirCruddyValidatorBehavior,
+                Polymer.AirCruddySerializaionBehavior
+            ],
+
+            properties: {}
+
+        });
+    })();
+</script>
