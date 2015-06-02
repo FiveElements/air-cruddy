@@ -12,25 +12,50 @@
         listeners: {
             'iron-form-element-register': '_registerElement'
         },
+
+
+        // --- Life Cycle
+        // --- ---------------------------
         ready: function () {
             // Holds all the custom elements registered with this form.
             this._customElements = [];
         },
+
+        // --- Node Watcher
+        // --- ---------------------------
         _registerElement: function (e) {
             if (this !== e.target) {
                 this._customElements.push(e.target);
             }
         },
-        _validateAll: function () {
-            var valid = true;
-            for (var el, i = 0; el = this._customElements[i], i < this._customElements.length; i++) {
-                valid = el.validate() && valid;
+
+        // --- Validators
+        // --- ---------------------------
+        _validateAllNodes: function (notValidNodesCallback) {
+            var childNodes = this._customElements;
+            // Compute InValid nodes
+            var notValidNodes = Array.prototype.filter.call(childNodes, function (childNode) {
+                if (typeof childNode.checkValidity === 'function') {
+                    return !childNode.checkValidity();
+                } else if (typeof childNode.validate === 'function') {
+                    return !childNode.validate();
+                }
+                return false;
+            });
+            // Not Valid Callback
+            if (notValidNodesCallback) {
+                notValidNodesCallback(notValidNodes);
             }
-            return valid;
+            // Return
+            return notValidNodes.length < 1;
         },
-        validate: function () {
-            return this._validateAll();
+
+        validate: function (callback) {
+            return this._validateAllNodes(callback);
         }
+
+        // --- End
+        // --- ---------------------------
 
     };
 </script>

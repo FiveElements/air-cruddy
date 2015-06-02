@@ -8,6 +8,53 @@
      */
     Polymer.AirCruddySerializaionBehavior = {
 
+        properties: {
+            /**
+             * Send All The Data to Update and not alone the diiferential updated by user.
+             */
+//            fullUpdate: {
+//                type: Boolean,
+//                value: false
+//            }
+        },
+
+        // --- External Apis
+        // --- ---------------------------
+//        _cloneData: function (data) {
+//            throw new Error('Not Implemented');
+//        },
+//        _diffDataSource:  function (data) {
+//            throw new Error('Not Implemented');
+//        },
+//        setData: function (data) {
+//            throw new Error('Not Implemented');
+//        },
+
+        // --- Entity Serialization Apis
+        // --- ---------------------------
+        _serializeDataCreate: function (data) {
+            var opt = {
+                body: data._source
+            };
+            this.serialize(opt);
+        },
+
+        _serializeDataUpdate: function (data) {
+            var opt = {
+                version: data._version,
+                body: data._source
+            };
+            this.serialize(opt);
+        },
+        _serializeDataDelete: function (data) {
+            var opt = {
+                version: data._version
+            };
+            this.serialize(opt);
+        },
+
+        // --- Implementations Apis
+        // --- ---------------------------
 
         _serializeStringify: function (data) {
             if (data) {
@@ -15,25 +62,25 @@
             }
             return null;
         },
-        _serializeEncrypt: function (data) {
-            return data;
-        },
+//        _serializeEncrypt: function (data) {
+//            return data;
+//        },
         serialize: function () {
-            var dataAsString =  this._serializeStringify(this.data);
+            var dataAsString = this._serializeStringify(this.data);
             return dataAsString;
         },
 
         // -- Deserialisation
         // --- ---------------------
-        _deserializeStringify: function (data) {
-            if (data) {
-                return JSON.parse(data);
-            }
-            return null;
-        },
-        _deserializeDecrypt: function (data) {
-            return data;
-        },
+//        _deserializeStringify: function (data) {
+//            if (data) {
+//                return JSON.parse(data);
+//            }
+//            return null;
+//        },
+//        _deserializeDecrypt: function (data) {
+//            return data;
+//        },
         deserialize: function (data) {
             this.setData(data);
         }
