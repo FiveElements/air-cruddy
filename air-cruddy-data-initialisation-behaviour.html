@@ -3,7 +3,6 @@
 <script>
 
     /**
-     * @demo demo/index.html
      * @polymerBehavior
      */
     Polymer.AirCruddyDataInitialisationBehavior = {
@@ -128,7 +127,9 @@
         setDataId: function (newDataId) {
             this.set('data._id', newDataId);
         },
-
+        unsetDataId: function () {
+            this.set('data._id', newDataId);
+        },
         // --- Data Snapshot
         // --- ---------------------
         dataSnapshot: function (data) {

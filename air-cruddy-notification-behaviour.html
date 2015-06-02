@@ -1,0 +1,24 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+
+    /**
+     * @polymerBehavior
+     */
+    Polymer.AirCruddyNotificationBehavior = {
+
+        ready: function () {
+            this.toastSaveError = document.createElement('paper-toast');
+        },
+
+        showSaveErrorMessage: function (msg) {
+            this.toastSaveError.text = msg;
+            this.toastSaveError.show();
+//            console.log('Saved error : ', msg);
+        },
+
+
+    };
+
+
+</script>

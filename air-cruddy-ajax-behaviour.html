@@ -5,7 +5,6 @@
 <script>
 
     /**
-     * @demo demo/index.html
      * @polymerBehavior
      */
     Polymer.AirCruddyAjaxBehavior = {
@@ -119,6 +118,11 @@
         checkValidity: function() {
             throw new Error('Not Implemented');
         },
+
+//        unsetDataId : function() {
+//            throw new Error('Not Implemented');
+//         },
+
         // --- Entity Serialization Apis
         // --- ---------------------------
 
@@ -138,13 +142,13 @@
         _handleResponseGet: function (event) {
             var response = event.detail.response;
             this.deserialize(response);
-            this.fire('fire-form-get-response', response);
+            this.fire('air-cruddy-get-response', response);
         },
         _handleErrorGet: function (event, detail) {
             var eventTest = this._extractErrorFromResponse(event, detail);
             // Fire Event
-            this.fire('fire-form-error', eventTest);
-            this.fire('fire-form-get-error', eventTest);
+            this.fire('air-cruddy-error', eventTest);
+            this.fire('air-cruddy-get-error', eventTest);
         },
 
 
@@ -169,13 +173,13 @@
             // Common Management
             this._handleResponseSave(event);
             // Fire Event
-            this.fire('fire-form-create-response', resp);
+            this.fire('air-cruddy-create-response', resp);
         },
         _handleErrorCreate: function (event) {
             var eventTest = this._extractErrorFromResponse(event, detail);
             // Fire Event
-            this.fire('fire-form-error', eventTest);
-            this.fire('fire-form-create-error', eventTest);
+            this.fire('air-cruddy-error', eventTest);
+            this.fire('air-cruddy-create-error', eventTest);
         },
 
 
@@ -197,19 +201,19 @@
             // Common Management
             this._handleResponseSave(event);
             // Fire Event
-            this.fire('fire-form-update-response', resp);
+            this.fire('air-cruddy-update-response', resp);
         },
         _handleErrorUpdate: function (event) {
             var eventTest = this._extractErrorFromResponse(event, detail);
             // Fire Event
-            this.fire('fire-form-error', eventTest);
-            this.fire('fire-form-update-error', eventTest);
+            this.fire('air-cruddy-error', eventTest);
+            this.fire('air-cruddy-update-error', eventTest);
         },
 
         // --- Entity Save handler
         // --- ---------------------
 
-        _handleResponseSave: function (event, detail) {
+        _handleResponseSave: function (event) {
             var status = event.detail.status;
             var resp = event.detail.response;
             // Increment version or reload data ?
@@ -220,8 +224,13 @@
                 // Update version
                 this.setDataVersion(resp._version);
             }
+            // Fire Event
+            this.fire('air-cruddy-save-response', resp);
         },
 
+        _handleErrorSave: function (event) {
+
+        },
         // --- Entity Delete Create
         // --- ---------------------
         /**
@@ -235,13 +244,14 @@
 
 
         _handleResponseDelete: function (event) {
-            this.fire('fire-form-delete-response', event.detail.response);
+            this.unsetDataId();
+            this.fire('air-cruddy-delete-response', event.detail.response);
         },
         _handleErrorDelete: function (event) {
             var eventTest = this._extractErrorFromResponse(event, detail);
             // Fire Event
-            this.fire('fire-form-error', eventTest);
-            this.fire('fire-form-delete-error', eventTest);
+            this.fire('air-cruddy-error', eventTest);
+            this.fire('air-cruddy-delete-error', eventTest);
         },
 
         // --- Other

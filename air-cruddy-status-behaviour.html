@@ -1,0 +1,58 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+
+    /**
+     * @polymerBehavior
+     */
+    Polymer.AirCruddyStatusBehavior = {
+
+        properties: {
+            crudStatus: {
+                type: Object,
+                notify: true,
+                value: function() {
+                    return {
+                        toSave : false,
+                        toDelete: false
+                    }
+                }
+            }
+        },
+
+        listeners: {
+            'iron-form-element-register': '_registerInputWatcherElement'
+        },
+
+
+        // --- Life Cycle
+        // --- ---------------------------
+        ready: function () {
+            // Holds all the custom elements registered with this form.
+            this._inputWatcherElements = [];
+        },
+
+        _registerInputWatcherElement: function (e) {
+            if (this !== e.target) {
+                this._inputWatcherElements.push(e.target);
+
+            }
+        },
+
+        // --- AutoSave
+        // --- ---------------------
+        addInputWatcher: function (focusable) {
+            var that = this;
+            // Add Event
+            Polymer.addEventListener(focusable, 'input', that.focusListener, true);
+            Polymer.addEventListener(focusable, 'blur', that.blurListener, true);
+        },
+
+        removeInputWatcher: function (childNode) {
+            var that = this;
+            Polymer.removeEventListener(childNode, 'blur', that.blurListener, true);
+            Polymer.removeEventListener(childNode, 'input', that.focusListener, true);
+        }
+
+
+</script>
