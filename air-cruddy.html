@@ -59,7 +59,7 @@ Attribute available:
 @demo demo/index.html
 -->
 
-<dom-module id="air-cruddy">
+<dom-module id="air-cruddy" attribute="endpoint">
 
     <style>
         :host {
@@ -67,6 +67,7 @@ Attribute available:
         }
     </style>
     <template>
+        <h1>Entity Id <span>{{entityId}}</span> to url <span>{{endpoint}}</span></h1>
         <content></content>
     </template>
 </dom-module>
@@ -78,18 +79,29 @@ Attribute available:
         Polymer({
             is: 'air-cruddy',
 
+            properties: {
+                endpoint: {
+                    type: String,
+                    notify: true,
+                    observer: '_toPrint'
+                }
+            },
+
             behaviors: [
                 // Polymer.AirCruddyNotificationBehavior,
                 // Polymer.AirCruddyStatusBehavior,
                 Polymer.AirCruddyDataInitialisationBehavior,
                 Polymer.AirCruddyAjaxBehavior,
                 Polymer.AirCruddyResponseBehavior,
-                Polymer.AirCruddyValidatorBehavior,
+//                Polymer.AirCruddyValidatorBehavior,
                 Polymer.AirCruddySerializaionBehavior
             ],
-
-            properties: {}
-
+            ready: function () {
+                console.log("rady endpointUrl", '--------------', this.endpoint);
+            },
+            _toPrint: function (newValue, oldValue) {
+                console.log("endpointUrl", newValue, ' <---- ', oldValue, '--------------', this.endpoint);
+            }
         });
     })();
 </script>

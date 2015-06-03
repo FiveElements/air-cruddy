@@ -8,6 +8,14 @@
     Polymer.AirCruddyDataInitialisationBehavior = {
 
         properties: {
+            /**
+             * The Id of the Entity used for construct REST Url
+             */
+            entityId: {
+                type: String,
+                notify: true,
+                observer: '_entityIdChanged'
+            },
             data: {
                 type: Object,
                 notify: true
@@ -16,7 +24,21 @@
             isModeCreate: {
                 type: Boolean,
                 computed : '_computedCreationMode(data._id)'
+            },
+            endpoint: {
+                type: String,
+                notify: true,
+                reflectToAttribute: true,
+                observer: '_toPrint'
             }
+        },
+
+        ready: function () {
+          console.log('ready Entity Id', this.entityId);
+            console.log('ready endpoint Id', this.endpoint);
+        },
+        _toPrint: function (newValue, oldValue) {
+            console.log("endpoint", newValue, ' <---- ', oldValue, '--------------', this.endpoint);
         },
 
         // --- External Apis
@@ -44,7 +66,8 @@
 
         // --- Logic Initialisation
         // --- ---------------------
-        _entityIdChanged: function () {
+        _entityIdChanged: function (newValue, oldValue) {
+            console.log('Entity Id Changed', oldValue, ' ---> ', newValue);
             if (this.entityId === null) {
                 // Blank case, no model to create
                 this.setData(null);
@@ -55,8 +78,8 @@
             } else if (!this.data || !this.data._id || this.data._id !== this.entityId) {
                 console.log('_entityIdChanged get data ', this.entityId);
                 // Update Mode
-                this.entityGet();
-                //  console.log('entityidChanged load data ', this.entityid);
+//                this.entityGet();
+                  console.log('entityidChanged load data ', this.entityid);
             }
         },
 

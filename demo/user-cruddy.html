@@ -39,7 +39,7 @@ The `user-form` provides
 
         </section>
 
-        <fire-form id="userCrud" endpoint="/s/users" entity-id="{{userId}}" data="{{data}}">
+        <air-cruddy id="userCrud" endpoint="/s/users" entity-id="{{userId}}" data="{{data}}">
             <paper-input label="Firstname" value="{{data._source.firstname}}" required></paper-input>
             <paper-input label="Lastname" value="{{data._source.lastname}}" required></paper-input>
             <br>
@@ -62,7 +62,7 @@ The `user-form` provides
                 <option value="Opera">
                 <option value="Safari">
             </datalist>
-        </fire-form>
+        </air-cruddy>
     </template>
 </dom-module>
 
@@ -74,7 +74,16 @@ The `user-form` provides
             is: 'user-cruddy',
 
             properties: {
-                userId: String,
+                userId: {
+                    type: String,
+                    notify: true,
+                    value: '1'
+                },
+//                endpoint: {
+//                    type: String,
+//                    notify: true,
+//                    value: '/s/users'
+//                },
                 data: {
                     type: Object,
                     value: {
@@ -91,11 +100,13 @@ The `user-form` provides
             ,
             createNewUser: function() {
                 console.log('Create New User form');
-                this.set('userId', null);
+               // this.set('userId', null);
+                this.userId= null;
             },
             loadUser: function() {
-                console.log('Create New User form');
-                this.set('userId', '1');
+                console.log('Load User with Id 1');
+ //               this.set('userId', '1');
+                this.userId= '1';
             }
 
         });

@@ -9,55 +9,42 @@
      */
     Polymer.AirCruddyAjaxBehavior = {
 
-        properties: {
-            /**
-             * The base of all CRUD url to manage the REST entity.
-             * The Pattern to respect is :
-             * For getting : GET to url  {{endpoint}}/entityId
-             * For getting : POST to url {{endpoint}}
-             * For updating : PUT to url {{endpoint}}
-             * For deleting : DELETE to url {{endpoint}}
-             */
-            endpoint: String,
-            /**
-             * The Id of the Entity used for construct REST Url
-             */
-            entityId: {
-                type: String,
-                notify: true,
-                observer: '_entityIdChanged'
-            },
-
-            /**
-             * Computed entity Rest Url
-             */
-            entityUrl: {
-                type: String,
-                computed: '_computeEndpointEntityUrl(endpoint, entityId)'
-            }
-        },
-
-        created: function () {
+//        properties: {
+//            /**
+//             * The base of all CRUD url to manage the REST entity.
+//             * The Pattern to respect is :
+//             * For getting : GET to url  endpoint/entityId
+//             * For creating : POST to url endpoint
+//             * For updating : PUT to url endpoint/entityId
+//             * For deleting : DELETE to url endpoint/entityId
+//             */
+//            endpoint: {
+//                type: String,
+//                notify: true,
+//                value: 'totot',
+//                observer: '_toPrint'
+//            }
+//        },
+//        _toPrint: function (newValue, oldValue) {
+//            console.log("endpointUrl", newValue, ' <---- ', oldValue, '--------------', this.endpoint);
+//        },
+        ready: function () {
             // Object that handles the ajax form submission request.
             this._requestGet = this._createGetIronAjax();
             this._requestCreate = this._createCreateIronAjax();
             this._requestUpdate = this._createUpdateIronAjax();
             this._requestDelete = this._createDeleteIronAjax();
+            console.log('Create iron-ajax composants', this.endpoint);
         },
 
-        // --- Compute Properties
-        // --- ---------------------------
-        _computeEndpointEntityUrl: function () {
-            return this.endpoint + '/' + this.entityId;
-        },
 
         // --- Iron Ajax Initialisation
         // --- ---------------------------
         _createIronAjax: function (type, verb) {
             var requestBot = document.createElement('iron-ajax');
             requestBot.method = verb || type.toUpperCase();
-            requestBot.addEventListener('response', this['_handleResponse' + type ].bind(this));
-            requestBot.addEventListener('error', this['_handleError' + type  ].bind(this));
+            requestBot.addEventListener('response', this['_handleResponse' + type].bind(this));
+            requestBot.addEventListener('error', this['_handleError' + type].bind(this));
             return requestBot;
         },
 
@@ -73,8 +60,6 @@
         _createDeleteIronAjax: function () {
             return this._createIronAjax('Delete');
         },
-
-
 
 
         // --- External Apis
@@ -96,7 +81,7 @@
             throw new Error('Not Implemented');
         },
 
-        checkValidity: function() {
+        checkValidity: function () {
             throw new Error('Not Implemented');
         },
 
@@ -107,7 +92,18 @@
         // --- Entity Serialization Apis
         // --- ---------------------------
 
-
+        entityGetUrl: function () {
+            return this.endpoint + '/' + this.entityId;
+        },
+        entityUrlCreate: function () {
+            return this.endpoint;
+        },
+        entityUrlUpdate: function () {
+            return this.entityGetUrl();
+        },
+        entityUrlDelete: function () {
+            return this.entityGetUrl();
+        },
 
         // --- Entity GET
         // --- ---------------------------
@@ -116,7 +112,8 @@
          * Called to request the get the entity from server.
          */
         entityGet: function () {
-            this._requestGet.url = this.entityUrl;
+            console.log('entityGet ', this.entityGetUrl());
+            this._requestGet.url = this.entityGetUrl();
             this._requestGet.generateRequest();
         },
 
@@ -128,15 +125,13 @@
         },
 
 
-
-
         // --- Entity Create
         // --- ---------------------
         /**
          * Called to request the create the entity to server.
          */
         _entityCreate: function (data) {
-            this._requestCreate.url = this.endpoint;
+            this._requestCreate.url = this.entityUrlCreate();
             this._requestCreate.body = this._serializeDataCreate(data);
             this._requestCreate.generateRequest();
         },
@@ -155,7 +150,7 @@
          * Called to request the update the entity to server.
          */
         _entityUpdate: function (data) {
-            this._requestCreate.url = this.entityUrl;
+            this._requestCreate.url = this.entityUrlUpdate();
             this._requestCreate.body = this._serializeDataUpdate(data);
             this._requestCreate.generateRequest();
         },
@@ -174,7 +169,7 @@
          * Called to request the delete the entity to server.
          */
         _entityDelete: function (data) {
-            this._requestCreate.url = this.entityUrl;
+            this._requestCreate.url = this.entityUrlDelete();
             this._requestCreate.body = this._serializeDataDelete(data);
             this._requestCreate.generateRequest();
         },

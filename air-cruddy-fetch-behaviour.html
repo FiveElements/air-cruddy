@@ -8,28 +8,25 @@
      */
     Polymer.AirCruddyFetchehavior = {
 
-        properties: {
-            /**
-             * The base of all CRUD url to manage the REST entity.
-             * The Pattern to respect is :
-             * For getting : GET to url  {{endpoint}}/entityId
-             * For getting : POST to url {{endpoint}}
-             * For updating : PUT to url {{endpoint}}
-             * For deleting : DELETE to url {{endpoint}}
-             */
-            endpoint: String,
-            /**
-             * The Id of the Entity used for construct REST Url
-             */
-            entityId: String,
-            /**
-             * Computed entity Rest Url
-             */
-            entityUrl: {
-                type: String,
-                computed: '_computeEndpointEntityUrl(endpoint, entityId)'
-            }
-        },
+//        properties: {
+//            /**
+//             * The base of all CRUD url to manage the REST entity.
+//             * The Pattern to respect is :
+//             * For getting : GET to url  {{endpoint}}/entityId
+//             * For getting : POST to url {{endpoint}}
+//             * For updating : PUT to url {{endpoint}}
+//             * For deleting : DELETE to url {{endpoint}}
+//             */
+//            endpoint: String,
+//
+//            /**
+//             * Computed entity Rest Url
+//             */
+//            entityUrl: {
+//                type: String,
+//                computed: '_computeEndpointEntityUrl(endpoint, entityId)'
+//            }
+//        },
         ready: function () {
         },
         // --- Compute Properties
