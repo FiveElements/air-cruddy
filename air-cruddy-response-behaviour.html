@@ -17,14 +17,12 @@
             }
         },
 
-
-
-
         // --- Response Error Event
         // --- ---------------------------
         _extractErrorFromResponse: function (event) {
             console.error('Error : ', event.detail);
-            var response = event.request.xhr.response;
+            console.error('Error request : ', event.detail.request.xhr);
+            var response = event.detail.request.xhr.response;
             var error = event.detail.error;
 
 
@@ -41,9 +39,7 @@
         // --- External Apis
         // --- ---------------------------
 
-
-
-        deserialize: function (event) {
+        _deserializeData: function (event) {
             var response = event.detail.response;
             return response;
         },
@@ -57,13 +53,12 @@
         // --- ---------------------------
 
 
-
         // --- Entity GET
         // --- ---------------------------
 
         _handleResponseGet: function (event) {
             console.log('Get Response:');
-            var response = this.deserialize(event);
+            var response = this._deserializeData(event);
             this._setData(response);
             this.fire('air-cruddy-get-response', response);
         },
@@ -74,8 +69,6 @@
             this.fire('air-cruddy-error', error);
             this.fire('air-cruddy-get-error', error);
         },
-
-
 
 
         // --- Entity Create
@@ -124,7 +117,7 @@
             var status = event.detail.status;
             var resp = event.detail.response;
             // Increment version or reload data ?
-            if (  this.reloadOnSave === true) {
+            if (this.reloadOnSave === true) {
                 console.log('Reload on save');
                 this._entityGet();
             } else {
@@ -144,7 +137,7 @@
             } else if (status === 409) { // 409 : Conflict
                 this.showSaveErrorMessage('Entity Save Conflict');
                 // conflict resolution with reload data
-               // TODO  this.resolveConflict();
+                // TODO  this.resolveConflict();
             } else {
 
             }

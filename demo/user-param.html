@@ -21,6 +21,7 @@ The `user-param` provides
                 <div>Display attribute values titi :<span>{{titi}}</span></div>
                 <div>Display attribute values toto :<span>{{toto}}</span></div>
                 <div>Display attribute values tata :<span>{{tata}}</span></div>
+                <div>Display attribute values tutu :<span>{{tutu}}</span></div>
             </section>
     </template>
 </dom-module>
@@ -38,7 +39,8 @@ The `user-param` provides
         },
         behaviors: [
             Polymer.UserParamBehavior,
-            Polymer.UserParamSupBehavior
+            Polymer.UserParamSupBehavior,
+                Polymer.UserParamPomBehavior
         ],
 
         ready: function () {

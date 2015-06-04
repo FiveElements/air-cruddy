@@ -56,4 +56,17 @@
 
     };
 
+    Polymer.UserParamPomBehavior = {
+        tutu: {
+            type: String,
+            notify: true,
+            observer: 'tutuChanged'
+        },
+        ready: function () {
+            console.log('Ready behaviors SUP', 'tutu', this.tutu);
+        },
+        tutuChanged: function (newValue, oldValue) {
+            console.log('tutuChanged behaviors SUP', oldValue, '--->', newValue);
+        }
+    }
 </script>
