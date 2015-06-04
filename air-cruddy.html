@@ -79,28 +79,24 @@ Attribute available:
         Polymer({
             is: 'air-cruddy',
 
-            properties: {
-                endpoint: {
-                    type: String,
-                    notify: true,
-                    observer: '_toPrint'
-                }
-            },
-
             behaviors: [
-                // Polymer.AirCruddyNotificationBehavior,
-                // Polymer.AirCruddyStatusBehavior,
-                Polymer.AirCruddyDataInitialisationBehavior,
-                Polymer.AirCruddyAjaxBehavior,
-                Polymer.AirCruddyResponseBehavior,
-//                Polymer.AirCruddyValidatorBehavior,
-                Polymer.AirCruddySerializaionBehavior
+                Polymer.AirCruddyDataInitialisationBehavior
+                , Polymer.AirCruddyAjaxBehavior
+                , Polymer.AirCruddyResponseBehavior
+                , Polymer.AirCruddySerializaionBehavior
             ],
+
+//            behaviors: [
+//                // Polymer.AirCruddyNotificationBehavior,
+//                // Polymer.AirCruddyStatusBehavior,
+//                Polymer.AirCruddyDataInitialisationBehavior,
+//                Polymer.AirCruddyAjaxBehavior,
+//                Polymer.AirCruddyResponseBehavior,
+////                Polymer.AirCruddyValidatorBehavior,
+//                Polymer.AirCruddySerializaionBehavior
+//            ],
             ready: function () {
                 console.log("rady endpointUrl", '--------------', this.endpoint);
-            },
-            _toPrint: function (newValue, oldValue) {
-                console.log("endpointUrl", newValue, ' <---- ', oldValue, '--------------', this.endpoint);
             }
         });
     })();

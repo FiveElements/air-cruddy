@@ -1,11 +1,163 @@
 <link rel="import" href="../polymer/polymer.html">
 
 <script>
+    /**
+    * @polymerBehavior
+    */
+    Polymer.AirCruddyDataInitialisationBehavior = {
+        properties: {
+
+            entityId: {
+                type: String,
+                notify: true,
+                observer: '_entityIdChanged'
+            },
+
+            data: {
+                type: Object,
+                notify: true
+            },
+
+            dataOri: Object,
+
+            isModeCreate: {
+                type: Boolean,
+                computed : '_computedCreationMode(data._id)'
+            }
+
+        },
+
+        // --- Computed Properties
+        // --- ---------------------------
+        _computedCreationMode: function (dataId) {
+            return !dataId;
+        },
+
+        // --- Life Cycle
+        // --- ---------------------------
+
+        ready: function () {
+            console.log('Ready behaviors', 'entityId', this.entityId);
+        },
+
+        // --- Accessor
+        // --- ---------------------------
+
+        _setData: function (data) {
+            this.set('data', data);
+            this._dataSnapshot(data);
+        },
+
+        _setDataVersion: function (newVersion) {
+            this.set('data._version', newVersion);
+        },
+        _setDataId: function (newDataId) {
+            this.set('data._id', newDataId);
+        },
+        _unsetDataId: function () {
+            this.set('data._id', newDataId);
+        },
+
+
+        // --- Changed
+        // --- ---------------------------
+        _entityIdChanged: function (newValue, oldValue) {
+            console.log('entityIdChanged behaviors', oldValue, '--->', newValue);
+            if (this.entityId === null) {
+                // Blank case, no model to create
+                this._setData(null);
+            } else if (this.entityId === '' || this.entityId === 'new') {
+                // Create Model
+                this.createEmptyEntity();
+                console.log('_entityIdChanged create empty data ', this.data);
+            } else if (!this.data || !this.data._id || this.data._id !== this.entityId) {
+                console.log('_entityIdChanged get data ', this.entityId);
+                // Update Mode
+                this._entityGet();
+                console.log('entityidChanged load data ', this.entityid);
+            }
+        },
+
+        // --- Required Api
+        // --- ---------------------------
+        _entityGet: function () {
+            console.error('Required Api implementation for function : [%s]', '_entityGet');
+            throw new Error('Required Api implementation for function : '+ '_entityGet');
+        },
+
+
+        // --- Data Snapshot
+        // --- ---------------------
+        _dataSnapshot: function (data) {
+            this.set('dataOri', this._cloneData(data));
+        },
+
+        _cloneData: function (data) {
+            data = data || this.data;
+            if (data) {
+                return JSON.parse(JSON.stringify(data));
+            }
+            return null;
+        },
+        _diffDataSource : function (notDiffCallback) {
+            var diff = this._diffProperties(this.dataOri._source, this.data._source);
+            if (notDiffCallback) {
+                notDiffCallback(diff);
+            }
+            return diff;
+        },
+
+        // --- Differential
+        // --- ---------------------
+
+        _isEmptyObj: function (obj) {
+            return (Object.getOwnPropertyNames(obj).length === 0);
+        },
+
+        _diffProperties: function (first, second, diffs) {
+            diffs = diffs || {};
+            // Compare ref to Object
+            for (var attr in second) {
+                if (Array.isArray(first[attr]) && Array.isArray(second[attr])) {
+                    // Bug in Array Comparaison
+                    // if (first[attr] !== second[attr]) {
+                    if (!this._isArrayEquals(first[attr], second[attr])) {
+                        diffs[attr] = second[attr];
+                    }
+                } else if (typeof first[attr] === 'object' && typeof second[attr] === 'object') { // Bug if property disapear
+                    // Check recursif
+                    var subDiffs = this._diffProperties(first[attr], second[attr], {});
+                    if (subDiffs) {
+                        diffs[attr] = subDiffs;
+                    }
+                } else if (first[attr] !== second[attr]) {
+                    diffs[attr] = second[attr];
+                }
+            }
+            return this._isEmptyObj(diffs) ? undefined : diffs;
+        },
+
+        _isArrayEquals: function (a, b) {
+            if (a.length() !== b.length()) {
+                return false;
+            }
+            if (a === b) {
+                return true;
+            }
+            var diff = a.filter(function (element, index) {
+                return a[index] !== b[index];
+            });
+            return diff.length() < 1;
+        }
+
+
+    };
+
 
     /**
      * @polymerBehavior
      */
-    Polymer.AirCruddyDataInitialisationBehavior = {
+    Polymer.AirCruddyDataInitialisationBehaviorOld = {
 
         properties: {
             /**
@@ -34,7 +186,7 @@
         },
 
         ready: function () {
-          console.log('ready Entity Id', this.entityId);
+            console.log('ready Entity Id', this.entityId);
             console.log('ready endpoint Id', this.endpoint);
         },
         _toPrint: function (newValue, oldValue) {
@@ -154,69 +306,7 @@
         unsetDataId: function () {
             this.set('data._id', newDataId);
         },
-        // --- Data Snapshot
-        // --- ---------------------
-        dataSnapshot: function (data) {
-           this.set('dataOri', this._cloneData(data));
-        },
 
-        _cloneData: function (data) {
-            data = data || this.data;
-            if (data) {
-                return JSON.parse(JSON.stringify(data));
-            }
-            return null;
-        },
-        _diffDataSource : function (notDiffCallback) {
-            var diff = this._diffProperties(this.dataOri._source, this.data._source);
-            if (notDiffCallback) {
-                notDiffCallback(diff);
-            }
-            return diff;
-        },
-
-        // --- Differential
-        // --- ---------------------
-
-        _isEmptyObj: function (obj) {
-            return (Object.getOwnPropertyNames(obj).length === 0);
-        },
-
-        _diffProperties: function (first, second, diffs) {
-            diffs = diffs || {};
-            // Compare ref to Object
-            for (var attr in second) {
-                if (Array.isArray(first[attr]) && Array.isArray(second[attr])) {
-                    // Bug in Array Comparaison
-                    // if (first[attr] !== second[attr]) {
-                    if (!this._isArrayEquals(first[attr], second[attr])) {
-                        diffs[attr] = second[attr];
-                    }
-                } else if (typeof first[attr] === 'object' && typeof second[attr] === 'object') { // Bug if property disapear
-                    // Check recursif
-                    var subDiffs = this._diffProperties(first[attr], second[attr], {});
-                    if (subDiffs) {
-                        diffs[attr] = subDiffs;
-                    }
-                } else if (first[attr] !== second[attr]) {
-                    diffs[attr] = second[attr];
-                }
-            }
-            return this._isEmptyObj(diffs) ? undefined : diffs;
-        },
-
-        _isArrayEquals: function (a, b) {
-            if (a.length() !== b.length()) {
-                return false;
-            }
-            if (a === b) {
-                return true;
-            }
-            var diff = a.filter(function (element, index) {
-                return a[index] !== b[index];
-            });
-            return diff.length() < 1;
-        }
 
 
     };

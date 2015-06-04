@@ -22,14 +22,16 @@
 
         // --- Response Error Event
         // --- ---------------------------
-        _extractErrorFromResponse: function (event, detail) {
-            console.log('Bug handleSaveError detail.response (Not JSON) : ', detail.response, detail.xhr.response);
-            var resp = detail.response;
+        _extractErrorFromResponse: function (event) {
+            console.error('Error : ', event.detail);
+            var response = event.request.xhr.response;
+            var error = event.detail.error;
 
-            var status = resp.statusCode; /// detail.xhr.status;
-            var statusText = resp.response;//detail.xhr.statusText;
+
+            var status = response.statusCode; /// detail.xhr.status;
+            var statusText = response.response;//detail.xhr.statusText;
             return {
-                response: resp,
+                error: error,
                 status: status,
                 statusText: statusText
             };
@@ -41,8 +43,9 @@
 
 
 
-        deserialize: function (data) {
-            throw new Error('Not Implemented');
+        deserialize: function (event) {
+            var response = event.detail.response;
+            return response;
         },
 
 
@@ -58,19 +61,18 @@
         // --- Entity GET
         // --- ---------------------------
 
-
-
         _handleResponseGet: function (event) {
             console.log('Get Response:');
-            var response = event.detail.response;
-            this.deserialize(response);
+            var response = this.deserialize(event);
+            this._setData(response);
             this.fire('air-cruddy-get-response', response);
         },
+
         _handleErrorGet: function (event, detail) {
-            var eventTest = this._extractErrorFromResponse(event, detail);
+            var error = this._extractErrorFromResponse(event, detail);
             // Fire Event
-            this.fire('air-cruddy-error', eventTest);
-            this.fire('air-cruddy-get-error', eventTest);
+            this.fire('air-cruddy-error', error);
+            this.fire('air-cruddy-get-error', error);
         },
 
 
@@ -83,56 +85,55 @@
             var status = event.detail.status;
             var resp = event.detail.response;
             // Define Create Existing id
-            this.setDataId(resp._id);
+            this._setDataId(resp._id);
             // Common Management
             this._handleResponseSave(event);
             // Fire Event
             this.fire('air-cruddy-create-response', resp);
         },
+
         _handleErrorCreate: function (event) {
-            var eventTest = this._extractErrorFromResponse(event, detail);
+            var error = this._extractErrorFromResponse(event, detail);
+            // Manage Error
+            this._handleErrorSave(error);
             // Fire Event
-            this.fire('air-cruddy-error', eventTest);
-            this.fire('air-cruddy-create-error', eventTest);
+            this.fire('air-cruddy-create-error', error);
         },
 
 
         // --- Entity Update
         // --- ---------------------
-
-
         _handleResponseUpdate: function (event) {
             var status = event.detail.status;
             var resp = event.detail.response;
-
             // Common Management
             this._handleResponseSave(event);
             // Fire Event
             this.fire('air-cruddy-update-response', resp);
         },
         _handleErrorUpdate: function (event) {
-            var eventTest = this._extractErrorFromResponse(event, detail);
+            var error = this._extractErrorFromResponse(event, detail);
+            this._handleErrorSave(event);
             // Fire Event
-            this.fire('air-cruddy-error', eventTest);
-            this.fire('air-cruddy-update-error', eventTest);
+            this.fire('air-cruddy-update-error', error);
         },
 
         // --- Entity Save handler
         // --- ---------------------
-
         _handleResponseSave: function (event) {
             var status = event.detail.status;
             var resp = event.detail.response;
             // Increment version or reload data ?
             if (  this.reloadOnSave === true) {
                 console.log('Reload on save');
-                this.entityGet();
+                this._entityGet();
             } else {
                 // Update version
-                this.setDataVersion(resp._version);
+                this._setDataVersion(resp._version);
             }
             // Fire Event
             this.fire('air-cruddy-save-response', resp);
+            this.fire('air-cruddy-error', error);
         },
 
         _handleErrorSave: function (event) {
@@ -150,11 +151,8 @@
         },
         // --- Entity Delete Create
         // --- ---------------------
-
-
-
         _handleResponseDelete: function (event) {
-            this.unsetDataId();
+            this._unsetDataId();
             this.fire('air-cruddy-delete-response', event.detail.response);
         },
         _handleErrorDelete: function (event) {

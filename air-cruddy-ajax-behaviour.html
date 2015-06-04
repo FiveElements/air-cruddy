@@ -4,41 +4,40 @@
 
 <script>
 
+
     /**
      * @polymerBehavior
      */
     Polymer.AirCruddyAjaxBehavior = {
+        properties: {
+            endpoint: {
+                type: String,
+                notify: true,
+                observer: '_endpointChanged'
+            }
 
-//        properties: {
-//            /**
-//             * The base of all CRUD url to manage the REST entity.
-//             * The Pattern to respect is :
-//             * For getting : GET to url  endpoint/entityId
-//             * For creating : POST to url endpoint
-//             * For updating : PUT to url endpoint/entityId
-//             * For deleting : DELETE to url endpoint/entityId
-//             */
-//            endpoint: {
-//                type: String,
-//                notify: true,
-//                value: 'totot',
-//                observer: '_toPrint'
-//            }
-//        },
-//        _toPrint: function (newValue, oldValue) {
-//            console.log("endpointUrl", newValue, ' <---- ', oldValue, '--------------', this.endpoint);
-//        },
-        ready: function () {
+        },
+        // --- Life Cycle
+        // --- ---------------------------
+
+        created: function () {
             // Object that handles the ajax form submission request.
             this._requestGet = this._createGetIronAjax();
             this._requestCreate = this._createCreateIronAjax();
             this._requestUpdate = this._createUpdateIronAjax();
             this._requestDelete = this._createDeleteIronAjax();
-            console.log('Create iron-ajax composants', this.endpoint);
+            // Log
+           // console.log('End Ready behaviors', 'endpoint', this.endpoint);
         },
 
+        // --- Service Instanciation
+        // --- ---------------------------
 
-        // --- Iron Ajax Initialisation
+        _endpointChanged: function (newValue, oldValue) {
+            console.log('endpointChanged behaviors', oldValue, '--->', newValue);
+        },
+
+        // --- Service Instantiation
         // --- ---------------------------
         _createIronAjax: function (type, verb) {
             var requestBot = document.createElement('iron-ajax');
@@ -60,6 +59,147 @@
         _createDeleteIronAjax: function () {
             return this._createIronAjax('Delete');
         },
+
+
+        // --- Required Api
+        // --- ---------------------------
+        _entityGetUrl: function () {
+            return this.endpoint + '/' + this.entityId;
+        },
+        _entityUrlCreate: function () {
+            return this.endpoint;
+        },
+        _entityUrlUpdate: function () {
+            return this._entityGetUrl();
+        },
+        _entityUrlDelete: function () {
+            return this._entityGetUrl();
+        },
+
+        _serializeDataCreate: function () {
+            console.error('Required Api implementation for function : [%s]', '_serializeDataCreate');
+        },
+
+        _serializeDataUpdate: function () {
+            console.error('Required Api implementation for function : [%s]', '_serializeDataUpdate');
+        },
+        _serializeDataDelete: function () {
+            console.error('Required Api implementation for function : [%s]', '_serializeDataDelete');
+        },
+
+
+
+        // --- Entity GET
+        // --- ---------------------------
+
+        /**
+         * Called to request the get the entity from server.
+         */
+        _entityGet: function () {
+            console.log('entityGet ', this._entityGetUrl());
+            this._requestGet.url = this._entityGetUrl();
+            this._requestGet.generateRequest();
+        },
+
+        _handleResponseGet: function (event) {
+            console.error('Required Api implementation for function : [%s]', '_handleResponseGet');
+        },
+        _handleErrorGet: function (event, detail) {
+            console.error('Required Api implementation for function : [%s]', '_handleErrorGet');
+        },
+
+
+        // --- Entity Create
+        // --- ---------------------
+        /**
+         * Called to request the create the entity to server.
+         */
+        _entityCreate: function (data) {
+            this._requestCreate.url = this._entityUrlCreate();
+            this._requestCreate.body = this._serializeDataCreate(data);
+            this._requestCreate.generateRequest();
+        },
+
+        _handleResponseCreate: function (event) {
+            console.error('Required Api implementation for function : [%s]', '_handleResponseCreate');
+        },
+        _handleErrorCreate: function (event) {
+            console.error('Required Api implementation for function : [%s]', '_handleErrorCreate');
+        },
+
+
+        // --- Entity Update
+        // --- ---------------------
+        /**
+         * Called to request the update the entity to server.
+         */
+        _entityUpdate: function (data) {
+            this._requestUpdate.url = this._entityUrlUpdate();
+            this._requestUpdate.body = this._serializeDataUpdate(data);
+            this._requestUpdate.generateRequest();
+        },
+
+        _handleResponseUpdate: function (event) {
+            console.error('Required Api implementation for function : [%s]', '_handleResponseUpdate');
+        },
+        _handleErrorUpdate: function (event) {
+            console.error('Required Api implementation for function : [%s]', '_handleErrorUpdate');
+        },
+
+
+        // --- Entity Delete Create
+        // --- ---------------------
+        /**
+         * Called to request the delete the entity to server.
+         */
+        _entityDelete: function (data) {
+            this._requestDelete.url = this._entityUrlDelete();
+            this._requestDelete.body = this._serializeDataDelete(data);
+            this._requestDelete.generateRequest();
+        },
+
+
+        _handleResponseDelete: function (event) {
+            console.error('Required Api implementation for function : [%s]', '_handleResponseDelete');
+        },
+        _handleErrorDelete: function (event) {
+            console.error('Required Api implementation for function : [%s]', '_handleErrorDelete');
+        }
+
+        // --- Other
+        // --- ---------------------
+
+
+    };
+    /**
+     * @polymerBehavior
+     */
+    Polymer.AirCruddyAjaxBehaviorSav = {
+
+//        properties: {
+//            /**
+//             * The base of all CRUD url to manage the REST entity.
+//             * The Pattern to respect is :
+//             * For getting : GET to url  endpoint/entityId
+//             * For creating : POST to url endpoint
+//             * For updating : PUT to url endpoint/entityId
+//             * For deleting : DELETE to url endpoint/entityId
+//             */
+//            endpoint: {
+//                type: String,
+//                notify: true,
+//                value: 'totot',
+//                observer: '_toPrint'
+//            }
+//        },
+//        _toPrint: function (newValue, oldValue) {
+//            console.log("endpointUrl", newValue, ' <---- ', oldValue, '--------------', this.endpoint);
+//        },
+
+
+
+        // --- Iron Ajax Initialisation
+        // --- ---------------------------
 
 
         // --- External Apis
@@ -105,24 +245,6 @@
             return this.entityGetUrl();
         },
 
-        // --- Entity GET
-        // --- ---------------------------
-
-        /**
-         * Called to request the get the entity from server.
-         */
-        entityGet: function () {
-            console.log('entityGet ', this.entityGetUrl());
-            this._requestGet.url = this.entityGetUrl();
-            this._requestGet.generateRequest();
-        },
-
-        _handleResponseGet: function (event) {
-            throw new Error('Not Implemented');
-        },
-        _handleErrorGet: function (event, detail) {
-            throw new Error('Not Implemented');
-        },
 
 
         // --- Entity Create
