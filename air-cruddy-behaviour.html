@@ -2,8 +2,8 @@
 
 <script>
     /**
-    * @polymerBehavior
-    */
+     * @polymerBehavior
+     */
     Polymer.AirCruddyBehavior = {
         properties: {
 
@@ -20,9 +20,9 @@
 
             dataOri: Object,
 
-            isModeCreate: {
+            _isModeCreate: {
                 type: Boolean,
-                computed : '_computedCreationMode(data._id)'
+                computed: '_computedCreationMode(data._id)'
             }
 
         },
@@ -37,7 +37,7 @@
         // --- ---------------------------
 
         ready: function () {
-           // console.log('Ready behaviors', 'entityId', this.entityId);
+            // console.log('Ready behaviors', 'entityId', this.entityId);
         },
 
         // --- Accessor
@@ -113,12 +113,13 @@
                 return false;
             }
 
+            console.log('Save operation', this._isModeCreate);
             // Is Diff and Valid, need to be saved
-            if (this.isModeCreate) {
-                this._entityCreate( this._cloneData() );
+            if (this._isModeCreate) {
+                this._entityCreate(this._cloneData());
             } else {
                 // TODO ? { _id: this.data._id, _version: this.data._version, _source: diffData }
-                this._entityUpdate(this._cloneData() );
+                this._entityUpdate(this._cloneData());
             }
         },
 
@@ -154,7 +155,7 @@
             }
             return null;
         },
-        _diffDataSource : function (notDiffCallback) {
+        _diffDataSource: function (notDiffCallback) {
             var diff = this._diffProperties(this.dataOri._source, this.data._source);
             if (notDiffCallback) {
                 notDiffCallback(diff);
@@ -213,126 +214,7 @@
      * @polymerBehavior
      */
     Polymer.AirCruddyDataInitialisationBehaviorOld = {
-
-        properties: {
-            /**
-             * The Id of the Entity used for construct REST Url
-             */
-            entityId: {
-                type: String,
-                notify: true,
-                observer: '_entityIdChanged'
-            },
-            data: {
-                type: Object,
-                notify: true
-            },
-            dataOri: Object,
-            isModeCreate: {
-                type: Boolean,
-                computed : '_computedCreationMode(data._id)'
-            },
-            endpoint: {
-                type: String,
-                notify: true,
-                reflectToAttribute: true,
-                observer: '_toPrint'
-            }
-        },
-
-        ready: function () {
-            console.log('ready Entity Id', this.entityId);
-            console.log('ready endpoint Id', this.endpoint);
-        },
-        _toPrint: function (newValue, oldValue) {
-            console.log("endpoint", newValue, ' <---- ', oldValue, '--------------', this.endpoint);
-        },
-
-        // --- External Apis
-        // --- ---------------------------
-        entityGet: function () {
-            throw new Error('Not Implemented');
-        },
-        _entityCreate: function (data) {
-            throw new Error('Not Implemented');
-        },
-        _entityUpdate: function (data) {
-            throw new Error('Not Implemented');
-        },
-        _entityDelete: function (data) {
-            throw new Error('Not Implemented');
-        },
-        validate: function (event) {
-            throw new Error('Not Implemented');
-        },
-        // --- External Apis
-        // --- ---------------------------
-        _computedCreationMode: function (dataId) {
-            return !dataId;
-        },
-
-        // --- Logic Initialisation
-        // --- ---------------------
-        _entityIdChanged: function (newValue, oldValue) {
-            console.log('Entity Id Changed', oldValue, ' ---> ', newValue);
-            if (this.entityId === null) {
-                // Blank case, no model to create
-                this.setData(null);
-            } else if (this.entityId === '' || this.entityId === 'new') {
-                // Create Model
-                this.createEmptyEntity();
-                console.log('_entityIdChanged create empty data ', this.data);
-            } else if (!this.data || !this.data._id || this.data._id !== this.entityId) {
-                console.log('_entityIdChanged get data ', this.entityId);
-                // Update Mode
-//                this.entityGet();
-                  console.log('entityidChanged load data ', this.entityid);
-            }
-        },
-
-        // --- Apis
-        // --- ---------------------
-        save: function () {
-            // Dirty Check
-            var diffData = this._diffDataSource(this.notifNotDiff.bind(this));
-            if (!diffData) {
-               // console.log('Save entity == NO Diff ');
-                return;
-            }
-            // Validation
-            if (!this.validate(this.notifValidityErrors.bind(this))) {
-                console.log('Save entity == NOT Valid ');
-                return false;
-            }
-
-            // Is Diff and Valid, need to be saved
-            if (this.isModeCreate) {
-                this._entityCreate( this._cloneData() );
-            } else {
-                // TODO ? { _id: this.data._id, _version: this.data._version, _source: diffData }
-                this._entityUpdate(this._cloneData() );
-            }
-
-        },
-
-        // --- Notification
-        // --- ---------------------
-        notifNotDiff: function (diff) {
-            if (!diff) {
-                this.showSaveErrorMessage('Saved not needed.');
-            }
-        },
-
-        notifValidityErrors: function (errorNodes) {
-            console.log('notifValidityErrors ', errorNodes);
-            // TODO Display Errors
-        },
-
-        showSaveErrorMessage: function (msg) {
-          //  this.toastSaveErrorMessage = msg;
-            //this.$.toastSaveError.show();
-            console.log(msg);
-        },
+ 
 
         // --- Entity Create
         // --- ---------------------
@@ -343,25 +225,6 @@
                 _source: {}
             };
         },
-
-        // --- Entity Values
-        // --- ---------------------
-
-        setData: function (data) {
-            this.set('data', data);
-            this.dataSnapshot(data);
-        },
-
-        setDataVersion: function (newVersion) {
-            this.set('data._version', newVersion);
-        },
-        setDataId: function (newDataId) {
-            this.set('data._id', newDataId);
-        },
-        unsetDataId: function () {
-            this.set('data._id', newDataId);
-        },
-
 
 
     };

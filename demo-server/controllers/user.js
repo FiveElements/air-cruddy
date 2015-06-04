@@ -68,15 +68,15 @@ UserDAO.prototype.update = function update(request, reply) {
         return reply( Boom.notFound('Not Found User '+ entityId), null );
     }
     // Validation
-    if (!doc._version) {
+    if (!doc.version) {
         return reply( Boom.preconditionFailed( 'Document Version is required for update'), null );
     }
-    if (doc._version !== entity._version) {
+    if (doc.version !== entity._version) {
         return reply( Boom.conflict( 'Conflict version'), null );
     }
     // Update
     entity._source = doc.body;
-
+    entity._version = entity._version +1;
     reply(null, entity);
 
 };
