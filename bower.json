@@ -1,16 +1,17 @@
 {
-  "name": "fire-form",
+  "name": "air-cruddy",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "An element that manage CRUD Operations",
-  "main": "fire-form.html",
+  "main": "air-cruddy.html",
   "author": [
     "The Five Elements Authors"
   ],
   "keywords": [
     "web-components",
     "polymer",
-    "crud"
+    "crud",
+    "air-elements"
   ],
   "ignore": [
     "index.html",
