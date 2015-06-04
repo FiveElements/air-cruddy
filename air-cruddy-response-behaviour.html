@@ -63,8 +63,8 @@
             this.fire('air-cruddy-get-response', response);
         },
 
-        _handleErrorGet: function (event, detail) {
-            var error = this._extractErrorFromResponse(event, detail);
+        _handleErrorGet: function (event) {
+            var error = this._extractErrorFromResponse(event);
             // Fire Event
             this.fire('air-cruddy-error', error);
             this.fire('air-cruddy-get-error', error);
@@ -86,7 +86,7 @@
         },
 
         _handleErrorCreate: function (event) {
-            var error = this._extractErrorFromResponse(event, detail);
+            var error = this._extractErrorFromResponse(event);
             // Manage Error
             this._handleErrorSave(error);
             // Fire Event
@@ -105,7 +105,7 @@
             this.fire('air-cruddy-update-response', resp);
         },
         _handleErrorUpdate: function (event) {
-            var error = this._extractErrorFromResponse(event, detail);
+            var error = this._extractErrorFromResponse(event);
             this._handleErrorSave(event);
             // Fire Event
             this.fire('air-cruddy-update-error', error);
@@ -149,7 +149,7 @@
             this.fire('air-cruddy-delete-response', event.detail.response);
         },
         _handleErrorDelete: function (event) {
-            var eventTest = this._extractErrorFromResponse(event, detail);
+            var eventTest = this._extractErrorFromResponse(event);
             // Fire Event
             this.fire('air-cruddy-error', eventTest);
             this.fire('air-cruddy-delete-error', eventTest);

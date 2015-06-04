@@ -1,7 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 
 <link rel="import" href="air-cruddy-notification-behaviour.html">
-<link rel="import" href="air-cruddy-data-initialisation-behaviour.html">
+<link rel="import" href="air-cruddy-behaviour.html">
 <link rel="import" href="air-cruddy-serialization-behaviour.html">
 <link rel="import" href="air-cruddy-validator-behaviour.html">
 <link rel="import" href="air-cruddy-ajax-behaviour.html">
@@ -20,7 +20,7 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
     <air-cruddy entity-id="{{entityid}}" data="{{data}}" endpoint="/s/users" autosave>
         <section>
         <paper-input-decorator floatingLabel label="First name" autoValidate>
-          <input is="core-input" value="{{ data._source.firstname}}" required>
+          <input is="core-input" value="{{data._source.firstname}}" required>
         </paper-input-decorator>
       </section>
     </air-cruddy>
@@ -30,8 +30,6 @@ Example of Get Entity Server Format:
 
     { _id: "AAApkZAAOAAAQYEAAJ",
       _version: 1,
-      _index: "users",
-      _type: "user",
       _source: {
         firstname: "NICOLE",
         lastname: "ABBO"
@@ -80,7 +78,7 @@ Attribute available:
             is: 'air-cruddy',
 
             behaviors: [
-                Polymer.AirCruddyDataInitialisationBehavior
+                Polymer.AirCruddyBehavior
                 , Polymer.AirCruddyAjaxBehavior
                 , Polymer.AirCruddySerializaionBehavior
                 , Polymer.AirCruddyResponseBehavior
