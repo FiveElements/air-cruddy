@@ -17,104 +17,49 @@
             }
         },
 
-        // --- Response Error Event
-        // --- ---------------------------
-        _extractErrorFromResponse: function (event) {
-            console.error('Error : ', event.detail);
-            console.error('Error request : ', event.detail.request.xhr);
-            var response = event.detail.request.xhr.response;
-            var error = event.detail.error;
-
-
-            var status = response.statusCode; /// detail.xhr.status;
-            var statusText = response.response;//detail.xhr.statusText;
-            return {
-                error: error,
-                status: status,
-                statusText: statusText
-            };
-        },
-
-
-        // --- External Apis
-        // --- ---------------------------
-
-        _deserializeData: function (data) {
-            return data;
-        },
-
-
-//        unsetDataId : function() {
-//            throw new Error('Not Implemented');
-//         },
-
-        // --- Entity Serialization Apis
-        // --- ---------------------------
-
 
         // --- Entity GET
         // --- ---------------------------
 
-        _handleResponseGet: function (event) {
-            console.log('Get Response:');
-            var response = this._deserializeData(event);
+        _onResponseGet: function (detail) {
+            var response = detail.response;
             this._setData(response);
-            this.fire('air-cruddy-get-response', response);
         },
-
-        _handleErrorGet: function (event) {
-            var error = this._extractErrorFromResponse(event);
-            // Fire Event
-            this.fire('air-cruddy-error', error);
-            this.fire('air-cruddy-get-error', error);
+        _onErrorGet: function (detail) {
+            var error = detail.error;
         },
 
 
         // --- Entity Create
         // --- ---------------------
 
-        _handleResponseCreate: function (event) {
-            var status = event.detail.status;
-            var resp = event.detail.response;
-            // Define Create Existing id
-            this._setDataId(resp._id);
-            // Common Management
-            this._handleResponseSave(event);
-            // Fire Event
-            this.fire('air-cruddy-create-response', resp);
+        _onResponseCreate: function (detail) {
+            var response = detail.response;
+            this._setDataId(response._id);
         },
-
-        _handleErrorCreate: function (event) {
-            var error = this._extractErrorFromResponse(event);
-            // Manage Error
-            this._handleErrorSave(error);
-            // Fire Event
-            this.fire('air-cruddy-create-error', error);
+        _onErrorCreate: function (detail) {
+            var error = detail.error;
         },
 
 
         // --- Entity Update
         // --- ---------------------
-        _handleResponseUpdate: function (event) {
-            var status = event.detail.status;
-            var resp = event.detail.response;
-            // Common Management
-            this._handleResponseSave(event);
-            // Fire Event
-            this.fire('air-cruddy-update-response', resp);
+
+
+        _onResponseUpdate: function (detail) {
+            var response = detail.response;
+            this._onResponseSave(detail);
         },
-        _handleErrorUpdate: function (event) {
-            var error = this._extractErrorFromResponse(event);
-            this._handleErrorSave(event);
-            // Fire Event
-            this.fire('air-cruddy-update-error', error);
+        _onErrorUpdate: function (detail) {
+            this._onErrorSave(detail);
         },
+
 
         // --- Entity Save handler
         // --- ---------------------
-        _handleResponseSave: function (event) {
-            var status = event.detail.status;
-            var resp = event.detail.response;
+        _onResponseSave: function (detail) {
+            var status = detail.status;
+            var resp = detail.response;
             // Increment version or reload data ?
             if (this.reloadOnSave === true) {
                 console.log('Reload on save');
@@ -123,14 +68,11 @@
                 // Update version
                 this._setDataVersion(resp._version);
             }
-            // Fire Event
-            this.fire('air-cruddy-save-response', resp);
-            this.fire('air-cruddy-error', error);
         },
 
-        _handleErrorSave: function (event) {
-            var status = event.detail.status;
-            var resp = event.detail.response;
+        _onErrorSave: function (detail) {
+            var status = detail.status;
+            var resp = detail.response;
             if (status === 404) { // 404 Not Found
                 this.showSaveErrorMessage('Entity Save Error : Entity Not Found');
             } else if (status === 409) { // 409 : Conflict
@@ -143,16 +85,16 @@
         },
         // --- Entity Delete Create
         // --- ---------------------
-        _handleResponseDelete: function (event) {
+
+        _onResponseDelete: function (detail) {
+//            var response = detail.response;
             this._unsetDataId();
-            this.fire('air-cruddy-delete-response', event.detail.response);
         },
-        _handleErrorDelete: function (event) {
-            var eventTest = this._extractErrorFromResponse(event);
-            // Fire Event
-            this.fire('air-cruddy-error', eventTest);
-            this.fire('air-cruddy-delete-error', eventTest);
-        },
+
+        _onErrorDelete: function (detail) {
+            var error = detail.error;
+        }
+
 
         // --- Other
         // --- ---------------------

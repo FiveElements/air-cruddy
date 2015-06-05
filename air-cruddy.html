@@ -4,10 +4,13 @@
 <!--<link rel="import" href="air-cruddy-serialization-behaviour.html">-->
 <!--<link rel="import" href="air-cruddy-validator-behaviour.html">-->
 <!--<link rel="import" href="air-cruddy-ajax-behaviour.html">-->
-<!--<link rel="import" href="air-cruddy-response-behaviour.html">-->
 <link rel="import" href="air-cruddy-behaviour.html">
 <link rel="import" href="air-cruddy-ajax-init-behaviour.html">
+
 <link rel="import" href="../air-cruddy-ajax/air-cruddy-ajax.html">
+<link rel="import" href="../air-cruddy-ajax/air-cruddy-ajax-behaviour.html">
+
+<link rel="import" href="air-cruddy-response-behaviour.html">
 
 <link rel="import" href="../air-cascade-validator/air-cascade-validator-behaviour.html">
 
@@ -83,7 +86,10 @@ Attribute available:
 
             behaviors: [
                 Polymer.AirCruddyBehavior
-                , Polymer.AirCruddyAjaxInitBehavior
+                //  , Polymer.AirCruddyAjaxInitBehavior
+                , Polymer.AirCruddyAjaxRestApiBehavior
+                , Polymer.AirCruddyResponseBehavior
+                , Polymer.AirCascadeValidatorBehavior
             ],
 
 //            behaviors: [
