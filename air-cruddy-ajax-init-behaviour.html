@@ -1,0 +1,137 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+
+<script>
+
+
+    /**
+     * @polymerBehavior
+     */
+    Polymer.AirCruddyAjaxInitBehavior = {
+        properties: {
+            restApi: {
+                type: String,
+                notify: true,
+                value: 'air-cruddy-ajax'
+            },
+            endpoint: {
+                type: String,
+                notify: true,
+                observer: '_endpointChanged'
+            }
+
+        },
+
+        listeners: {
+            'air-cruddy-error': '_handleErrorGet',
+            'air-cruddy-response-get': '_handleResponseGet',
+            'air-cruddy-response-create': '_handleResponseCreate',
+            'air-cruddy-response-update': '_handleResponseUpdate',
+            'air-cruddy-response-delete': '_handleResponseDelete'
+        },
+
+
+        // --- Life Cycle
+        // --- ---------------------------
+
+        created: function () {
+            // Object that handles the ajax form submission request.
+            this._requestCrud = this._createIronAjax();
+            // Log
+           // console.log('End Ready behaviors', 'endpoint', this.endpoint);
+        },
+
+
+
+        // --- Service Instantiation
+        // --- ---------------------------
+        _createIronAjax: function () {
+            var requestBot = document.createElement('air-cruddy-ajax');
+            requestBot.addEventListener( 'air-cruddy-response-get', this._handleResponseGet.bind(this));
+            return requestBot;
+        },
+
+        _endpointChanged: function () {
+            this._requestCrud.endpoint = this.endpoint;
+        },
+
+        // --- Entity GET
+        // --- ---------------------------
+
+        /**
+         * Called to request the get the entity from server.
+         */
+        _entityGet: function () {
+            this._requestCrud._entityGet(this.entityId);
+        },
+
+        _handleResponseGet: function (res) {
+            var detail =  res.detail;
+            console.log('_handleResponseGet',detail);
+            this._setData(detail.response);
+        },
+        _handleErrorGet: function (error) {
+            console.error('Required Api implementation for function : [%s]', '_handleErrorGet');
+        },
+
+
+        // --- Entity Create
+        // --- ---------------------
+        /**
+         * Called to request the create the entity to server.
+         */
+        _entityCreate: function (data) {
+            this._requestCrud._entityCreate(data);
+        },
+
+        _handleResponseCreate: function (response) {
+            console.error('Required Api implementation for function : [%s]', '_handleResponseCreate');
+        },
+        _handleErrorCreate: function (error) {
+            console.error('Required Api implementation for function : [%s]', '_handleErrorCreate');
+        },
+
+
+        // --- Entity Update
+        // --- ---------------------
+        /**
+         * Called to request the update the entity to server.
+         */
+        _entityUpdate: function (data) {
+            this._requestCrud._entityUpdate(data);
+        },
+
+        _handleResponseUpdate: function (response) {
+            console.error('Required Api implementation for function : [%s]', '_handleResponseUpdate');
+        },
+        _handleErrorUpdate: function (error) {
+            console.error('Required Api implementation for function : [%s]', '_handleErrorUpdate');
+        },
+
+
+        // --- Entity Delete Create
+        // --- ---------------------
+        /**
+         * Called to request the delete the entity to server.
+         */
+        _entityDelete: function (data) {
+            this._requestCrud._entityDelete(data);
+        },
+
+
+        _handleResponseDelete: function (response) {
+            console.error('Required Api implementation for function : [%s]', '_handleResponseDelete');
+        },
+        _handleErrorDelete: function (error) {
+            console.error('Required Api implementation for function : [%s]', '_handleErrorDelete');
+        }
+
+        // --- Other
+        // --- ---------------------
+
+
+    };
+
+
+</script>

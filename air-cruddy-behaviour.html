@@ -27,6 +27,15 @@
 
         },
 
+
+        // --- Computed Properties
+        // --- ---------------------------
+        _printAjaxError: function (detail) {
+            console.error('Ajax Error', detail);
+        },
+        _printAjaxResponse: function (detail) {
+            console.log('Ajax Response', detail);
+        },
         // --- Computed Properties
         // --- ---------------------------
         _computedCreationMode: function (dataId) {
@@ -73,8 +82,8 @@
             } else if (!this.data || !this.data._id || this.data._id !== this.entityId) {
                 console.log('_entityIdChanged get data ', this.entityId);
                 // Update Mode
-                this._entityGet();
-                console.log('entityidChanged load data ', this.entityid);
+                this._entityGet(this.entityId);
+                console.log('entityidChanged load data ', this.entityId);
             }
         },
 
