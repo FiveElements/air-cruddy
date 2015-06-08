@@ -14,10 +14,39 @@
             dataOrigin: {
                 type: Object
             }
-        }
+        },
+
+        listeners: {
+            'air-cruddy-response-get': '_handleGetForConflictBeResolution'
+        },
  
         // --- Api
         // --- ---------------------
+       startConflictBeResolution: function () {
+            console.log('markToConflictToBeResolve -- BEGIN', this.data, this.dataOri);
+            this.dataUser = JSON.parse(JSON.stringify(this.data));
+            this.dataOrigin = JSON.parse(JSON.stringify(this.dataOri));
+            console.log('markToConflictToBeResolve -- END');
+        },
+        isConflictBeResolution: function () {
+            return  this.dataUser !== undefined;
+        },
+        endConflictBeResolution: function () {
+            this.dataUser = undefined;
+            this.dataOrigin = undefined;
+        },
+
+        // --- Conflict Resolution
+        // --- ---------------------
+        _handleGetForConflictBeResolution: function (event) {
+            var detail = event.detail;
+            console.log('------- _handleGetForConflictBeResolution : ', detail);
+        },
+
+
+        // --- Conflict Resolution
+        // --- ---------------------
+
 
     };
 

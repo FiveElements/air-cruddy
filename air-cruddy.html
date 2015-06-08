@@ -11,6 +11,7 @@
 <link rel="import" href="../air-cruddy-ajax/air-cruddy-ajax-behaviour.html">
 
 <link rel="import" href="air-cruddy-response-behaviour.html">
+<link rel="import" href="air-cruddy-response-409-behaviour.html">
 
 <link rel="import" href="../air-cascade-validator/air-cascade-validator-behaviour.html">
 
@@ -86,9 +87,10 @@ Attribute available:
 
             behaviors: [
                 Polymer.AirCruddyBehavior
-                  , Polymer.AirCruddyAjaxInitBehavior
+                , Polymer.AirCruddyAjaxInitBehavior
                 // , Polymer.AirCruddyAjaxRestApiBehavior // Buggy see composition
                 , Polymer.AirCruddyResponseBehavior
+                , Polymer.AirCruddyResponse409Behavior
                 , Polymer.AirCascadeValidatorBehavior
             ],
 

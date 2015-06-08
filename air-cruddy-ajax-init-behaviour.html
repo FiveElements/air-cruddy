@@ -35,6 +35,9 @@
         // --- Life Cycle
         // --- ---------------------------
 
+        created: function () {
+
+        },
         ready: function () {
             // Object that handles the ajax form submission request.
             this._requestCrud = this._createIronAjax(this.crudApi);
@@ -48,7 +51,10 @@
         // --- Service Instantiation
         // --- ---------------------------
         _createIronAjax: function (componentName) {
+          //  console.log('Create ajax service : ', componentName);
             var requestBot = document.createElement(componentName);
+            requestBot.endpoint = this.endpoint;
+            // Register Listener
             requestBot.addEventListener( 'air-cruddy-response-get', this._handleResponseGet.bind(this));
             requestBot.addEventListener( 'air-cruddy-error-get', this._handleErrorGet.bind(this));
             requestBot.addEventListener( 'air-cruddy-response-create', this._handleResponseCreate.bind(this));
@@ -61,7 +67,9 @@
         },
 
         _endpointChanged: function () {
-            this._requestCrud.endpoint = this.endpoint;
+            if (this._requestCrud) {
+                this._requestCrud.endpoint = this.endpoint;
+            }
         },
 
         // --- Request Auto when Ready
@@ -108,10 +116,14 @@
 
 
         _handleResponseGet: function (response) {
-            this._onResponseGet(response.detail);
+            var detail = response.detail;
+            this.fire('air-cruddy-response-get', detail);
+            this._onResponseGet(detail);
         },
-        _handleErrorGet: function (error) {
-            this._handleErrorGet(response.detail);
+        _handleErrorGet: function (response) {
+            var detail = response.detail;
+            this.fire('air-cruddy-error-get', detail);
+            this._handleErrorGet(detail);
         },
 
         _onResponseGet: function (detail) {
@@ -132,10 +144,14 @@
         },
 
         _handleResponseCreate: function (response) {
-            this._onResponseCreate(response.detail);
+            var detail = response.detail;
+            this.fire('air-cruddy-response-create', detail);
+            this._onResponseCreate(detail);
         },
         _handleErrorCreate: function (response) {
-            this._onErrorCreate(response.detail);
+            var detail = response.detail;
+            this.fire('air-cruddy-error-create', detail);
+            this._onErrorCreate(detail);
         },
 
 
@@ -157,10 +173,14 @@
         },
 
         _handleResponseUpdate: function (response) {
-            this._onResponseUpdate(response.detail);
+            var detail = response.detail;
+            this.fire('air-cruddy-response-update', detail);
+            this._onResponseUpdate(detail);
         },
         _handleErrorUpdate: function (response) {
-            this._onErrorUpdate(response.detail);
+            var detail = response.detail;
+            this.fire('air-cruddy-error-update', detail);
+            this._onErrorUpdate(detail);
         },
 
         _onResponseUpdate: function (detail) {
@@ -183,10 +203,14 @@
 
 
         _handleResponseDelete: function (response) {
-            this._onResponseDelete(response.detail);
+            var detail = response.detail;
+            this.fire('air-cruddy-response-delete', detail);
+            this._onResponseDelete(detail);
         },
         _handleErrorDelete: function (error) {
-            this._onErrorDelete(response.detail);
+            var detail = response.detail;
+            this.fire('air-cruddy-error-delete', detail);
+            this._onErrorDelete(detail);
         },
 
         _onResponseDelete: function (detail) {

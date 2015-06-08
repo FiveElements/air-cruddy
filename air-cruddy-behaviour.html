@@ -71,19 +71,19 @@
         // --- Changed
         // --- ---------------------------
         _entityIdChanged: function (newValue, oldValue) {
-            console.log('entityIdChanged behaviors', oldValue, '--->', newValue);
+            //console.log('entityIdChanged behaviors', oldValue, '--->', newValue);
             if (this.entityId === null) {
                 // Blank case, no model to create
                 this._setData(null);
             } else if (this.entityId === '' || this.entityId === 'new') {
                 // Create Model
                 this.createEmptyEntity();
-                console.log('_entityIdChanged create empty data ', this.data);
+              //  console.log('_entityIdChanged create empty data ', this.data);
             } else if (!this.data || !this.data._id || this.data._id !== this.entityId) {
-                console.log('_entityIdChanged get data ', this.entityId);
+               // console.log('_entityIdChanged get data ', this.entityId);
                 // Update Mode
                 this._entityGet(this.entityId);
-                console.log('entityidChanged load data ', this.entityId);
+               // console.log('entityidChanged load data ', this.entityId);
             }
         },
 
