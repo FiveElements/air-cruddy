@@ -10,7 +10,7 @@
      */
     Polymer.AirCruddyAjaxInitBehavior = {
         properties: {
-            restApi: {
+            crudApi: {
                 type: String,
                 notify: true,
                 value: 'air-cruddy-ajax'
@@ -23,21 +23,22 @@
 
         },
 
-        listeners: {
-            'air-cruddy-error': '_handleErrorGet',
-            'air-cruddy-response-get': '_handleResponseGet',
-            'air-cruddy-response-create': '_handleResponseCreate',
-            'air-cruddy-response-update': '_handleResponseUpdate',
-            'air-cruddy-response-delete': '_handleResponseDelete'
-        },
+//        listeners: {
+//            'air-cruddy-error': '_handleErrorGet',
+//            'air-cruddy-response-get': '_handleResponseGet',
+//            'air-cruddy-response-create': '_handleResponseCreate',
+//            'air-cruddy-response-update': '_handleResponseUpdate',
+//            'air-cruddy-response-delete': '_handleResponseDelete'
+//        },
 
 
         // --- Life Cycle
         // --- ---------------------------
 
-        created: function () {
+        ready: function () {
             // Object that handles the ajax form submission request.
-            this._requestCrud = this._createIronAjax();
+            this._requestCrud = this._createIronAjax(this.crudApi);
+            this._playAutoRequestWhenReady();
             // Log
            // console.log('End Ready behaviors', 'endpoint', this.endpoint);
         },
@@ -46,15 +47,44 @@
 
         // --- Service Instantiation
         // --- ---------------------------
-        _createIronAjax: function () {
-            var requestBot = document.createElement('air-cruddy-ajax');
+        _createIronAjax: function (componentName) {
+            var requestBot = document.createElement(componentName);
             requestBot.addEventListener( 'air-cruddy-response-get', this._handleResponseGet.bind(this));
+            requestBot.addEventListener( 'air-cruddy-error-get', this._handleErrorGet.bind(this));
+            requestBot.addEventListener( 'air-cruddy-response-create', this._handleResponseCreate.bind(this));
+            requestBot.addEventListener( 'air-cruddy-error-create', this._handleErrorCreate.bind(this));
+            requestBot.addEventListener( 'air-cruddy-response-update', this._handleResponseUpdate.bind(this));
+            requestBot.addEventListener( 'air-cruddy-error-update', this._handleErrorUpdate.bind(this));
+            requestBot.addEventListener( 'air-cruddy-response-delete', this._handleResponseDelete.bind(this));
+            requestBot.addEventListener( 'air-cruddy-error-delete', this._handleErrorDelete.bind(this));
             return requestBot;
         },
 
         _endpointChanged: function () {
             this._requestCrud.endpoint = this.endpoint;
         },
+
+        // --- Request Auto when Ready
+        // --- ---------------------------
+
+        _addAutoRequestWhenReady: function ( requestFunction ) {
+            if (this.autoRequestWhenReady) {
+                this.autoRequestWhenReady.push(requestFunction);
+            } else {
+                this.autoRequestWhenReady= [requestFunction];
+            }
+        },
+        _playAutoRequestWhenReady: function () {
+            if (this.autoRequestWhenReady) {
+                this.autoRequestWhenReady.forEach(function (todo) {
+                    if (todo) {
+                        todo();
+                    }
+                });
+            }
+            this.autoRequestWhenReady = undefined;
+        },
+
 
         // --- Entity GET
         // --- ---------------------------
@@ -63,16 +93,32 @@
          * Called to request the get the entity from server.
          */
         _entityGet: function () {
-            this._requestCrud._entityGet(this.entityId);
+            if ( this._requestCrud) {
+                this._requestCrud._entityGet(this.entityId);
+            } else {
+                // Do request when Ready
+                var that = this;
+                var entityId = this.entityId;
+                var todo = function() {
+                    that._requestCrud._entityGet(entityId);
+                };
+                this._addAutoRequestWhenReady(todo);
+            }
         },
 
-        _handleResponseGet: function (res) {
-            var detail =  res.detail;
-            console.log('_handleResponseGet',detail);
-            this._setData(detail.response);
+
+        _handleResponseGet: function (response) {
+            this._onResponseGet(response.detail);
         },
         _handleErrorGet: function (error) {
-            console.error('Required Api implementation for function : [%s]', '_handleErrorGet');
+            this._handleErrorGet(response.detail);
+        },
+
+        _onResponseGet: function (detail) {
+            console.warn('Required Api implementation for function : [%s]', '_onResponseGet', detail);
+        },
+        _onErrorGet: function (detail) {
+            console.warn('Required Api implementation for function : [%s]', '_onErrorGet', detail);
         },
 
 
@@ -86,10 +132,18 @@
         },
 
         _handleResponseCreate: function (response) {
-            console.error('Required Api implementation for function : [%s]', '_handleResponseCreate');
+            this._onResponseCreate(response.detail);
         },
-        _handleErrorCreate: function (error) {
-            console.error('Required Api implementation for function : [%s]', '_handleErrorCreate');
+        _handleErrorCreate: function (response) {
+            this._onErrorCreate(response.detail);
+        },
+
+
+        _onResponseCreate: function (detail) {
+            console.warn('Required Api implementation for function : [%s]', '_onResponseCreate', detail);
+        },
+        _onErrorCreate: function (detail) {
+            console.warn('Required Api implementation for function : [%s]', '_onErrorCreate', detail);
         },
 
 
@@ -103,14 +157,22 @@
         },
 
         _handleResponseUpdate: function (response) {
-            console.error('Required Api implementation for function : [%s]', '_handleResponseUpdate');
+            this._onResponseUpdate(response.detail);
         },
-        _handleErrorUpdate: function (error) {
-            console.error('Required Api implementation for function : [%s]', '_handleErrorUpdate');
+        _handleErrorUpdate: function (response) {
+            this._onErrorUpdate(response.detail);
+        },
+
+        _onResponseUpdate: function (detail) {
+            console.warn('Required Api implementation for function : [%s]', '_onResponseUpdate', detail);
+        },
+        _onErrorUpdate: function (detail) {
+            console.warn('Required Api implementation for function : [%s]', '_onErrorUpdate', detail);
         },
 
 
-        // --- Entity Delete Create
+
+        // --- Entity Delete
         // --- ---------------------
         /**
          * Called to request the delete the entity to server.
@@ -121,11 +183,21 @@
 
 
         _handleResponseDelete: function (response) {
-            console.error('Required Api implementation for function : [%s]', '_handleResponseDelete');
+            this._onResponseDelete(response.detail);
         },
         _handleErrorDelete: function (error) {
-            console.error('Required Api implementation for function : [%s]', '_handleErrorDelete');
+            this._onErrorDelete(response.detail);
+        },
+
+        _onResponseDelete: function (detail) {
+            console.warn('Required Api implementation for function : [%s]', '_onResponseDelete', detail);
+        },
+
+        _onErrorDelete: function (detail) {
+            console.warn('Required Api implementation for function : [%s]', '_onErrorDelete', detail);
         }
+
+
 
         // --- Other
         // --- ---------------------

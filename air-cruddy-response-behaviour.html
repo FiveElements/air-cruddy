@@ -24,6 +24,8 @@
         _onResponseGet: function (detail) {
             var response = detail.response;
             this._setData(response);
+
+            // TODO Resolve conflict is Needed
         },
         _onErrorGet: function (detail) {
             var error = detail.error;
@@ -65,7 +67,7 @@
                 console.log('Reload on save');
                 this._entityGet();
             } else {
-                // Update version
+                // FIXME Update version
                 this._setDataVersion(resp._version);
             }
         },
