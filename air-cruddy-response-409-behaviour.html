@@ -1,11 +1,13 @@
 <link rel="import" href="../polymer/polymer.html">
 
+<link rel="import" href="air-cruddy-differential-behaviour.html">
+
 <script>
 
     /**
      * @polymerBehavior
      */
-    Polymer.AirCruddyResponse409Behavior = {
+    Polymer.AirCruddyResponse409BehaviorImpl = {
 
         properties: {
             dataUser: {
@@ -16,13 +18,16 @@
             }
         },
 
+
         listeners: {
             'air-cruddy-response-get': '_handleGetForConflictBeResolution'
         },
+
+
  
         // --- Api
         // --- ---------------------
-       startConflictBeResolution: function () {
+       beginConflictBeResolution: function () {
             console.log('markToConflictToBeResolve -- BEGIN', this.data, this.dataOri);
             this.dataUser = JSON.parse(JSON.stringify(this.data));
             this.dataOrigin = JSON.parse(JSON.stringify(this.dataOri));
@@ -40,14 +45,113 @@
         // --- ---------------------
         _handleGetForConflictBeResolution: function (event) {
             var detail = event.detail;
+            // TODO UseGetData ??? var data = detail.response;
+            if (this.isConflictBeResolution()) {
+                var userDiff = this.mergeConflict();
+                if (userDiff.userDiffConflict) {
+                    // TODO Real Conflict without resolution ??
+                }
+            }
             console.log('------- _handleGetForConflictBeResolution : ', detail);
         },
-
 
         // --- Conflict Resolution
         // --- ---------------------
 
+        mergeConflict: function () {
+            var userDiff = this.computeUserDiff();
+            // Merge Not Conflict
+            if (userDiff.userDiffMergeable) {
+                this.copyObjectAttributes(userDiff.userDiffMergeable, this.data._source, true);
+            }
+            if (userDiff.userDiffConflict) {
+                // TODO Unmergeable Conflict
+            }
+            this.endConflictBeResolution();
+            console.log('---------- Conflict resolution END');
+            return userDiff;
+        },
+        /**
+         * Call after server get (witch change this.data),
+         * and compare with the data backup in (this.dataUser, this.dataOrigin).
+         *
+         * Call markToConflictToBeResolve before to save states.
+         */
+        computeUserDiff: function () {
+            // Field that the user want to update (compare version n and n+2)
+            var diffUser = this._diffProperties(this.dataOrigin._source, this.dataUser._source);
+            // Fields modify in server side between the the edit form time. (compare version n and n+1)
+            var diffServer = this._diffProperties(this.dataOrigin._source, this.data._source);
+            // Compute conflict
+            var userDiffMergeable = this.userDiffNotInServerProperties(diffServer, diffUser);
+            var userDiffConflict = this.userDiffInServerProperties(diffServer, diffUser);
+            // Result
+            var result = {
+                modifByUser: diffUser,
+                modifByServer: diffServer,
+                userDiffMergeable: userDiffMergeable,
+                userDiffConflict: userDiffConflict
+            };
+            console.log('Diff User', result);
+            return result;
+        },
+        // --- Differential
+        // --- ---------------------
+        // Intersect
+        userDiffInServerProperties: function (server, client, conflict) {
+            conflict = conflict || {};
+            if (client && server) {
+                for (var attr in client) {
+                    if (server.hasOwnProperty(attr) && client.hasOwnProperty(attr)) {
+                        conflict[attr] = client[attr];
+                    }
+                }
+            }
+            return this.isEmptyObj(conflict) ? undefined : conflict;
+        },
+        userDiffNotInServerProperties: function (server, client, conflict) {
+            conflict = conflict || {};
+            if (client) {
+                for (var attr in client) {
+                    if (client.hasOwnProperty(attr) && !server.hasOwnProperty(attr)) {
+                        conflict[attr] = client[attr];
+                    }
+                }
+            }
+            return this.isEmptyObj(conflict) ? undefined : conflict;
+        },
+        // --- Tools
+        // --- ---------------------
+        copyObjectAttributes: function (src, dest, override) {
+            dest = dest || {};
+            if (!src) {
+                return dest;
+            }
+            for (var attr in src) {
+                if (typeof src[attr] === 'object' && !Array.isArray(src[attr])) {
+                    // console.log('copyProperties type : ', attr, ' --> ', typeof src[attr], ' / is Array '  , Array.isArray(src[attr]) );
+                    if (override || !dest.hasOwnProperty(attr)) {
+                        var subDest = this.copyObjectAttributes(src[attr], dest[attr], override);
+                        // console.log('sub dest', subDest);
+                        dest[attr] = subDest;
+                    }
+                } else if (src.hasOwnProperty(attr)) {
+                    if (override || !dest.hasOwnProperty(attr)) {
+                        dest[attr] = src[attr];
+                    }
+                }
+            }
+            return dest;
+        }
+        // --- Other
+        // --- ---------------------
 
     };
+
+    /**
+     * @polymerBehavior
+     */
+    Polymer.AirCruddyResponse409Behavior = [Polymer.AirCruddyDifferentialBehavior,  Polymer.AirCruddyResponse409BehaviorImpl];
+
 
 </script>

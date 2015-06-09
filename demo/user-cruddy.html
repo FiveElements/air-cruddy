@@ -6,6 +6,10 @@
 
 <link rel="import" href="../../paper-input/paper-input.html">
 <link rel="import" href="../../paper-button/paper-button.html">
+
+<link rel="import" href="../../air-cruddy-ajax/air-cruddy-ajax-es.html">
+
+
 <!--
 
 The `user-form` provides  
@@ -39,7 +43,7 @@ The `user-form` provides
 
         </section>
 
-        <air-cruddy id="userCrud" endpoint="/s/users" entity-id="{{userId}}" data="{{data}}">
+        <air-cruddy id="userCrud" crud-api="air-cruddy-ajax-es" endpoint="http://127.0.0.1:9200/users/user" entity-id="{{userId}}" data="{{data}}">
             <paper-input label="Firstname" value="{{data._source.firstname}}" required></paper-input>
             <paper-input label="Lastname" value="{{data._source.lastname}}" required></paper-input>
             <br>
@@ -77,7 +81,7 @@ The `user-form` provides
                 userId: {
                     type: String,
                     notify: true,
-                    value: '1'
+                    value: 'AAApkZAAOAAAQJsAAs'
                 },
 //                endpoint: {
 //                    type: String,

@@ -14,6 +14,14 @@
             reloadOnSave: {
                 type: Boolean,
                 value: false
+            },
+            reloadOnUpdate: {
+                type: Boolean,
+                value: false
+            },
+            reloadOnCreate: {
+                type: Boolean,
+                value: false
             }
         },
 
@@ -49,11 +57,22 @@
 
 
         _onResponseUpdate: function (detail) {
-            var response = detail.response;
+            // var response = detail.response;
             this._onResponseSave(detail);
         },
         _onErrorUpdate: function (detail) {
-            this._onErrorSave(detail);
+            var status = detail.status;
+            // var resp = detail.response;
+            if (status === 409) {
+                // conflict resolution with reload data
+                if (typeof  this.beginConflictBeResolution === 'function') {
+                    this.beginConflictBeResolution();
+                }
+                // Reload Data anyway, what else could you do in this case !!! (Sorry for Your lost)
+                this._entityGet();
+            } else {
+                this._onErrorSave(detail);
+            }
         },
 
 

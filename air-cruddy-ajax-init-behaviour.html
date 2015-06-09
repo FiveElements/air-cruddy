@@ -10,6 +10,11 @@
      */
     Polymer.AirCruddyAjaxInitBehavior = {
         properties: {
+            /**
+             *  Define the Rest Api to Use,
+             *  By default is 'air-cruddy-ajax' but other are available :
+             *  'air-cruddy-ajax-es'
+             */
             crudApi: {
                 type: String,
                 notify: true,
@@ -100,9 +105,9 @@
         /**
          * Called to request the get the entity from server.
          */
-        _entityGet: function () {
+        _entityGet: function (opt, ver) {
             if ( this._requestCrud) {
-                this._requestCrud._entityGet(this.entityId);
+                this._requestCrud._entityGet(opt, ver);
             } else {
                 // Do request when Ready
                 var that = this;
@@ -117,13 +122,14 @@
 
         _handleResponseGet: function (response) {
             var detail = response.detail;
-            this.fire('air-cruddy-response-get', detail);
             this._onResponseGet(detail);
+            this.fire('air-cruddy-response-get', detail);
         },
         _handleErrorGet: function (response) {
+            console.log('air-cruddy-ajax _handleErrorGet : ', response);
             var detail = response.detail;
-            this.fire('air-cruddy-error-get', detail);
             this._handleErrorGet(detail);
+            this.fire('air-cruddy-error-get', detail);
         },
 
         _onResponseGet: function (detail) {
@@ -145,13 +151,13 @@
 
         _handleResponseCreate: function (response) {
             var detail = response.detail;
-            this.fire('air-cruddy-response-create', detail);
             this._onResponseCreate(detail);
+            this.fire('air-cruddy-response-create', detail);
         },
         _handleErrorCreate: function (response) {
             var detail = response.detail;
-            this.fire('air-cruddy-error-create', detail);
             this._onErrorCreate(detail);
+            this.fire('air-cruddy-error-create', detail);
         },
 
 
@@ -169,18 +175,19 @@
          * Called to request the update the entity to server.
          */
         _entityUpdate: function (data) {
+
             this._requestCrud._entityUpdate(data);
         },
 
         _handleResponseUpdate: function (response) {
             var detail = response.detail;
-            this.fire('air-cruddy-response-update', detail);
             this._onResponseUpdate(detail);
+            this.fire('air-cruddy-response-update', detail);
         },
         _handleErrorUpdate: function (response) {
             var detail = response.detail;
-            this.fire('air-cruddy-error-update', detail);
             this._onErrorUpdate(detail);
+            this.fire('air-cruddy-error-update', detail);
         },
 
         _onResponseUpdate: function (detail) {
@@ -204,13 +211,13 @@
 
         _handleResponseDelete: function (response) {
             var detail = response.detail;
-            this.fire('air-cruddy-response-delete', detail);
             this._onResponseDelete(detail);
+            this.fire('air-cruddy-response-delete', detail);
         },
         _handleErrorDelete: function (error) {
             var detail = response.detail;
-            this.fire('air-cruddy-error-delete', detail);
             this._onErrorDelete(detail);
+            this.fire('air-cruddy-error-delete', detail);
         },
 
         _onResponseDelete: function (detail) {

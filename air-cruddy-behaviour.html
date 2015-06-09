@@ -1,10 +1,13 @@
 <link rel="import" href="../polymer/polymer.html">
 
+<link rel="import" href="air-cruddy-differential-behaviour.html">
+
 <script>
+
     /**
      * @polymerBehavior
      */
-    Polymer.AirCruddyBehavior = {
+    Polymer.AirCruddyBehaviorImpl = {
         properties: {
 
             entityId: {
@@ -27,15 +30,10 @@
 
         },
 
+        behaviors: [
 
-        // --- Computed Properties
-        // --- ---------------------------
-        _printAjaxError: function (detail) {
-            console.error('Ajax Error', detail);
-        },
-        _printAjaxResponse: function (detail) {
-            console.log('Ajax Response', detail);
-        },
+        ],
+
         // --- Computed Properties
         // --- ---------------------------
         _computedCreationMode: function (dataId) {
@@ -172,51 +170,15 @@
             return diff;
         },
 
-        // --- Differential
-        // --- ---------------------
 
-        _isEmptyObj: function (obj) {
-            return (Object.getOwnPropertyNames(obj).length === 0);
-        },
-
-        _diffProperties: function (first, second, diffs) {
-            diffs = diffs || {};
-            // Compare ref to Object
-            for (var attr in second) {
-                if (Array.isArray(first[attr]) && Array.isArray(second[attr])) {
-                    // Bug in Array Comparaison
-                    // if (first[attr] !== second[attr]) {
-                    if (!this._isArrayEquals(first[attr], second[attr])) {
-                        diffs[attr] = second[attr];
-                    }
-                } else if (typeof first[attr] === 'object' && typeof second[attr] === 'object') { // Bug if property disapear
-                    // Check recursif
-                    var subDiffs = this._diffProperties(first[attr], second[attr], {});
-                    if (subDiffs) {
-                        diffs[attr] = subDiffs;
-                    }
-                } else if (first[attr] !== second[attr]) {
-                    diffs[attr] = second[attr];
-                }
-            }
-            return this._isEmptyObj(diffs) ? undefined : diffs;
-        },
-
-        _isArrayEquals: function (a, b) {
-            if (a.length() !== b.length()) {
-                return false;
-            }
-            if (a === b) {
-                return true;
-            }
-            var diff = a.filter(function (element, index) {
-                return a[index] !== b[index];
-            });
-            return diff.length() < 1;
-        }
 
 
     };
+
+    /**
+     * @polymerBehavior
+     */
+    Polymer.AirCruddyBehavior = [Polymer.AirCruddyDifferentialBehavior, Polymer.AirCruddyBehaviorImpl];
 
 
     /**

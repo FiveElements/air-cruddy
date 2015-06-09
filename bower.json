@@ -14,15 +14,13 @@
     "air-elements"
   ],
   "ignore": [
-    "index.html",
-    "demo**/**",
+    "/.*",
     ".jshintrc",
     ".editorconfig",
     ".bowerrc",
     ".git*",
     "package.json",
-    "gulpfile.js",
-    "test"
+    "gulpfile.js"
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#^1.0.0"
