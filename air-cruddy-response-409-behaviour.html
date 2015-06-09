@@ -62,6 +62,7 @@
             var userDiff = this.computeUserDiff();
             // Merge Not Conflict
             if (userDiff.userDiffMergeable) {
+                // FIXME is link to model
                 this.copyObjectAttributes(userDiff.userDiffMergeable, this.data._source, true);
                 this.notifyPath('data._source', userDiff.userDiffMergeable);
             }

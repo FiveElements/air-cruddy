@@ -99,6 +99,16 @@
         },
 
 
+        // --- Entity Model
+        // --- ---------------------------
+
+        _extractResponseVersion: function (data) {
+            return this._requestCrud._extractResponseVersion(data);
+        },
+        _extractResponseId: function (data) {
+            return this._requestCrud._extractResponseId(data);
+        },
+
         // --- Entity GET
         // --- ---------------------------
 
@@ -231,7 +241,6 @@
 
         // --- Other
         // --- ---------------------
-
 
     };
 

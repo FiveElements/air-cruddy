@@ -50,6 +50,13 @@
         // --- Accessor
         // --- ---------------------------
 
+        /**
+         * Place the form in status of creating a new entity.
+         */
+        newEntity: function () {
+            this.entityId = '';
+        },
+
         _setData: function (data) {
             this.set('data', data);
             this._dataSnapshot(data);
@@ -59,12 +66,20 @@
             this.set('data._version', newVersion);
         },
         _setDataId: function (newDataId) {
+            this.entityId = newDataId;
             this.set('data._id', newDataId);
         },
         _unsetDataId: function () {
-            this.set('data._id', newDataId);
+            this.entityId = null;
+            this.set('data', null);
         },
-
+        _createEmptyEntity: function () {
+            return {
+                _id: null,
+                _version: null,
+                _source: {}
+            };
+        },
 
         // --- Changed
         // --- ---------------------------
@@ -75,8 +90,8 @@
                 this._setData(null);
             } else if (this.entityId === '' || this.entityId === 'new') {
                 // Create Model
-                this.createEmptyEntity();
-              //  console.log('_entityIdChanged create empty data ', this.data);
+                this._setData(this._createEmptyEntity());
+                //console.log('_entityIdChanged create empty data ', this.data);
             } else if (!this.data || !this.data._id || this.data._id !== this.entityId) {
                // console.log('_entityIdChanged get data ', this.entityId);
                 // Update Mode
@@ -156,13 +171,14 @@
         },
 
         _cloneData: function (data) {
-            data = data || this.data;
+           // data = data || this.data;
             if (data) {
                 return JSON.parse(JSON.stringify(data));
             }
             return null;
         },
         _diffDataSource: function (notDiffCallback) {
+            //console.log('_diffDataSource : dataOri :', this.dataOri, 'data : ',  this.data);
             var diff = this._diffProperties(this.dataOri._source, this.data._source);
             if (notDiffCallback) {
                 notDiffCallback(diff);
@@ -181,22 +197,4 @@
     Polymer.AirCruddyBehavior = [Polymer.AirCruddyDifferentialBehavior, Polymer.AirCruddyBehaviorImpl];
 
 
-    /**
-     * @polymerBehavior
-     */
-    Polymer.AirCruddyDataInitialisationBehaviorOld = {
-
-
-        // --- Entity Create
-        // --- ---------------------
-        createEmptyEntity: function () {
-            return {
-                _id: null,
-                _version: null,
-                _source: {}
-            };
-        },
-
-
-    };
 </script>

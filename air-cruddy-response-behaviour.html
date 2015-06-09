@@ -26,6 +26,26 @@
         },
 
 
+        // --- Entity Model
+        // --- ---------------------------
+
+
+        _setDataVersionFromResponse: function (data, reloadOnChange) {
+            if (reloadOnChange) {
+                var id = this._extractResponseId(data);
+                this._entityGet(id);
+            } else {
+                var version = this._extractResponseVersion(data);
+                if (version) {
+                    this._setDataVersion(version);
+                }
+            }
+        },
+        _setDataIdFromResponse: function (data) {
+            var id = this._extractResponseId(data);
+            this._setDataId(id);
+        },
+
         // --- Entity GET
         // --- ---------------------------
 
@@ -46,7 +66,8 @@
         _onResponseCreate: function (detail) {
             var response = detail.response;
             // 201 – OK – New resource has been created
-            this._setDataId(response._id);
+            this._setDataIdFromResponse(response);
+            this._setDataVersionFromResponse(response);
         },
         _onErrorCreate: function (detail) {
             var error = detail.error;
@@ -58,7 +79,8 @@
 
 
         _onResponseUpdate: function (detail) {
-            // var response = detail.response;
+            var response = detail.response;
+            this._setDataVersionFromResponse(response, this.reloadOnSave);
             this._onResponseSave(detail);
         },
         _onErrorUpdate: function (detail) {
@@ -75,6 +97,7 @@
                 this._onErrorSave(detail);
             }
         },
+
 
 
         // --- Entity Save handler
