@@ -126,9 +126,8 @@
             this.fire('air-cruddy-response-get', detail);
         },
         _handleErrorGet: function (response) {
-            console.log('air-cruddy-ajax _handleErrorGet : ', response);
             var detail = response.detail;
-            this._handleErrorGet(detail);
+            this._onErrorGet(detail);
             this.fire('air-cruddy-error-get', detail);
         },
 

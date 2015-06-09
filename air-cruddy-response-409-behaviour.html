@@ -63,6 +63,7 @@
             // Merge Not Conflict
             if (userDiff.userDiffMergeable) {
                 this.copyObjectAttributes(userDiff.userDiffMergeable, this.data._source, true);
+                this.notifyPath('data._source', userDiff.userDiffMergeable);
             }
             if (userDiff.userDiffConflict) {
                 // TODO Unmergeable Conflict
@@ -107,7 +108,7 @@
                     }
                 }
             }
-            return this.isEmptyObj(conflict) ? undefined : conflict;
+            return this._isEmptyObj(conflict) ? undefined : conflict;
         },
         userDiffNotInServerProperties: function (server, client, conflict) {
             conflict = conflict || {};
@@ -118,7 +119,7 @@
                     }
                 }
             }
-            return this.isEmptyObj(conflict) ? undefined : conflict;
+            return this._isEmptyObj(conflict) ? undefined : conflict;
         },
         // --- Tools
         // --- ---------------------

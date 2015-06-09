@@ -45,6 +45,7 @@
 
         _onResponseCreate: function (detail) {
             var response = detail.response;
+            // 201 – OK – New resource has been created
             this._setDataId(response._id);
         },
         _onErrorCreate: function (detail) {
@@ -69,7 +70,7 @@
                     this.beginConflictBeResolution();
                 }
                 // Reload Data anyway, what else could you do in this case !!! (Sorry for Your lost)
-                this._entityGet();
+                this._entityGet(this.entityId);
             } else {
                 this._onErrorSave(detail);
             }
@@ -109,6 +110,7 @@
 
         _onResponseDelete: function (detail) {
 //            var response = detail.response;
+            // 204 – OK – The resource was successfully deleted
             this._unsetDataId();
         },
 
