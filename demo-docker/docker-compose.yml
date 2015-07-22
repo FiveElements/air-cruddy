@@ -1,0 +1,12 @@
+es:
+  build: es
+  ports:
+   - "9200:9200"
+  expose:
+   - "9200"
+  volumes:
+   - /data/ttstore/logs:/logs
+   - /data/ttstore/data:/data
+   - /data/ttstore/work:/work
+   - /data/ttstore/tmp:/tmp
+

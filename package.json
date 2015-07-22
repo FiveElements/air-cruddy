@@ -9,32 +9,32 @@
     "start": "node  --harmony src/index.js"
   },
   "dependencies": {
-    "bell": "^2.7.1",
-    "boom": "^2.7.1",
+    "bell": "^5.0.0",
+    "boom": "^2.8.0",
     "confidence": "^1.1.0",
     "glib": "0.0.3",
-    "good": "^6.1.2",
-    "good-console": "^5.0.0",
-    "hapi": "^8.4.0",
+    "good": "^6.3.0",
+    "good-console": "^5.0.2",
+    "hapi": "^8.8.0",
     "hkp-client": "0.0.2",
-    "hoek": "^2.13.0",
-    "joi": "^6.4.1",
-    "kbpgp": "^2.0.10",
-    "lodash": "^3.8.0"
+    "hoek": "^2.14.0",
+    "joi": "^6.6.0",
+    "kbpgp": "^2.0.29",
+    "lodash": "^3.10.0"
   },
   "devDependencies": {
     "aguid": "^1.0.3",
-    "del": "^1.1.1",
-    "gulp": "^3.8.11",
+    "del": "^1.2.0",
+    "gulp": "^3.9.0",
     "gulp-cached": "^1.1.0",
     "gulp-changed": "^1.2.1",
     "gulp-debug": "^2.0.1",
     "gulp-install": "^0.4.0",
-    "gulp-jshint": "^1.10.0",
+    "gulp-jshint": "^1.11.2",
     "gulp-livereload": "^3.8.0",
-    "gulp-load-plugins": "^0.10.0",
+    "gulp-load-plugins": "^1.0.0-rc",
     "gulp-nodemon": "^2.0.3",
-    "gulp-shell": "^0.4.1",
-    "jshint-stylish": "^1.0.2"
+    "gulp-shell": "^0.4.2",
+    "jshint-stylish": "^2.0.1"
   }
 }
