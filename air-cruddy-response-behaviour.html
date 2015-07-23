@@ -79,6 +79,7 @@
 
 
         _onResponseUpdate: function (detail) {
+
             var response = detail.response;
             this._setDataVersionFromResponse(response, this.reloadOnSave);
             this._onResponseSave(detail);
@@ -92,6 +93,7 @@
                     this.beginConflictBeResolution();
                 }
                 // Reload Data anyway, what else could you do in this case !!! (Sorry for Your lost)
+                console.log('begin Conflict Resolution for entity :', this.entityId);
                 this._entityGet(this.entityId);
             } else {
                 this._onErrorSave(detail);
@@ -108,7 +110,9 @@
             // Increment version or reload data ?
             if (this.reloadOnSave === true) {
                 console.log('Reload on save');
-                this._entityGet();
+                var id = this._extractResponseId(resp);
+                console.log('Reload  on save Entity, ', id);
+                this._entityGet(id);
             } else {
                 // FIXME Update version
                 this._setDataVersion(resp._version);

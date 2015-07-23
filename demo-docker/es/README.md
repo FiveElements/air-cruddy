@@ -1,6 +1,21 @@
 # Build Docker Images
 docker build --rm -t 5elements/elasticsearch .
 
+# Docker Tips and Tricks
+### Stop / remove all Docker containers
+
+- stop et delete all docker containers: 
+```Shell
+# docker stop $(docker ps -a -q) 
+# docker rm -v $(docker ps -a -q)
+```
+
+
+- delete all docker images: 
+```Shell
+# docker rmi -f $(docker images -q)
+```
+
 # Os Configuration
 http://www.tldp.org/LDP/abs/html/
  

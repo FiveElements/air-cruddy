@@ -8,7 +8,7 @@ ENV HOME="/root" DEBIAN_FRONTEND="noninteractive"
 
 # Config proxy env
 # #######################
-# ENV http_proxy="http://webcache.groupe.generali.fr:3128" no_proxy="*.groupe.generali.fr"
+ENV http_proxy="http://webcache.groupe.generali.fr:3128" no_proxy="*.groupe.generali.fr"
 ENV https_proxy="$http_proxy"  HTTP_PROXY="$http_proxy" HTTPS_PROXY="$http_proxy" NO_PROXY="$no_proxy"
 
  
@@ -29,14 +29,9 @@ CMD [ "/opt/elasticsearch/bin/elasticsearch" ]
 
 # Install build
 # #######################
-# ADD build build
-
-COPY  build/install-jdk-repo.sh /build/
+ADD build build
 RUN [ "/build/install-jdk-repo.sh" , "setup" ]
-
-COPY  build/install-es.sh /build/
 RUN [ "/build/install-es.sh" , "setup" ]
- 
 
 # Clean proxy env
 # #######################

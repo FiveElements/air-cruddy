@@ -18,12 +18,13 @@
     "hapi": "^8.8.0",
     "hkp-client": "0.0.2",
     "hoek": "^2.14.0",
-    "joi": "^6.6.0",
+    "joi": "^6.6.1",
     "kbpgp": "^2.0.29",
     "lodash": "^3.10.0"
   },
   "devDependencies": {
     "aguid": "^1.0.3",
+    "browser-sync": "^2.8.0",
     "del": "^1.2.0",
     "gulp": "^3.9.0",
     "gulp-cached": "^1.1.0",
@@ -35,6 +36,7 @@
     "gulp-load-plugins": "^1.0.0-rc",
     "gulp-nodemon": "^2.0.3",
     "gulp-shell": "^0.4.2",
-    "jshint-stylish": "^2.0.1"
+    "jshint-stylish": "^2.0.1",
+    "proxy-middleware": "^0.13.0"
   }
 }

@@ -100,9 +100,17 @@
             }
         },
 
+        // --- Public Api
+        // --- ---------------------------
+        entityGet: function (entityId) {
+             var loadId= entityId || this.entityId;
+            this._entityGet(loadId);
+        },
+
+
         // --- Required Api
         // --- ---------------------------
-        _entityGet: function () {
+        _entityGet: function (entityId) {
             console.warn('Required Api implementation for function : [%s]', '_entityGet');
             //throw new Error('Required Api implementation for function : '+ '_entityGet');
         },
@@ -178,8 +186,8 @@
             return null;
         },
         _diffDataSource: function (notDiffCallback) {
-            //console.log('_diffDataSource : dataOri :', this.dataOri, 'data : ',  this.data);
-            var diff = this._diffProperties(this.dataOri._source, this.data._source);
+            console.log('_diffDataSource : dataOri :', this.dataOri, 'data : ',  this.data);
+            var diff = this._diffProperties(this.dataOri._source || {}, this.data._source || {});
             if (notDiffCallback) {
                 notDiffCallback(diff);
             }

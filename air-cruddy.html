@@ -26,12 +26,15 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
 
 
 
-    <air-cruddy entity-id="{{entityid}}" data="{{data}}" endpoint="/s/users" autosave>
+    <air-cruddy entity-id="{{entityid}}" data="{{data}}" endpoint="/v1/users" autosave>
         <section>
-        <paper-input-decorator floatingLabel label="First name" autoValidate>
-          <input is="core-input" value="{{data._source.firstname}}" required>
-        </paper-input-decorator>
-      </section>
+           <paper-input-decorator floatingLabel label="First name" autoValidate>
+              <input is="core-input" value="{{data._source.firstname}}" required>
+           </paper-input-decorator>
+           <paper-input-decorator floatingLabel label="First name" autoValidate>
+              <input is="core-input" value="{{data._source.lastname}}" required>
+           </paper-input-decorator>
+        </section>
     </air-cruddy>
 
 ### Server Data Format
@@ -40,8 +43,8 @@ Example of Get Entity Server Format:
     { _id: "AAApkZAAOAAAQYEAAJ",
       _version: 1,
       _source: {
-        firstname: "NICOLE",
-        lastname: "ABBO"
+        firstname: "Leeloominaï",
+        lastname: "Lekatariba Lamina-Tchaï Ekbat De Sebat"
       }
     }
 

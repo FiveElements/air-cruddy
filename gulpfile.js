@@ -19,9 +19,11 @@ var del = require('del');
 var install = require("gulp-install");
 var $ = require('gulp-load-plugins')();
 
-// LiveRlead
+// LiveReload
 var nodemon = require('gulp-nodemon'),
   livereload = require('gulp-livereload');
+
+var browserSync = require('browser-sync');
 
 // Config
 var path = {
@@ -79,7 +81,35 @@ gulp.task('cp:package', function () {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // LiveReload
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('serve', function () {
+// Watch Files For Changes & Reload
+gulp.task('serve',   function () {
+  // Proxy Server
+  // -------------
+  var url = require('url');
+  var proxy = require('proxy-middleware');
+  var proxyOptions = url.parse('http://127.0.0.1:9200/5elements/');
+  proxyOptions.route = '/5elements/';
+  var proxies = [proxy(proxyOptions)];
+  // browserSync Server
+  // ------------------
+  browserSync({
+    notify: true,
+    // Run as an https by uncommenting 'https: true'
+    // Note: this uses an unsigned certificate which on first access
+    //       will present a certificate warning in the browser.
+    // https: true,
+    startPath: "/air-cruddy/demo/index.html",
+    server: {
+      middleware: proxies,
+      baseDir: ['../.'],
+      directory: true
+    }
+  });
+
+});
+
+
+gulp.task('serveNode', function () {
   livereload.listen({port: 35739});
   //    exec: "--use_strict --harmony",
   nodemon({

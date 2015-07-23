@@ -44,15 +44,14 @@
         // --- Conflict Resolution
         // --- ---------------------
         _handleGetForConflictBeResolution: function (event) {
-            var detail = event.detail;
-            // TODO UseGetData ??? var data = detail.response;
             if (this.isConflictBeResolution()) {
+                var detail = event.detail;
                 var userDiff = this.mergeConflict();
                 if (userDiff.userDiffConflict) {
                     // TODO Real Conflict without resolution ??
                 }
+                console.log('------- _handleGetForConflictBeResolution : ', detail);
             }
-            console.log('------- _handleGetForConflictBeResolution : ', detail);
         },
 
         // --- Conflict Resolution
