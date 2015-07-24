@@ -46,6 +46,7 @@
         ready: function () {
             // Object that handles the ajax form submission request.
             this._requestCrud = this._createIronAjax(this.crudApi);
+            Polymer.dom(this).appendChild(this._requestCrud);
             this._playAutoRequestWhenReady();
             // Log
            // console.log('End Ready behaviors', 'endpoint', this.endpoint);
@@ -60,14 +61,14 @@
             var requestBot = document.createElement(componentName);
             requestBot.endpoint = this.endpoint;
             // Register Listener
-            requestBot.addEventListener( 'air-cruddy-response-get', this._handleResponseGet.bind(this));
-            requestBot.addEventListener( 'air-cruddy-error-get', this._handleErrorGet.bind(this));
-            requestBot.addEventListener( 'air-cruddy-response-create', this._handleResponseCreate.bind(this));
-            requestBot.addEventListener( 'air-cruddy-error-create', this._handleErrorCreate.bind(this));
-            requestBot.addEventListener( 'air-cruddy-response-update', this._handleResponseUpdate.bind(this));
-            requestBot.addEventListener( 'air-cruddy-error-update', this._handleErrorUpdate.bind(this));
-            requestBot.addEventListener( 'air-cruddy-response-delete', this._handleResponseDelete.bind(this));
-            requestBot.addEventListener( 'air-cruddy-error-delete', this._handleErrorDelete.bind(this));
+//            requestBot.addEventListener( 'air-cruddy-response-get', this._handleResponseGet.bind(this));
+//            requestBot.addEventListener( 'air-cruddy-error-get', this._handleErrorGet.bind(this));
+//            requestBot.addEventListener( 'air-cruddy-response-create', this._handleResponseCreate.bind(this));
+//            requestBot.addEventListener( 'air-cruddy-error-create', this._handleErrorCreate.bind(this));
+//            requestBot.addEventListener( 'air-cruddy-response-update', this._handleResponseUpdate.bind(this));
+//            requestBot.addEventListener( 'air-cruddy-error-update', this._handleErrorUpdate.bind(this));
+//            requestBot.addEventListener( 'air-cruddy-response-delete', this._handleResponseDelete.bind(this));
+//            requestBot.addEventListener( 'air-cruddy-error-delete', this._handleErrorDelete.bind(this));
             return requestBot;
         },
 
@@ -130,24 +131,6 @@
         },
 
 
-        _handleResponseGet: function (response) {
-            var detail = response.detail;
-            this._onResponseGet(detail);
-            this.fire('air-cruddy-response-get', detail);
-        },
-        _handleErrorGet: function (response) {
-            var detail = response.detail;
-            this._onErrorGet(detail);
-            this.fire('air-cruddy-error-get', detail);
-        },
-
-        _onResponseGet: function (detail) {
-            console.warn('Required Api implementation for function : [%s]', '_onResponseGet', detail);
-        },
-        _onErrorGet: function (detail) {
-            console.warn('Required Api implementation for function : [%s]', '_onErrorGet', detail);
-        },
-
 
         // --- Entity Create
         // --- ---------------------
@@ -158,24 +141,6 @@
             this._requestCrud._entityCreate(data);
         },
 
-        _handleResponseCreate: function (response) {
-            var detail = response.detail;
-            this._onResponseCreate(detail);
-            this.fire('air-cruddy-response-create', detail);
-        },
-        _handleErrorCreate: function (response) {
-            var detail = response.detail;
-            this._onErrorCreate(detail);
-            this.fire('air-cruddy-error-create', detail);
-        },
-
-
-        _onResponseCreate: function (detail) {
-            console.warn('Required Api implementation for function : [%s]', '_onResponseCreate', detail);
-        },
-        _onErrorCreate: function (detail) {
-            console.warn('Required Api implementation for function : [%s]', '_onErrorCreate', detail);
-        },
 
 
         // --- Entity Update
@@ -187,23 +152,6 @@
             this._requestCrud._entityUpdate(data);
         },
 
-        _handleResponseUpdate: function (response) {
-            var detail = response.detail;
-            this._onResponseUpdate(detail);
-            this.fire('air-cruddy-response-update', detail);
-        },
-        _handleErrorUpdate: function (response) {
-            var detail = response.detail;
-            this._onErrorUpdate(detail);
-            this.fire('air-cruddy-error-update', detail);
-        },
-
-        _onResponseUpdate: function (detail) {
-            console.warn('Required Api implementation for function : [%s]', '_onResponseUpdate', detail);
-        },
-        _onErrorUpdate: function (detail) {
-            console.warn('Required Api implementation for function : [%s]', '_onErrorUpdate', detail);
-        },
 
 
 
@@ -217,24 +165,7 @@
         },
 
 
-        _handleResponseDelete: function (response) {
-            var detail = response.detail;
-            this._onResponseDelete(detail);
-            this.fire('air-cruddy-response-delete', detail);
-        },
-        _handleErrorDelete: function (error) {
-            var detail = response.detail;
-            this._onErrorDelete(detail);
-            this.fire('air-cruddy-error-delete', detail);
-        },
 
-        _onResponseDelete: function (detail) {
-            console.warn('Required Api implementation for function : [%s]', '_onResponseDelete', detail);
-        },
-
-        _onErrorDelete: function (detail) {
-            console.warn('Required Api implementation for function : [%s]', '_onErrorDelete', detail);
-        }
 
 
 

@@ -30,9 +30,18 @@
 
         },
 
-        behaviors: [
+        listeners: {
+            'air-cruddy-response-get': '_handleResponseGet',
+            'air-cruddy-error-get': '_handleErrorGet',
+            'air-cruddy-response-create': '_handleResponseCreate',
+            'air-cruddy-error-create': '_handleErrorCreate',
+            'air-cruddy-response-update': '_handleResponseUpdate',
+            'air-cruddy-error-update': '_handleErrorUpdate',
+            'air-cruddy-response-delete': '_handleResponseDelete',
+            'air-cruddy-error-delete': '_handleErrorDelete'
+        },
 
-        ],
+
 
         // --- Computed Properties
         // --- ---------------------------
@@ -93,17 +102,17 @@
                 this._setData(this._createEmptyEntity());
                 //console.log('_entityIdChanged create empty data ', this.data);
             } else if (!this.data || !this.data._id || this.data._id !== this.entityId) {
-               // console.log('_entityIdChanged get data ', this.entityId);
+                // console.log('_entityIdChanged get data ', this.entityId);
                 // Update Mode
                 this._entityGet(this.entityId);
-               // console.log('entityidChanged load data ', this.entityId);
+                // console.log('entityidChanged load data ', this.entityId);
             }
         },
 
         // --- Public Api
         // --- ---------------------------
         entityGet: function (entityId) {
-             var loadId= entityId || this.entityId;
+            var loadId = entityId || this.entityId;
             this._entityGet(loadId);
         },
 
@@ -179,14 +188,14 @@
         },
 
         _cloneData: function (data) {
-           // data = data || this.data;
+            // data = data || this.data;
             if (data) {
                 return JSON.parse(JSON.stringify(data));
             }
             return null;
         },
         _diffDataSource: function (notDiffCallback) {
-            console.log('_diffDataSource : dataOri :', this.dataOri, 'data : ',  this.data);
+            console.log('_diffDataSource : dataOri :', this.dataOri, 'data : ', this.data);
             var diff = this._diffProperties(this.dataOri._source || {}, this.data._source || {});
             if (notDiffCallback) {
                 notDiffCallback(diff);
@@ -194,7 +203,92 @@
             return diff;
         },
 
+        // --- Entity GET
+        // --- ---------------------------
 
+        _handleResponseGet: function (response) {
+            console.log('------------------ Get One', event.detail);
+            var detail = response.detail;
+            this._onResponseGet(detail);
+        },
+        _handleErrorGet: function (response) {
+            var detail = response.detail;
+            this._onErrorGet(detail);
+        },
+
+        _onResponseGet: function (detail) {
+            console.warn('Required Api implementation for function : [%s]', '_onResponseGet', detail);
+        },
+        _onErrorGet: function (detail) {
+            console.warn('Required Api implementation for function : [%s]', '_onErrorGet', detail);
+        },
+
+
+
+
+        // --- Entity Create
+        // --- ---------------------
+        _handleResponseCreate: function (response) {
+            var detail = response.detail;
+            this._onResponseCreate(detail);
+        },
+        _handleErrorCreate: function (response) {
+            var detail = response.detail;
+            this._onErrorCreate(detail);
+        },
+
+
+        _onResponseCreate: function (detail) {
+            console.warn('Required Api implementation for function : [%s]', '_onResponseCreate', detail);
+        },
+        _onErrorCreate: function (detail) {
+            console.warn('Required Api implementation for function : [%s]', '_onErrorCreate', detail);
+        },
+
+
+
+        // --- Entity Update
+        // --- ---------------------
+
+        _handleResponseUpdate: function (response) {
+            var detail = response.detail;
+            this._onResponseUpdate(detail);
+        },
+        _handleErrorUpdate: function (response) {
+            var detail = response.detail;
+            this._onErrorUpdate(detail);
+        },
+
+        _onResponseUpdate: function (detail) {
+            console.warn('Required Api implementation for function : [%s]', '_onResponseUpdate', detail);
+        },
+        _onErrorUpdate: function (detail) {
+            console.warn('Required Api implementation for function : [%s]', '_onErrorUpdate', detail);
+        },
+
+
+        // --- Entity Delete
+        // --- ---------------------
+
+        _handleResponseDelete: function (response) {
+            var detail = response.detail;
+            this._onResponseDelete(detail);
+        },
+        _handleErrorDelete: function (error) {
+            var detail = response.detail;
+            this._onErrorDelete(detail);
+        },
+
+        _onResponseDelete: function (detail) {
+            console.warn('Required Api implementation for function : [%s]', '_onResponseDelete', detail);
+        },
+
+        _onErrorDelete: function (detail) {
+            console.warn('Required Api implementation for function : [%s]', '_onErrorDelete', detail);
+        }
+
+        // --- Other
+        // --- ---------------------
 
 
     };

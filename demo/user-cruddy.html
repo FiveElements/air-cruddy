@@ -36,11 +36,14 @@ The `user-form` provides
                 <iron-icon icon="add"></iron-icon>
                 <span>Create New User</span>
             </paper-button>
-            <paper-button  on-tap="loadUser">
+            <paper-button  on-tap="loadUser1">
                 <iron-icon icon="user"></iron-icon>
-                <span>Load User</span>
+                <span>Load LeiLoo</span>
             </paper-button>
-
+            <paper-button  on-tap="loadUser2">
+                <iron-icon icon="user"></iron-icon>
+                <span>Korben</span>
+            </paper-button>
         </section>
 
         <air-cruddy id="userCrud" crud-api="air-cruddy-ajax-es" endpoint="/5elements/5elements" entity-id="{{userId}}" data="{{data}}">
@@ -108,10 +111,15 @@ The `user-form` provides
                // this.userId= '';
                 this.$.userCrud.newEntity();
             },
-            loadUser: function() {
+            loadUser1: function() {
                 console.log('Load User with Id 1');
  //               this.set('userId', '1');
                 this.userId= '1';
+            },
+            loadUser2: function() {
+                console.log('Load User with Id 2');
+                //               this.set('userId', '1');
+                this.userId= '2';
             }
 
         });
