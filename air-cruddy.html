@@ -1,16 +1,12 @@
 <link rel="import" href="../polymer/polymer.html">
 
-<!--<link rel="import" href="air-cruddy-notification-behaviour.html">-->
-<!--<link rel="import" href="air-cruddy-serialization-behaviour.html">-->
-<!--<link rel="import" href="air-cruddy-validator-behaviour.html">-->
-<!--<link rel="import" href="air-cruddy-ajax-behaviour.html">-->
+
 <link rel="import" href="air-cruddy-behaviour.html">
 <link rel="import" href="air-cruddy-ajax-init-behaviour.html">
 
 <link rel="import" href="../air-cruddy-ajax/air-cruddy-ajax.html">
 <link rel="import" href="../air-cruddy-ajax/air-cruddy-ajax-behaviour.html">
 
-<link rel="import" href="air-cruddy-response-behaviour.html">
 <link rel="import" href="air-cruddy-response-409-behaviour.html">
 
 <link rel="import" href="../air-cascade-validator/air-cascade-validator-behaviour.html">
@@ -92,20 +88,10 @@ Attribute available:
                 Polymer.AirCruddyBehavior
                 , Polymer.AirCruddyAjaxInitBehavior
                 // , Polymer.AirCruddyAjaxRestApiBehavior // Buggy see composition
-                , Polymer.AirCruddyResponseBehavior
                 , Polymer.AirCruddyResponse409Behavior
                 , Polymer.AirCascadeValidatorBehavior
             ],
 
-//            behaviors: [
-//                // Polymer.AirCruddyNotificationBehavior,
-//                // Polymer.AirCruddyStatusBehavior,
-//                Polymer.AirCruddyDataInitialisationBehavior,
-//                Polymer.AirCruddyAjaxBehavior,
-//                Polymer.AirCruddyResponseBehavior,
-////                Polymer.AirCruddyValidatorBehavior,
-//                Polymer.AirCruddySerializaionBehavior
-//            ],
             ready: function () {
                 console.log("ready endpointUrl", '--------------', this.endpoint);
             }
