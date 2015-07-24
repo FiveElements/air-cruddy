@@ -131,9 +131,39 @@
 
         // --- Public Api
         // --- ---------------------------
-        entityGet: function (entityId) {
-            var loadId = entityId || this.entityId;
-            this._entityGet(loadId);
+        _getRequestEntityId: function (entityId, entityVersion) {
+            var opt = {};
+            if (entityId) {
+                opt._id = entityId;
+                opt._version = entityVersion;
+            } else {
+                if (this.data) {
+                    opt._id = this._extractResponseId(this.data);
+                    opt._version = this._extractResponseVersion(this.data);
+                }
+            }
+            return opt;
+        },
+
+        entityGet: function (entityId, entityVersion) {
+            var opt = this._getRequestEntityId(entityId, entityVersion);
+            this._entityGet(opt);
+        },
+
+        entityUpdate: function (entityId, entityVersion) {
+            var opt = this._getRequestEntityId(entityId, entityVersion);
+            var dataClone = this._cloneData();
+            this._entityUpdate(opt, dataClone);
+        },
+
+        entityCreate: function (entityId, entityVersion) {
+            var opt = this._getRequestEntityId(entityId, entityVersion);
+            this._entityCreate(opt, this._cloneData());
+        },
+
+        entityDelete: function (entityId, entityVersion) {
+            var opt = this._getRequestEntityId(entityId, entityVersion);
+            this._entityDelete(opt);
         },
 
 
@@ -143,13 +173,13 @@
             console.warn('Required Api implementation for function : [%s]', '_entityGet');
             //throw new Error('Required Api implementation for function : '+ '_entityGet');
         },
-        _entityCreate: function (data) {
+        _entityCreate: function (entityId,  data, version) {
             console.warn('Required Api implementation for function : [%s]', '_entityCreate');
         },
-        _entityUpdate: function (data) {
+        _entityUpdate: function (entityId, data, version) {
             console.warn('Required Api implementation for function : [%s]', '_entityUpdate');
         },
-        _entityDelete: function (data) {
+        _entityDelete: function (entityId, version) {
             console.warn('Required Api implementation for function : [%s]', '_entityDelete');
         },
         validate: function (callback) {
@@ -175,10 +205,10 @@
             console.log('Save operation', this._isModeCreate);
             // Is Diff and Valid, need to be saved
             if (this._isModeCreate) {
-                this._entityCreate(this._cloneData());
+                this.entityCreate();
             } else {
                 // TODO ? { _id: this.data._id, _version: this.data._version, _source: diffData }
-                this._entityUpdate(this._cloneData());
+                this.entityUpdate();
             }
         },
 
@@ -208,9 +238,11 @@
         },
 
         _cloneData: function (data) {
-            // data = data || this.data;
+             data = data || this.data;
+            console.log('Request _cloneData: ', data);
             if (data) {
-                return JSON.parse(JSON.stringify(data));
+                var dataClone =  JSON.parse(JSON.stringify(data));
+                return dataClone;
             }
             return null;
         },

@@ -29,17 +29,14 @@
                 type: String,
                 notify: true,
                 observer: '_endpointChanged'
-            }
+            },
+
+            /**
+             * Internal
+             */
+            _requestCrud: Object
 
         },
-
-//        listeners: {
-//            'air-cruddy-error': '_handleErrorGet',
-//            'air-cruddy-response-get': '_handleResponseGet',
-//            'air-cruddy-response-create': '_handleResponseCreate',
-//            'air-cruddy-response-update': '_handleResponseUpdate',
-//            'air-cruddy-response-delete': '_handleResponseDelete'
-//        },
 
 
         // --- Life Cycle
@@ -51,29 +48,20 @@
         ready: function () {
             // Object that handles the ajax form submission request.
             this._requestCrud = this._createIronAjax(this.crudApi);
+            // Add to dom for event bubling
             Polymer.dom(this).appendChild(this._requestCrud);
             this._playAutoRequestWhenReady();
             // Log
-           // console.log('End Ready behaviors', 'endpoint', this.endpoint);
+            // console.log('End Ready behaviors', 'endpoint', this.endpoint);
         },
-
 
 
         // --- Service Instantiation
         // --- ---------------------------
         _createIronAjax: function (componentName) {
-          //  console.log('Create ajax service : ', componentName);
+            //  console.log('Create ajax service : ', componentName);
             var requestBot = document.createElement(componentName);
             requestBot.endpoint = this.endpoint;
-            // Register Listener
-//            requestBot.addEventListener( 'air-cruddy-response-get', this._handleResponseGet.bind(this));
-//            requestBot.addEventListener( 'air-cruddy-error-get', this._handleErrorGet.bind(this));
-//            requestBot.addEventListener( 'air-cruddy-response-create', this._handleResponseCreate.bind(this));
-//            requestBot.addEventListener( 'air-cruddy-error-create', this._handleErrorCreate.bind(this));
-//            requestBot.addEventListener( 'air-cruddy-response-update', this._handleResponseUpdate.bind(this));
-//            requestBot.addEventListener( 'air-cruddy-error-update', this._handleErrorUpdate.bind(this));
-//            requestBot.addEventListener( 'air-cruddy-response-delete', this._handleResponseDelete.bind(this));
-//            requestBot.addEventListener( 'air-cruddy-error-delete', this._handleErrorDelete.bind(this));
             return requestBot;
         },
 
@@ -86,11 +74,11 @@
         // --- Request Auto when Ready
         // --- ---------------------------
 
-        _addAutoRequestWhenReady: function ( requestFunction ) {
+        _addAutoRequestWhenReady: function (requestFunction) {
             if (this.autoRequestWhenReady) {
                 this.autoRequestWhenReady.push(requestFunction);
             } else {
-                this.autoRequestWhenReady= [requestFunction];
+                this.autoRequestWhenReady = [requestFunction];
             }
         },
         _playAutoRequestWhenReady: function () {
@@ -122,19 +110,21 @@
          * Called to request the get the entity from server.
          */
         _entityGet: function (opt, ver) {
-            if ( this._requestCrud) {
-                this._requestCrud._entityGet(opt, ver);
+            if (this._requestCrud) {
+                console.log('arguments : ', arguments);
+                var fn = this._requestCrud._entityGet;
+                return fn.apply(this._requestCrud, arguments);
             } else {
                 // Do request when Ready
                 var that = this;
-                var entityId = this.entityId;
-                var todo = function() {
-                    that._requestCrud._entityGet(entityId);
+                var todoAgrs = arguments;
+                var todo = function () {
+                    var fn =  that._requestCrud._entityGet;
+                    return fn.apply(that._requestCrud, todoAgrs);
                 };
                 this._addAutoRequestWhenReady(todo);
             }
         },
-
 
 
         // --- Entity Create
@@ -142,10 +132,9 @@
         /**
          * Called to request the create the entity to server.
          */
-        _entityCreate: function (data) {
-            this._requestCrud._entityCreate(data);
+        _entityCreate: function () {
+           return  this._requestCrud._entityCreate.apply(this._requestCrud, arguments);
         },
-
 
 
         // --- Entity Update
@@ -153,11 +142,9 @@
         /**
          * Called to request the update the entity to server.
          */
-        _entityUpdate: function (data) {
-            this._requestCrud._entityUpdate(data);
+        _entityUpdate: function () {
+            return  this._requestCrud._entityUpdate.apply(this._requestCrud, arguments);
         },
-
-
 
 
         // --- Entity Delete
@@ -165,13 +152,9 @@
         /**
          * Called to request the delete the entity to server.
          */
-        _entityDelete: function (data) {
-            this._requestCrud._entityDelete(data);
+        _entityDelete: function () {
+            return  this._requestCrud._entityDelete.apply(this._requestCrud, arguments);
         },
-
-
-
-
 
 
         // --- Other
