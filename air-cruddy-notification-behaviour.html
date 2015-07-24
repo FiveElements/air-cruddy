@@ -1,11 +1,16 @@
 <link rel="import" href="../polymer/polymer.html">
 
 <script>
+    /**
+     * FiveElements Namespace definition
+     */
+    var FiveElements = FiveElements || {};
+
 
     /**
      * @polymerBehavior
      */
-    Polymer.AirCruddyNotificationBehavior = {
+    FiveElements.AirCruddyNotificationBehavior = {
 
         ready: function () {
             this.toastSaveError = document.createElement('paper-toast');

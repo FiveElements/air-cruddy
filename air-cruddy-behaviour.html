@@ -5,9 +5,14 @@
 <script>
 
     /**
+     * FiveElements Namespace definition
+     */
+    var FiveElements = FiveElements || {};
+
+    /**
      * @polymerBehavior
      */
-    Polymer.AirCruddyBehaviorImpl = {
+    FiveElements.AirCruddyBehaviorImpl = {
         properties: {
            // Data
             entityId: {
@@ -71,7 +76,7 @@
         },
 
         // --- Accessor
-        // --- --------------------------- 
+        // --- ---------------------------
         /**
          * Place the form in status of creating a new entity.
          */
@@ -218,7 +223,6 @@
             }
             return diff;
         },
-
 
 
         // --- Entity Model
@@ -376,7 +380,7 @@
     /**
      * @polymerBehavior
      */
-    Polymer.AirCruddyBehavior = [Polymer.AirCruddyDifferentialBehavior, Polymer.AirCruddyBehaviorImpl];
+    FiveElements.AirCruddyBehavior = [FiveElements.AirCruddyDifferentialBehavior, FiveElements.AirCruddyBehaviorImpl];
 
 
 </script>

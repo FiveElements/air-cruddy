@@ -3,11 +3,15 @@
 <link rel="import" href="air-cruddy-differential-behaviour.html">
 
 <script>
+    /**
+     * FiveElements Namespace definition
+     */
+    var FiveElements = FiveElements || {};
 
     /**
      * @polymerBehavior
      */
-    Polymer.AirCruddyResponse409BehaviorImpl = {
+    FiveElements.AirCruddyResponse409BehaviorImpl = {
 
         properties: {
             dataUser: {
@@ -165,7 +169,7 @@
     /**
      * @polymerBehavior
      */
-    Polymer.AirCruddyResponse409Behavior = [Polymer.AirCruddyDifferentialBehavior,  Polymer.AirCruddyResponse409BehaviorImpl];
+    FiveElements.AirCruddyResponse409Behavior = [FiveElements.AirCruddyDifferentialBehavior,  FiveElements.AirCruddyResponse409BehaviorImpl];
 
 
 </script>
