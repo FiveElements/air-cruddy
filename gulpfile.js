@@ -87,9 +87,10 @@ gulp.task('serve',   function () {
   // -------------
   var url = require('url');
   var proxy = require('proxy-middleware');
-  var proxyOptions = url.parse('http://127.0.0.1:9200/5elements/');
+  var proxyOptions = url.parse('http://localhost:9200/5elements/');
   proxyOptions.route = '/5elements/';
   var proxies = [proxy(proxyOptions)];
+
   // browserSync Server
   // ------------------
   browserSync({
