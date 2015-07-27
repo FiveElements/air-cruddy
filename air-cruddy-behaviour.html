@@ -189,19 +189,25 @@
 
         // --- Public Apis
         // --- ---------------------
-        save: function () {
-            // Dirty Check
-            var diffData = this._diffDataSource(this.notifNotDiff.bind(this));
-            if (!diffData) {
-                // console.log('Save entity == NO Diff ');
-                return;
-            }
+        isNeedToSave: function() {
             // Validation
             if (!this.validate(this.notifValidityErrors.bind(this))) {
                 console.log('Save entity == NOT Valid ');
                 return false;
             }
+            // Dirty Check
+            var diffData = this._diffDataSource(this.notifNotDiff.bind(this));
+            if (!diffData) {
+                // console.log('Save entity == NO Diff ');
+                return false;
+            }
+            return true;
+        },
 
+        save: function () {
+            if (!this.isNeedToSave()) {
+                return false;
+            }
             console.log('Save operation', this._isModeCreate);
             // Is Diff and Valid, need to be saved
             if (this._isModeCreate) {
@@ -286,7 +292,7 @@
                 var errorStatusFunc = baseErrorFuncName + status;
                 if (typeof  this[errorStatusFunc] === 'function') {
                     // Manage Method Like : _onErrorUpdate409
-                    this[errorStatusFunc]();
+                    this[errorStatusFunc](event);
                     event.stopPropagation();
                     return true;
                 }

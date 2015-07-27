@@ -100,6 +100,7 @@ gulp.task('serve',   function () {
     //       will present a certificate warning in the browser.
     // https: true,
     startPath: "/air-cruddy/demo/index.html",
+    ghostMode: false,
     server: {
       middleware: proxies,
       baseDir: ['../.'],

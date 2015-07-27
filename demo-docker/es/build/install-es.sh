@@ -75,6 +75,9 @@ function configEs {
   sed -i'' 's/#path.data: \/path\/to\/data$/path.data: \/data/' $ES_HOME/config/elasticsearch.yml
   sed -i'' 's/#path.logs: \/path\/to\/logs/path.logs: \/logs/' $ES_HOME/config/elasticsearch.yml
   sed -i'' 's/#path.work: \/path\/to\/work/path.work: \/work/' $ES_HOME/config/elasticsearch.yml
+  # Cors
+  echo '# Enabled Cors' >>  $ES_HOME/config/elasticsearch.yml
+  echo 'http.cors.enabled: true' >>  $ES_HOME/config/elasticsearch.yml
   # Config ulimits
   echo ""   >> /etc/security/limits.conf
   echo "*         soft    nofile          1048576"   >> /etc/security/limits.conf
