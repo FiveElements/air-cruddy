@@ -9,7 +9,7 @@
     /**
      * @polymerBehavior
      */
-    FiveElements.AirCruddyStatusBehavior = {
+    FiveElements.AirCruddyDirtyBehavior = {
 
         properties: {
             crudStatus: {
@@ -39,14 +39,22 @@
         _registerInputWatcherElement: function (e) {
             if (this !== e.target) {
                 this._inputWatcherElements.push(e.target);
-
             }
+        },
+
+        // --- External Api to be call
+        // --- ---------------------
+        _handleResponseForStatusRegister: function () {
+            this.crudStatus.toSave = false;
         },
 
         // --- AutoSave
         // --- ---------------------
         addInputWatcher: function (focusable) {
             var that = this;
+            //
+            this.focusListener = this.focusListener || this.autoSaveInputFieldFocus.bind(this);
+            this.blurListener = this.blurAction || this.autoSaveInputFieldBlur.bind(this);
             // Add Event
             Polymer.addEventListener(focusable, 'input', that.focusListener, true);
             Polymer.addEventListener(focusable, 'blur', that.blurListener, true);
@@ -56,7 +64,31 @@
             var that = this;
             Polymer.removeEventListener(childNode, 'blur', that.blurListener, true);
             Polymer.removeEventListener(childNode, 'input', that.focusListener, true);
-        }
+        },
+
+
+        // --- Logic
+        // --- ---------------------
+
+        autoSaveInputFieldBlur: function () {
+            console.log('*** Blur ', event);
+//        var autosave = this.isModeCreate ? (this.autocreate === '' || this.autocreate === true) : ( this.autosave === '' || this.autosave === true );
+            // Auto save
+            if (this.isAutosave && this._diffDataSource()) {
+                // console.log('---- autoSaveInputFieldBlur', this.data);
+                this.job('save', function () {
+                    this.save();
+                }, 200);
+            }
+        },
+
+        autoSaveInputFieldFocus: function () {
+            console.log('*** Focus ', event);
+            if (this.isAutosave) {
+                this.crudStatus.toSave = true;
+            }
+        },
+
 
     };
 
