@@ -286,7 +286,8 @@
 
         // --- Entity Response For Specific Status
         // --- -----------------------------------------
-        _handleResponseWithSpecificStatus: function (baseErrorFuncName, event, detail ) {
+        _handleResponseWithSpecificStatus: function (baseErrorFuncName, event ) {
+            var detail =  event.detail;
             var status = detail.status;
             if (status) {
                 var errorStatusFunc = baseErrorFuncName + status;
@@ -306,15 +307,19 @@
         _handleResponseGet: function (event) {
             console.log('------------------ Get One', event.detail);
             var detail = event.detail;
-            if (!this._handleResponseWithSpecificStatus('_handleResponseGet', event, detail)) {
+            if (!this._handleResponseWithSpecificStatus('_handleResponseGet', event)) {
                 var response = detail.response;
                 this._setData(response);
+                // Special Use case 409
+                if (typeof  this['_handleGetForConflictBeResolution'] === 'function') {
+                    this['_handleGetForConflictBeResolution'](event);
+                }
             }
         },
 
         _handleErrorGet: function (event) {
             var detail = event.detail;
-            if (!this._handleResponseWithSpecificStatus('_handleErrorGet', event, detail)) {
+            if (!this._handleResponseWithSpecificStatus('_handleErrorGet', event)) {
                 var error = detail.error;
                 // TODO Manage the error at least 404
             }
@@ -326,7 +331,7 @@
         // --- ---------------------
         _handleResponseDelete: function (event) {
             var detail = event.detail;
-            if (!this._handleResponseWithSpecificStatus('_handleResponseDelete', event, detail)) {
+            if (!this._handleResponseWithSpecificStatus('_handleResponseDelete', event)) {
                 // 204 – OK – The resource was successfully deleted
                 this._unsetDataId();
             }
@@ -334,7 +339,7 @@
 
         _handleErrorDelete: function (event) {
             var detail = event.detail;
-            if (!this._handleResponseWithSpecificStatus('_handleErrorDelete', event, detail)) {
+            if (!this._handleResponseWithSpecificStatus('_handleErrorDelete', event)) {
                 var error = detail.error;
             }
         },
@@ -344,7 +349,7 @@
         // --- ---------------------
         _handleResponseCreate: function (event) {
             var detail = event.detail;
-            if (!this._handleResponseWithSpecificStatus('_handleResponseCreate', event, detail)) {
+            if (!this._handleResponseWithSpecificStatus('_handleResponseCreate', event)) {
                 var response = detail.response;
                 // 201 – OK – New resource has been created
                 this._setDataIdFromResponse(response);
@@ -354,7 +359,7 @@
 
         _handleErrorCreate: function (event) {
             var detail = event.detail;
-            if (!this._handleResponseWithSpecificStatus('_handleErrorCreate', event, detail)) {
+            if (!this._handleResponseWithSpecificStatus('_handleErrorCreate', event)) {
                 var error = detail.error;
             }
         },
@@ -372,7 +377,7 @@
         _handleErrorUpdate: function (event) {
             var detail = event.detail;
            //console.error('_handleErrorUpdate ',  detail.status,  detail);
-            if (!this._handleResponseWithSpecificStatus('_handleErrorUpdate', event, detail)) {
+            if (!this._handleResponseWithSpecificStatus('_handleErrorUpdate', event)) {
                 this._onErrorSave(detail);
             }
         },

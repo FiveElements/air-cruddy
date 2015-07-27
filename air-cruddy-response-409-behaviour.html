@@ -23,21 +23,27 @@
         },
 
 
-        listeners: {
-            'air-cruddy-response-get': '_handleGetForConflictBeResolution'
-        },
+//        listeners: {
+//            'air-cruddy-response-get': '_handleGetForConflictBeResolution'
+//        },
 
         // --- Api
         // --- ---------------------
 
         _handleErrorUpdate409: function (event) {
-            if (typeof  this.beginConflictBeResolution === 'function') {
-                this._beginConflictBeResolution();
-            }
+            this._beginConflictBeResolution();
             // Reload Data anyway, what else could you do in this case !!! (Sorry for Your lost)
-            console.log('_handleErrorUpdate409 ', event);
             console.log('begin Conflict Resolution for entity :', this.entityId);
-            this._entityGet(this.entityId);
+            var detail = event.detail;
+            // Check if the document contains the last version of the document in conflict.
+            var serverDocument = detail.error['_document'];
+            if (serverDocument) {
+                // The error contain the last version of the document, could do the conflict resolution
+                this._setData(serverDocument);
+                this.mergeConflict();
+            } else {
+                this._entityGet(this.entityId, null);
+            }
         },
 
  
@@ -55,14 +61,14 @@
         // --- Conflict Resolution
         // --- ---------------------
         _beginConflictBeResolution: function () {
-            console.log('markToConflictToBeResolve -- BEGIN', this.data, this.dataOri);
             this.dataUser = JSON.parse(JSON.stringify(this.data));
             this.dataOrigin = JSON.parse(JSON.stringify(this.dataOri));
-            console.log('markToConflictToBeResolve -- END');
+            console.log('markToConflictToBeResolve -- BEGIN', this.dataUser, this.dataOrigin);
         },
 
 
         _handleGetForConflictBeResolution: function (event) {
+            console.log('------- _handleGetForConflictBeResolution CALL : ', this.isConflictBeResolution());
             if (this.isConflictBeResolution()) {
                 var detail = event.detail;
                 var userDiff = this.mergeConflict();
