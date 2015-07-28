@@ -3,11 +3,8 @@
 
 <link rel="import" href="air-cruddy-behaviour.html">
 <link rel="import" href="air-cruddy-ajax-init-behaviour.html">
-
-<link rel="import" href="../air-cruddy-cloudy/air-cruddy-cloudy.html">
-<link rel="import" href="../air-cruddy-cloudy/air-cruddy-cloudy-behaviour.html">
-
 <link rel="import" href="air-cruddy-response-409-behaviour.html">
+<link rel="import" href="air-cruddy-dirty-behaviour.html">
 
 <link rel="import" href="../air-cascade-validator/air-cascade-validator-behaviour.html">
 
@@ -90,6 +87,7 @@ Attribute available:
                 // , Polymer.AirCruddyAjaxRestApiBehavior // Buggy see composition
                 , FiveElements.AirCruddyResponse409Behavior
                 , FiveElements.AirCascadeValidatorBehavior
+                , FiveElements.AirCruddyDirtyBehavior
             ],
 
             ready: function () {

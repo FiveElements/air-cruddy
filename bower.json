@@ -23,7 +23,8 @@
     "gulpfile.js"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.0.0"
+    "polymer": "Polymer/polymer#^1.0.0",
+    "lodash": "~3.10.0"
   },
   "devDependencies": {
     "test-fixture": "polymerelements/test-fixture#^1.0.0",

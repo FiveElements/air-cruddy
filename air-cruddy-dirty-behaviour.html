@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
+<script src="../lodash/lodash.js"></script>
 
 <script>
     /**
@@ -12,83 +13,154 @@
     FiveElements.AirCruddyDirtyBehavior = {
 
         properties: {
+
             crudStatus: {
+                type: String,
+                notify: true
+            },
+
+            // -- Internal
+            // -----------------------
+
+            /**
+             * Contains an map all dirty field
+             */
+            dataSourceDirtyDetailStatus: {
                 type: Object,
                 notify: true,
-                value: function() {
-                    return {
-                        toSave : false,
-                        toDelete: false
-                    }
+                value: function () {
+                    return {}
                 }
             }
         },
 
+        observers: [
+            'dataSourceChanged(data._source.*)'
+        ],
+
         listeners: {
-            'iron-form-element-register': '_registerInputWatcherElement'
+            'air-cruddy-response-get': '_handleResponseGetForDirtyStatus',
+            'air-cruddy-response-create': '_handleResponseCreateForDirtyStatus',
+            'air-cruddy-response-update': '_handleResponseUpdateForDirtyStatus',
+            'air-cruddy-response-delete': '_handleResponseDeleteForDirtyStatus'
         },
 
 
         // --- Life Cycle
         // --- ---------------------------
-        ready: function () {
-            // Holds all the custom elements registered with this form.
-            this._inputWatcherElements = [];
-        },
 
-        _registerInputWatcherElement: function (e) {
-            if (this !== e.target) {
-                this._inputWatcherElements.push(e.target);
-            }
-        },
 
         // --- External Api to be call
         // --- ---------------------
-        _handleResponseForStatusRegister: function () {
-            this.crudStatus.toSave = false;
+        _handleResponseGetForDirtyStatus: function (event) {
+
         },
 
-        // --- AutoSave
+        _handleResponseCreateForDirtyStatus: function (event) {
+
+        },
+
+        _handleResponseUpdateForDirtyStatus: function (event) {
+        },
+
+        _handleResponseDeleteForDirtyStatus: function (event) {
+
+        },
+
+        // --- Value Comparator
         // --- ---------------------
-        addInputWatcher: function (focusable) {
-            var that = this;
-            //
-            this.focusListener = this.focusListener || this.autoSaveInputFieldFocus.bind(this);
-            this.blurListener = this.blurAction || this.autoSaveInputFieldBlur.bind(this);
-            // Add Event
-            Polymer.addEventListener(focusable, 'input', that.focusListener, true);
-            Polymer.addEventListener(focusable, 'blur', that.blurListener, true);
-        },
 
-        removeInputWatcher: function (childNode) {
-            var that = this;
-            Polymer.removeEventListener(childNode, 'blur', that.blurListener, true);
-            Polymer.removeEventListener(childNode, 'input', that.focusListener, true);
+        _isArrayEquals: function (one, two) {
+            // if the other two is a falsy value, return
+            if (!two)
+                return false;
+
+            // compare lengths - can save a lot of time
+            if (one.length != two.length)
+                return false;
+
+            for (var i = 0, l = one.length; i < l; i++) {
+                // Check if we have nested arrays
+                if (one[i] instanceof Array && two[i] instanceof Array) {
+                    // recurse into the nested arrays
+                    if (!one[i].equals(two[i]))
+                        return false;
+                }
+                else if (one[i] != two[i]) {
+                    // Warning - two different object instances will never be equal: {x:20} != {x:20}
+                    return false;
+                }
+            }
+            return true;
         },
 
 
         // --- Logic
         // --- ---------------------
 
-        autoSaveInputFieldBlur: function () {
-            console.log('*** Blur ', event);
-//        var autosave = this.isModeCreate ? (this.autocreate === '' || this.autocreate === true) : ( this.autosave === '' || this.autosave === true );
-            // Auto save
-            if (this.isAutosave && this._diffDataSource()) {
-                // console.log('---- autoSaveInputFieldBlur', this.data);
-                this.job('save', function () {
-                    this.save();
-                }, 200);
-            }
+
+        isDataDirty: function () {
+            return Object.keys(this.dataSourceDirtyDetailStatus).length > 0;
         },
 
-        autoSaveInputFieldFocus: function () {
-            console.log('*** Focus ', event);
-            if (this.isAutosave) {
-                this.crudStatus.toSave = true;
-            }
+        // --- Value Comparator
+        // --- ---------------------
+
+        _isValueEqual: function (dataRef, data) {
+            return _.isEqual(dataRef, data);
         },
 
+        // --- Logic
+        // --- ---------------------
+        _computeCrudStatus: function (dataSourceDirtyDetailStatus, isModeCreate) {
+            var status = 'R';
+            var isDiff = Object.keys(dataSourceDirtyDetailStatus).length > 0;
+            if (isModeCreate) {
+                status = 'C';
+            } else {
+                if (isDiff) {
+                    status = 'U';
+                } else {
+                    status = 'R';
+                }
+            }
+            console.log('--- Crud Status : ---> ', status);
+            this.crudStatus = status;
+            return status;
+        },
+
+        
+
+        dataSourceChanged: function (changeRecord) {
+            console.log('### ', changeRecord.path + ' changed to ' + changeRecord.value);
+
+            // Compare the Change to Origin loaded data
+            // -----------------------------------------
+            // Extract the object prefix : 'data.'.length = 5
+            var pathChanged = changeRecord.path.slice(5);
+            // Compare with the original Value
+            var valueOri = this.get(pathChanged, this.dataOri);
+            var isValueEqual = this._isValueEqual(valueOri, changeRecord.value);
+            console.log('isValueEqual =', isValueEqual, ' // ', changeRecord.value, ' ?=? ', valueOri);
+
+            // Manage Change Field List
+            // -------------------------
+            if (isValueEqual) {
+                if ('_source' === pathChanged) {
+                    this.dataSourceDirtyDetailStatus = {};
+                } else {
+                    delete this.dataSourceDirtyDetailStatus[pathChanged]
+                }
+            } else {
+                this.dataSourceDirtyDetailStatus[pathChanged] = true;
+                //  this.set(path, true, this.dataSourceDirtyDetailStatus);
+            }
+            console.log('dataSourceDirtyDetailStatus : ', this.dataSourceDirtyDetailStatus);
+            // Status Compute
+            this._computeCrudStatus(this.dataSourceDirtyDetailStatus, this._isModeCreate);
+
+
+        }
 
     };
 

@@ -85,8 +85,9 @@
         },
 
         _setData: function (data) {
-            this.set('data', data);
+            // Define Snapshot in first, to permit data change comparison to be accured
             this._dataSnapshot(data);
+            this.set('data', data);
         },
 
         _setDataVersion: function (newVersion) {
@@ -208,7 +209,6 @@
             if (!this.isNeedToSave()) {
                 return false;
             }
-            console.log('Save operation', this._isModeCreate);
             // Is Diff and Valid, need to be saved
             if (this._isModeCreate) {
                 this.entityCreate();
@@ -245,7 +245,6 @@
 
         _cloneData: function (data) {
              data = data || this.data;
-            console.log('Request _cloneData: ', data);
             if (data) {
                 var dataClone =  JSON.parse(JSON.stringify(data));
                 return dataClone;
@@ -305,7 +304,6 @@
         // --- Entity GET
         // --- ---------------------------
         _handleResponseGet: function (event) {
-            console.log('------------------ Get One', event.detail);
             var detail = event.detail;
             if (!this._handleResponseWithSpecificStatus('_handleResponseGet', event)) {
                 var response = detail.response;
@@ -390,7 +388,6 @@
             var resp = detail.response;
             // Increment version or reload data ?
             if (this.reloadOnSave === true) {
-                console.log('Reload on save');
                 var id = this._extractResponseId(resp);
                 console.log('Reload  on save Entity, ', id);
                 this._entityGet(id);

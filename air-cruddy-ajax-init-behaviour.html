@@ -1,6 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 
-<link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../air-cruddy-cloudy/air-cruddy-cloudy.html">
 
 <script>
 
@@ -23,7 +23,7 @@
             crudApi: {
                 type: String,
                 notify: true,
-                value: 'air-cruddy-ajax'
+                value: 'air-cruddy-cloudy'
             },
             endpoint: {
                 type: String,
@@ -111,7 +111,6 @@
          */
         _entityGet: function (opt, ver) {
             if (this._requestCrud) {
-                console.log('arguments : ', arguments);
                 var fn = this._requestCrud._entityGet;
                 return fn.apply(this._requestCrud, arguments);
             } else {
