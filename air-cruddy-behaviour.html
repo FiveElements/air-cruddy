@@ -188,6 +188,11 @@
             return true;
         },
 
+        isDataDirty: function () {
+            // Need to be Overided to compute the Differential Status
+          return true;
+        },
+
         // --- Public Apis
         // --- ---------------------
         isNeedToSave: function() {
@@ -197,11 +202,13 @@
                 return false;
             }
             // Dirty Check
-            var diffData = this._diffDataSource(this.notifNotDiff.bind(this));
-            if (!diffData) {
-                // console.log('Save entity == NO Diff ');
-                return false;
-            }
+            var isDirty = this.isDataDirty();
+            return isDirty;
+//            var diffData = this._diffDataSource(this.notifNotDiff.bind(this));
+//            if (!diffData) {
+//                // console.log('Save entity == NO Diff ');
+//                return false;
+//            }
             return true;
         },
 
@@ -220,11 +227,11 @@
 
         // --- Notification
         // --- ---------------------
-        notifNotDiff: function (diff) {
-            if (!diff) {
-                this.showSaveErrorMessage('Saved not needed.');
-            }
-        },
+//        notifNotDiff: function (diff) {
+//            if (!diff) {
+//                this.showSaveErrorMessage('Saved not needed.');
+//            }
+//        },
 
         notifValidityErrors: function (errorNodes) {
             console.log('notifValidityErrors ', errorNodes);
@@ -251,15 +258,15 @@
             }
             return null;
         },
-
-        _diffDataSource: function (notDiffCallback) {
-            console.log('_diffDataSource : dataOri :', this.dataOri, 'data : ', this.data);
-            var diff = this._diffProperties(this.dataOri._source || {}, this.data._source || {});
-            if (notDiffCallback) {
-                notDiffCallback(diff);
-            }
-            return diff;
-        },
+//
+//        _diffDataSource: function (notDiffCallback) {
+//            console.log('_diffDataSource : dataOri :', this.dataOri, 'data : ', this.data);
+//            var diff = this._diffProperties(this.dataOri._source || {}, this.data._source || {});
+//            if (notDiffCallback) {
+//                notDiffCallback(diff);
+//            }
+//            return diff;
+//        },
 
 
         // --- Entity Model

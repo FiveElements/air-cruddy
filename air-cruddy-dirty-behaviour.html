@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
+
 <script src="../lodash/lodash.js"></script>
 
 <script>
@@ -14,6 +15,12 @@
 
         properties: {
 
+            /**
+             * The Crud Status :
+             *  C : Creating, (Need to be Save)
+             *  R : Read for service, (No modification)
+             *  U : Updating, Read and is Modify (Need to be Save)
+             */
             crudStatus: {
                 type: String,
                 notify: true
@@ -35,80 +42,27 @@
         },
 
         observers: [
-            'dataSourceChanged(data._source.*)'
+            'dataSourceChanged(data.*)'
         ],
-
-        listeners: {
-            'air-cruddy-response-get': '_handleResponseGetForDirtyStatus',
-            'air-cruddy-response-create': '_handleResponseCreateForDirtyStatus',
-            'air-cruddy-response-update': '_handleResponseUpdateForDirtyStatus',
-            'air-cruddy-response-delete': '_handleResponseDeleteForDirtyStatus'
-        },
 
 
         // --- Life Cycle
         // --- ---------------------------
 
 
-        // --- External Api to be call
-        // --- ---------------------
-        _handleResponseGetForDirtyStatus: function (event) {
-
-        },
-
-        _handleResponseCreateForDirtyStatus: function (event) {
-
-        },
-
-        _handleResponseUpdateForDirtyStatus: function (event) {
-        },
-
-        _handleResponseDeleteForDirtyStatus: function (event) {
-
-        },
-
-        // --- Value Comparator
-        // --- ---------------------
-
-        _isArrayEquals: function (one, two) {
-            // if the other two is a falsy value, return
-            if (!two)
-                return false;
-
-            // compare lengths - can save a lot of time
-            if (one.length != two.length)
-                return false;
-
-            for (var i = 0, l = one.length; i < l; i++) {
-                // Check if we have nested arrays
-                if (one[i] instanceof Array && two[i] instanceof Array) {
-                    // recurse into the nested arrays
-                    if (!one[i].equals(two[i]))
-                        return false;
-                }
-                else if (one[i] != two[i]) {
-                    // Warning - two different object instances will never be equal: {x:20} != {x:20}
-                    return false;
-                }
-            }
-            return true;
-        },
-
-
         // --- Logic
         // --- ---------------------
 
-
         isDataDirty: function () {
-            return Object.keys(this.dataSourceDirtyDetailStatus).length > 0;
+            switch (this.crudStatus) {
+                case 'C':
+                case 'U':
+                    return true;
+                default :
+                    return false;
+            }
         },
 
-        // --- Value Comparator
-        // --- ---------------------
-
-        _isValueEqual: function (dataRef, data) {
-            return _.isEqual(dataRef, data);
-        },
 
         // --- Logic
         // --- ---------------------
@@ -124,39 +78,56 @@
                     status = 'R';
                 }
             }
-            console.log('--- Crud Status : ---> ', status);
+            console.log('--- --- --- Crud Status : ---> ', status);
             this.crudStatus = status;
             return status;
         },
 
-        
+        // --- Value Comparator
+        // --- ---------------------
 
+        _isValueEqual: function (dataRef, data) {
+            return _.isEqual(dataRef, data);
+        },
+
+        // --- Dirty Changed
+        // --- ---------------------
         dataSourceChanged: function (changeRecord) {
-            console.log('### ', changeRecord.path + ' changed to ' + changeRecord.value);
+            console.log('### ', changeRecord.path + ' changed to ' + changeRecord.value, ' // ', changeRecord);
 
             // Compare the Change to Origin loaded data
             // -----------------------------------------
             // Extract the object prefix : 'data.'.length = 5
             var pathChanged = changeRecord.path.slice(5);
-            // Compare with the original Value
-            var valueOri = this.get(pathChanged, this.dataOri);
-            var isValueEqual = this._isValueEqual(valueOri, changeRecord.value);
-            console.log('isValueEqual =', isValueEqual, ' // ', changeRecord.value, ' ?=? ', valueOri);
+            var isValueEqual = true;
+            switch (pathChanged) {
+                case '':
+                case '_source':
+                case '_version':
+                    this.dataSourceDirtyDetailStatus = {};
+                    isValueEqual = true;
+                    break;
+                default:
+                    if (pathChanged.indexOf('_source.') === 0) {
+                        var valueOri = this.get(pathChanged, this.dataOri);
+                        isValueEqual = this._isValueEqual(valueOri, changeRecord.value);
+                        console.log('isValueEqual =', isValueEqual, ' // ', changeRecord.value, ' ?=? ', valueOri);
+                    } else {
+                        console.warn("Change Path Not manage : ", changeRecord.path);
+                    }
+            }
 
             // Manage Change Field List
             // -------------------------
             if (isValueEqual) {
-                if ('_source' === pathChanged) {
-                    this.dataSourceDirtyDetailStatus = {};
-                } else {
-                    delete this.dataSourceDirtyDetailStatus[pathChanged]
-                }
+                delete this.dataSourceDirtyDetailStatus[pathChanged]
             } else {
                 this.dataSourceDirtyDetailStatus[pathChanged] = true;
-                //  this.set(path, true, this.dataSourceDirtyDetailStatus);
             }
             console.log('dataSourceDirtyDetailStatus : ', this.dataSourceDirtyDetailStatus);
+
             // Status Compute
+            // -------------------------
             this._computeCrudStatus(this.dataSourceDirtyDetailStatus, this._isModeCreate);
 
 

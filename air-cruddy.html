@@ -62,7 +62,7 @@ Attribute available:
 @demo demo/index.html
 -->
 
-<dom-module id="air-cruddy" attribute="endpoint">
+<dom-module id="air-cruddy"  >
 
     <style>
         :host {
@@ -84,15 +84,11 @@ Attribute available:
             behaviors: [
                 FiveElements.AirCruddyBehavior
                 , FiveElements.AirCruddyAjaxInitBehavior
-                // , Polymer.AirCruddyAjaxRestApiBehavior // Buggy see composition
                 , FiveElements.AirCruddyResponse409Behavior
                 , FiveElements.AirCascadeValidatorBehavior
                 , FiveElements.AirCruddyDirtyBehavior
-            ],
+            ]
 
-            ready: function () {
-                console.log("ready endpointUrl", '--------------', this.endpoint);
-            }
         });
     })();
 </script>
