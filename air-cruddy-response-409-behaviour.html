@@ -44,6 +44,8 @@
             } else {
                 this._entityGet(this.entityId, null);
             }
+            // Stop event propagation
+            return true;
         },
 
  

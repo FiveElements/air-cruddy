@@ -5,6 +5,7 @@
 <link rel="import" href="air-cruddy-ajax-init-behaviour.html">
 <link rel="import" href="air-cruddy-response-409-behaviour.html">
 <link rel="import" href="air-cruddy-dirty-behaviour.html">
+<link rel="import" href="air-cruddy-autosave-behaviour.html">
 
 <link rel="import" href="../air-cascade-validator/air-cascade-validator-behaviour.html">
 
@@ -62,7 +63,7 @@ Attribute available:
 @demo demo/index.html
 -->
 
-<dom-module id="air-cruddy"  >
+<dom-module id="air-cruddy">
 
     <style>
         :host {
@@ -87,7 +88,15 @@ Attribute available:
                 , FiveElements.AirCruddyResponse409Behavior
                 , FiveElements.AirCascadeValidatorBehavior
                 , FiveElements.AirCruddyDirtyBehavior
-            ]
+                , FiveElements.AirCruddyAutoSaveBehavior
+            ],
+
+            _handleErrorGet404: function (event) {
+
+                // Not Stop event propagation
+                return false;
+            }
+
 
         });
     })();

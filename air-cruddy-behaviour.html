@@ -299,8 +299,11 @@
                 var errorStatusFunc = baseErrorFuncName + status;
                 if (typeof  this[errorStatusFunc] === 'function') {
                     // Manage Method Like : _onErrorUpdate409
-                    this[errorStatusFunc](event);
-                    event.stopPropagation();
+                    var stopEvent = this[errorStatusFunc](event);
+                    if (stopEvent) {
+                        event.stopPropagation();
+                    }
+                    // Return if Specific status
                     return true;
                 }
             }
