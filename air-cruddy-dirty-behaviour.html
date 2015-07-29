@@ -107,7 +107,7 @@
                     status = 'R';
                 }
             }
-            console.log('--- --- --- Crud Status : ---> ', status);
+           // console.log('--- --- --- Crud Status : ---> ', status);
             this.crudStatus = status;
             return status;
         },
@@ -122,7 +122,7 @@
         // --- Dirty Changed
         // --- ---------------------
         dataSourceChanged: function (changeRecord) {
-            console.log('### ', changeRecord.path + ' changed to ' + changeRecord.value, ' // ', changeRecord);
+            //console.log('### ', changeRecord.path + ' changed to ' + changeRecord.value, ' // ', changeRecord);
 
             // Compare the Change to Origin loaded data
             // -----------------------------------------
@@ -140,7 +140,7 @@
                     if (pathChanged.indexOf('_source.') === 0) {
                         var valueOri = this.get(pathChanged, this.dataOri);
                         isValueEqual = this._isValueEqual(valueOri, changeRecord.value);
-                        console.log('isValueEqual =', isValueEqual, ' // ', changeRecord.value, ' ?=? ', valueOri);
+                        //  console.log('isValueEqual =', isValueEqual, ' // ', changeRecord.value, ' ?=? ', valueOri);
                     } else {
                         console.warn("Change Path Not manage : ", changeRecord.path);
                     }
@@ -153,11 +153,11 @@
             } else {
                 this.dataSourceDirtyDetailStatus[pathChanged] = true;
             }
-            console.log('dataSourceDirtyDetailStatus : ', this.dataSourceDirtyDetailStatus);
+            //console.log('dataSourceDirtyDetailStatus : ', this.dataSourceDirtyDetailStatus);
 
             // Status Compute
             // -------------------------
-            this._computeCrudStatus(this.dataSourceDirtyDetailStatus, this._isModeCreate); 
+            this._computeCrudStatus(this.dataSourceDirtyDetailStatus, this._isModeCreate);
         }
 
     };

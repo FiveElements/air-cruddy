@@ -4,9 +4,8 @@
 <link rel="import" href="air-cruddy-behaviour.html">
 <link rel="import" href="air-cruddy-cloudy-init-behaviour.html">
 <link rel="import" href="air-cruddy-response-409-behaviour.html">
-<link rel="import" href="air-cruddy-dirty-behaviour.html">
-
 <link rel="import" href="../air-cascade-validator/air-cascade-validator-behaviour.html">
+<link rel="import" href="air-cruddy-dirty-behaviour.html">
 
 
 <!--
@@ -68,9 +67,17 @@ Attribute available:
         :host {
             display: block;
         }
+
+        .content-wrapper-hide {
+            display: none;
+        }
+
     </style>
     <template>
-        <content></content>
+        <div id="contentWrapper" class="content-wrapper-hide">
+            <content></content>
+        </div>
+        <span>{{data}}</span>
     </template>
 </dom-module>
 
@@ -81,6 +88,14 @@ Attribute available:
         Polymer({
             is: 'air-cruddy',
 
+            properties: {
+
+            },
+
+            observers: [
+                'dataChanged(data)'
+            ],
+
             behaviors: [
                 FiveElements.AirCruddyBehavior
                 , FiveElements.AirCruddyAjaxInitBehavior
@@ -89,11 +104,18 @@ Attribute available:
                 , FiveElements.AirCruddyDirtyBehavior
             ],
 
-            _handleErrorGet404: function (event) {
-                console.log('***** Error 404 : ');
-                // Not Stop event propagation
-                return false;
+            dataChanged: function (newValue) {
+                if (newValue) {
+                    this._showContent(true);
+                } else {
+                    this._showContent(false);
+                }
+            },
+
+            _showContent: function (toShow) {
+                this.toggleClass('content-wrapper-hide', !toShow, this.$.contentWrapper);
             }
+
 
 
         });

@@ -44,6 +44,10 @@ The `user-form` provides
                 <iron-icon icon="user"></iron-icon>
                 <span>Korben</span>
             </paper-button>
+            <paper-button  on-tap="loadUserBadId">
+                <iron-icon icon="user"></iron-icon>
+                <span>404</span>
+            </paper-button>
         </section>
 
         <air-cruddy id="userCrud" crud-api="air-cruddy-cloudy-es" endpoint="http://localhost:9200/5elements/5elements" entity-id="{{userId}}" data="{{data}}">
@@ -86,18 +90,8 @@ The `user-form` provides
                     notify: true,
                     value: 'AAApkZAAOAAAQJsAAs'
                 },
-//                endpoint: {
-//                    type: String,
-//                    notify: true,
-//                    value: '/s/users'
-//                },
                 data: {
                     type: Object,
-                    value: {
-                        _id: null,
-                        _version: null,
-                        _source: {}
-                    },
                     notity: true
                 }
             },
@@ -120,6 +114,9 @@ The `user-form` provides
                 console.log('Load User with Id 2');
                 //               this.set('userId', '1');
                 this.userId= '2';
+            },
+            loadUserBadId: function () {
+                this.userId= 'badId';
             }
 
         });

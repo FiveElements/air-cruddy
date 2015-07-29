@@ -11,7 +11,7 @@
     /**
      * @polymerBehavior
      */
-    FiveElements.AirCruddyBehaviorImpl = {
+    FiveElements.AirCruddyBehavior = {
         properties: {
            // Data
             entityId: {
@@ -129,6 +129,7 @@
             } else if (!this.data || !this.data._id || this.data._id !== this.entityId) {
                 // console.log('_entityIdChanged get data ', this.entityId);
                 // Update Mode
+                this._setData(null);
                 this._entityGet(this.entityId);
                 // console.log('entityidChanged load data ', this.entityId);
             }
@@ -432,11 +433,5 @@
 
 
     };
-
-    /**
-     * @polymerBehavior
-     */
-    FiveElements.AirCruddyBehavior = [FiveElements.AirCruddyDifferentialBehavior, FiveElements.AirCruddyBehaviorImpl];
-
 
 </script>
