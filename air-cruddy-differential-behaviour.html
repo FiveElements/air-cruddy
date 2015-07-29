@@ -24,7 +24,7 @@
             // Compare ref to Object
             for (var attr in second) {
                 if (Array.isArray(first[attr]) && Array.isArray(second[attr])) {
-                    // Bug in Array Comparaison
+                    // Bug in Array Comparison
                     // if (first[attr] !== second[attr]) {
                     if (!this._isArrayEquals(first[attr], second[attr])) {
                         diffs[attr] = second[attr];

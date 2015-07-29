@@ -1,6 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
 
-<link rel="import" href="air-cruddy-differential-behaviour.html">
 
 <script>
 
@@ -37,6 +36,11 @@
             reloadOnCreate: {
                 type: Boolean,
                 value: false
+            },
+
+            saveWait: {
+                type: Number,
+                value: 10
             },
 
             // Internal Properties
@@ -213,6 +217,10 @@
         },
 
         save: function () {
+            this.debounce('air-cruddy-save', this._save.bind(this), this.saveWait);
+        },
+
+        _save: function () {
             if (!this.isNeedToSave()) {
                 return false;
             }
@@ -220,7 +228,6 @@
             if (this._isModeCreate) {
                 this.entityCreate();
             } else {
-                // TODO ? { _id: this.data._id, _version: this.data._version, _source: diffData }
                 this.entityUpdate();
             }
         },
@@ -295,19 +302,18 @@
         _handleResponseWithSpecificStatus: function (baseErrorFuncName, event ) {
             var detail =  event.detail;
             var status = detail.status;
+            var eatEvent = false;
             if (status) {
                 var errorStatusFunc = baseErrorFuncName + status;
                 if (typeof  this[errorStatusFunc] === 'function') {
                     // Manage Method Like : _onErrorUpdate409
-                    var stopEvent = this[errorStatusFunc](event);
-                    if (stopEvent) {
+                    eatEvent = this[errorStatusFunc](event);
+                    if (eatEvent) {
                         event.stopPropagation();
                     }
-                    // Return if Specific status
-                    return true;
                 }
             }
-            return false;
+            return eatEvent;
         },
 
 

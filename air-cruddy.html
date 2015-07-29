@@ -2,10 +2,9 @@
 
 
 <link rel="import" href="air-cruddy-behaviour.html">
-<link rel="import" href="air-cruddy-ajax-init-behaviour.html">
+<link rel="import" href="air-cruddy-cloudy-init-behaviour.html">
 <link rel="import" href="air-cruddy-response-409-behaviour.html">
 <link rel="import" href="air-cruddy-dirty-behaviour.html">
-<link rel="import" href="air-cruddy-autosave-behaviour.html">
 
 <link rel="import" href="../air-cascade-validator/air-cascade-validator-behaviour.html">
 
@@ -88,11 +87,10 @@ Attribute available:
                 , FiveElements.AirCruddyResponse409Behavior
                 , FiveElements.AirCascadeValidatorBehavior
                 , FiveElements.AirCruddyDirtyBehavior
-                , FiveElements.AirCruddyAutoSaveBehavior
             ],
 
             _handleErrorGet404: function (event) {
-
+                console.log('***** Error 404 : ');
                 // Not Stop event propagation
                 return false;
             }

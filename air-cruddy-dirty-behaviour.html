@@ -26,6 +26,15 @@
                 notify: true
             },
 
+            autoSave: {
+                type: Boolean,
+                value: true
+            },
+
+            autoSaveWait: {
+                type: Number
+            },
+
             // -- Internal
             // -----------------------
 
@@ -41,6 +50,10 @@
             }
         },
 
+        listeners: {
+            'focusout': '_handleBlur'
+        },
+
         observers: [
             'dataSourceChanged(data.*)'
         ],
@@ -49,6 +62,22 @@
         // --- Life Cycle
         // --- ---------------------------
 
+        _handleBlur: function (event) {
+            console.log('Handle Blur ', event.srcElement);
+            if (this.autoSave && this.isDataDirty()) {
+                this._doAutoSaveAsync();
+            }
+        },
+        _doAutoSave: function () {
+            if (this.isDataDirty()) {
+                console.log('Call Save from AutoSave');
+                this.save();
+            }
+        },
+
+        _doAutoSaveAsync: function () {
+            this.debounce('air-cruddy-autosave', this._doAutoSave.bind(this), this.autoSaveWait);
+        },
 
         // --- Logic
         // --- ---------------------
@@ -128,9 +157,7 @@
 
             // Status Compute
             // -------------------------
-            this._computeCrudStatus(this.dataSourceDirtyDetailStatus, this._isModeCreate);
-
-
+            this._computeCrudStatus(this.dataSourceDirtyDetailStatus, this._isModeCreate); 
         }
 
     };
