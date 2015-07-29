@@ -129,8 +129,9 @@
             } else if (!this.data || !this.data._id || this.data._id !== this.entityId) {
                 // console.log('_entityIdChanged get data ', this.entityId);
                 // Update Mode
+                console.log('----------- set ID with clean Data');
                 this._setData(null);
-                this._entityGet(this.entityId);
+                this.entityGet(this.entityId);
                 // console.log('entityidChanged load data ', this.entityId);
             }
         },
@@ -153,6 +154,7 @@
 
         entityGet: function (entityId, entityVersion) {
             var opt = this._getRequestEntityId(entityId, entityVersion);
+            console.log('Entity Get', opt);
             this._entityGet(opt);
         },
 
@@ -334,6 +336,7 @@
 
         _handleErrorGet: function (event) {
             var detail = event.detail;
+            console.log('_handleErrorGet : ', detail);
             if (!this._handleResponseWithSpecificStatus('_handleErrorGet', event)) {
                 var error = detail.error;
                 // TODO Manage the error at least 404
@@ -364,8 +367,10 @@
         // --- ---------------------
         _handleResponseCreate: function (event) {
             var detail = event.detail;
+            console.log('_handleResponseCreate : ', detail);
             if (!this._handleResponseWithSpecificStatus('_handleResponseCreate', event)) {
                 var response = detail.response;
+                console.log('_handleResponseCreate No Specifc for response: ', response);
                 // 201 – OK – New resource has been created
                 this._setDataIdFromResponse(response);
                 this._setDataVersionFromResponse(response);

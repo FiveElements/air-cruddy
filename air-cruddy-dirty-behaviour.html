@@ -28,7 +28,7 @@
 
             autoSave: {
                 type: Boolean,
-                value: true
+                value: false
             },
 
             autoSaveWait: {
@@ -63,14 +63,14 @@
         // --- ---------------------------
 
         _handleBlur: function (event) {
-            console.log('Handle Blur ', event.srcElement);
+           // console.log('Handle Blur ', event.srcElement);
             if (this.autoSave && this.isDataDirty()) {
                 this._doAutoSaveAsync();
             }
         },
         _doAutoSave: function () {
             if (this.isDataDirty()) {
-                console.log('Call Save from AutoSave');
+               // console.log('Call Save from AutoSave');
                 this.save();
             }
         },
@@ -145,7 +145,6 @@
                         console.warn("Change Path Not manage : ", changeRecord.path);
                     }
             }
-
             // Manage Change Field List
             // -------------------------
             if (isValueEqual) {
