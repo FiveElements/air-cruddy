@@ -19,15 +19,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <link rel="import" href="../../polymer/polymer.html">
     <link rel="import" href="../../test-fixture/test-fixture.html">
     <link rel="import" href="../air-cruddy.html">
-    <link rel="import" href="simple-element.html">
 
 </head>
 <body>
 
 
 <test-fixture id="Basic">
-    <template>
-        <air-cruddy crud-api="air-cruddy-cloudy-es" endpoint="/responds_with_json"
+    <template is="dom-template">
+        <air-cruddy endpoint="/responds_with_json"
                     entity-id="{{userId}}" data="{{data}}">
             <paper-input label="Firstname" value="{{data._source.firstname}}" required></paper-input>
             <paper-input label="Lastname" value="{{data._source.lastname}}" required></paper-input>
