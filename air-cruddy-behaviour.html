@@ -129,7 +129,7 @@
             } else if (!this.data || !this.data._id || this.data._id !== this.entityId) {
                 // console.log('_entityIdChanged get data ', this.entityId);
                 // Update Mode
-                console.log('----------- set ID with clean Data');
+                console.log('----------- set ID with clean Data :', this.entityId);
                 this._setData(null);
                 this.entityGet(this.entityId);
                 // console.log('entityidChanged load data ', this.entityId);

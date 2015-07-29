@@ -10,7 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 <html>
 <head>
-    <title>fire-form</title>
+    <title>air-cruddy</title>
 
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
@@ -24,68 +24,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 </head>
 <body>
 
+
 <test-fixture id="Basic">
     <template>
-        <form is="fire-form">
-            <simple-element name="zig" value="zag"></simple-element>
-            <input name="foo" value="bar">
-        </form>
+        <air-cruddy crud-api="air-cruddy-cloudy-es" endpoint="/responds_with_json"
+                    entity-id="{{userId}}" data="{{data}}">
+            <paper-input label="Firstname" value="{{data._source.firstname}}" required></paper-input>
+            <paper-input label="Lastname" value="{{data._source.lastname}}" required></paper-input>
+        </air-cruddy>
     </template>
 </test-fixture>
 
-
-<test-fixture id="CheckedStates">
-    <template>
-        <form is="fire-form">
-            <input type="checkbox" name="foo" value="bar1" checked>
-            <input type="checkbox" name="foo" value="bar2">
-            <input type="checkbox" name="foo" value="bar3" checked>
-            <input type="checkbox" name="foo" value="bar4">
-        </form>
-    </template>
-</test-fixture>
-
-<test-fixture id="FormGet">
-    <template>
-        <form is="fire-form" action="/responds_with_json" method="get">
-            <simple-element name="zig" value="zag"></simple-element>
-        </form>
-    </template>
-</test-fixture>
-
-<test-fixture id="FormPost">
-    <template>
-        <form is="fire-form" action="/responds_with_json" method="post">
-            <simple-element name="zig" value="zag"></simple-element>
-        </form>
-    </template>
-</test-fixture>
 
 <script>
-    suite('serializing', function() {
-        test('serializes both custom and native elements', function() {
-            f = fixture('Basic');
-            assert.equal(f._validateElements.length, 1);
-            assert.equal(f.elements.length, 1);
-            var json = f.serialize();
-            assert.equal(Object.keys(json).length, 2);
-            assert.equal(json['zig'], 'zag');
-            assert.equal(json['foo'], 'bar');
-        });
-        test('serializes elements with checked states', function() {
-            f = fixture('CheckedStates');
-            assert.equal(f._validateElements.length, 0);
-            assert.equal(f.elements.length, 4);
-            var json = f.serialize();
-            assert.equal(Object.keys(json).length, 1);
-            assert.equal(json['foo'].length, 2);
-            assert.equal(json['foo'][0], 'bar1');
-            assert.equal(json['foo'][1], 'bar3');
-        });
-    });
-    suite('submitting', function () {
+    suite('<air-cruddy-behaviour>', function() {
+
         var server;
-        var form;
+
+
+
+    });
+    suite('<air-cruddy-behaviour>', function () {
+        var server;
+
         setup(function() {
             server = sinon.fakeServer.create();
             server.respondWith(
@@ -94,7 +55,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     [
                         200,
                         '{"Content-Type":"application/json"}',
-                        '{"success":true}'
+                        '{"_id":"leilou"}'
                     ]
             );
             server.respondWith(
@@ -119,52 +80,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         teardown(function() {
             server.restore();
         });
-        test('can submit with method=get', function(done) {
-            form = fixture('FormGet');
-            var submitted = false;
-            form.addEventListener('fire-form-submit', function() {
-                submitted = true;
-            });
-            form.addEventListener('fire-form-response', function(event) {
-                expect(submitted).to.be.equal(true);
-                var response = event.detail;
-                expect(response).to.be.ok;
-                expect(response).to.be.an('object');
-                expect(response.success).to.be.equal(true);
-                done();
-            });
-            form.submit();
+
+        test('Get with entity Id', function() {
+            var data;
+            f = fixture('Basic', {userId: 'leilou', data: data });
             server.respond();
-        });
-        test('can submit with method=post', function(done) {
-            form = fixture('FormPost');
-            var submitted = false;
-            form.addEventListener('fire-form-submit', function() {
-                submitted = true;
-            });
-            form.addEventListener('fire-form-response', function(event) {
-                expect(submitted).to.be.equal(true);
-                var response = event.detail;
-                expect(response).to.be.ok;
-                expect(response).to.be.an('object');
-                expect(response.success).to.be.equal(true);
-                done();
-            });
-            form.submit();
-            server.respond();
-        });
-        test('can relay errors', function(done) {
-            form = fixture('FormPost');
-            form.action = "/responds_with_error";
-            form.addEventListener('fire-form-error', function(event) {
-                var error = event.detail;
-                expect(error).to.be.ok;
-                expect(error).to.be.an('object');
-                expect(error.error).to.be.ok;
-                done();
-            });
-            form.submit();
-            server.respond();
+
+            assert.equal(data._id, 'leilou');
+
         });
     });
 </script>

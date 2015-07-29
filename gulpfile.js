@@ -25,57 +25,24 @@ var nodemon = require('gulp-nodemon'),
 
 var browserSync = require('browser-sync');
 
-// Config
-var path = {
-  source: 'demo-server',
-  dist: 'dist',
-  distServer: 'dist/server'
-};
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // DEFAULT FOR 'gulp' COMMAND
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('default', ['lint']);
+gulp.task('default', ['test:local']);
 
-// Clean all files
-gulp.task('clean', function (cb) {
-  del([path.dist], cb); // Delete dist and build to allow for nice, clean files!
-});
+gulp.task('test', ['test:local']);
 
-// Clean all files
-gulp.task('clean:npm', function (cb) {
-  del('node_modules{,/**}', cb); // Delete dist and build to allow for nice, clean files!
-});
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Lint TASKS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('lint', function () {
-  return gulp.src(path.sources)
-    .pipe(jshint())
-    .pipe(jshint.reporter('jshint-stylish'));
-});
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Dist
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('cp:src', function () {
-  var DEST_DIR = path.distServer;
-  return gulp.src(path.source + '/**', {base: './'})
-    .pipe(cache('source', {optimizeMemory: true}))
-    .pipe(changed(DEST_DIR))
-    .pipe(debug({title: 'source :'}))
-    .pipe(gulp.dest(DEST_DIR));
-});
-
-gulp.task('cp:package', function () {
-  var DEST_DIR = path.distServer;
-  return gulp.src('package.json')
-    .pipe(cache('package.json', {optimizeMemory: true}))
-    .pipe(changed(DEST_DIR))
-    .pipe(debug({title: 'source :'}))
-    .pipe(gulp.dest(DEST_DIR))
-    .pipe(install({production: true}));
+// Lint JavaScript
+gulp.task('jshint', function () {
+  return gulp.src([
+    '*.js',
+    '*.html'
+  ])
+      .pipe(jshint.extract()) // Extract JS from .html files
+      .pipe(jshint())
+      .pipe(jshint.reporter('jshint-stylish')) ;
 });
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -141,63 +108,11 @@ gulp.task('serveHome', function () {
   });
 });
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Build
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gulp.task('build', ['cp:package', 'cp:src']);
-
-gulp.task('dist', ['clean'], function (cb) {
-  gulp.run('build');
-  cb();
-});
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Docker TASKS
+// Registering FOR 'gulp' COMMAND
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-var dockerOpt = {
-  namespace: 'jmorille',
-  image: 'ttstore-back-server',
-  registryHost: '178.255.97.203:5000'
-};
-
-
-gulp.task('build:docker', ['build'], function () {
-  var DEST_DIR = path.dist;
-  return gulp.src('docker/Dockerfile')
-    .pipe(cache('Dockerfile'))
-    .pipe(debug({title: 'docker :'}))
-    .pipe(gulp.dest(DEST_DIR))
-    .pipe($.shell(['docker build --rm -t ' + dockerOpt.namespace + '/' + dockerOpt.image + ' .'], {
-      cwd: path.dist,
-      ignoreErrors: false
-    }));
-});
-
-
-gulp.task('dist:docker', ['build:docker'], function () {
-  var DEST_DIR = path.dist + '/docker-server';
-  var DEST_TAR = dockerOpt.image + '.tar';
-  return gulp.src('docker/README.md')
-    .pipe(gulp.dest(DEST_DIR))
-    .pipe($.shell(['docker save --output ' + DEST_TAR + ' ' + dockerOpt.namespace + '/' + dockerOpt.image], {
-      cwd: DEST_DIR,
-      ignoreErrors: false
-    }));
-});
-
-
-gulp.task('release:docker', ['build:docker'], function () {
-  // Config Tag
-  var fs = require('fs');
-  var packageJson = JSON.parse(fs.readFileSync('package.json'));
-  var dockerLocalName = dockerOpt.namespace + '/' + dockerOpt.image;
-  var dockerRegistryName = dockerOpt.registryHost + '/' + dockerOpt.image;
-  var dockerVersion = packageJson.version;
-  // Call Docker Cmd
-  return gulp.src('Dockerfile', {read: false, cwd: path.dist})
-    .pipe($.shell(['docker tag -f ' + dockerLocalName + ' ' + dockerRegistryName + ':latest'], {cwd: path.dist}))
-    .pipe($.shell(['docker tag -f ' + dockerLocalName + ' ' + dockerRegistryName + ':' + dockerVersion], {cwd: path.dist}))
-    .pipe($.shell(['docker push ' + dockerRegistryName], {cwd: path.dist, ignoreErrors: false}));
-
-});
+// Load tasks for web-component-tester
+// Adds tasks for `gulp test:local` and `gulp test:remote`
+try { require('web-component-tester').gulp.init(gulp); } catch (err) {}
 
