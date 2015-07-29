@@ -50,11 +50,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             server = sinon.fakeServer.create();
             server.respondWith(
                     'GET',
-                    /\/responds_with_json.*/,
+                    /\/responds_with_json\/id1/,
                     [
                         200,
                         '{"Content-Type":"application/json"}',
-                        '{"_id":"leilou"}'
+                        '{ "_id": "id1",  "_version": 1, "_source": { "firstname": "Leeloominaï", "lastname": "Lekatariba Lamina-Tchaï Ekbat De Sebat" } }'
                     ]
             );
             server.respondWith(
@@ -80,14 +80,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             server.restore();
         });
 
-        test('Get with entity Id', function() {
-            var data;
-            f = fixture('Basic', {userId: 'leilou', data: data });
+        test('Get with entity Id', function(done) {
+            form = fixture('Basic', {userId: 'id1' });
+            form.addEventListener('air-cruddy-response-get', function (event) {
+                var detail = event.detail;
+                var response = detail.response;
+
+                expect(detail.status).to.be.equal(200);
+                assert.equal(response._id, 'id1');
+                assert.equal(form.data._id, 'id1');
+                done();
+            });
             server.respond();
-
-            assert.equal(data._id, 'leilou');
-
         });
+
     });
 </script>
 
