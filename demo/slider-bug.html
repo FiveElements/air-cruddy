@@ -1,0 +1,51 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<link rel="import" href="../../iron-icon/iron-icon.html">
+<link rel="import" href="../../iron-icons/iron-icons.html">
+
+<link rel="import" href="../../paper-slider/paper-slider.html">
+<link rel="import" href="../../paper-button/paper-button.html">
+
+<!--
+
+The `user-form` provides  
+
+@group Demo Elements
+@element user-form
+-->
+
+<dom-module id="slider-bug">
+    <template>
+        <h1>Not reset on change value to undefined</h1>
+        <section>
+            <paper-button on-tap="unsetSliderValue">
+                <iron-icon icon="user"></iron-icon>
+                <span>Reset Slider value = [<span>{{data.slider}}</span>]</span>
+            </paper-button>
+        </section>
+
+        <paper-slider min="10" max="200" value="{{data.slider}}" editable="true"></paper-slider>
+
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: 'slider-bug',
+
+        properties: {
+            data: {
+                type: Object,
+                notity: true,
+                value: function () {
+                    return {slider: 15}
+                }
+            }
+        },
+
+        unsetSliderValue: function () {
+            this.set('data.slider', undefined);
+        }
+
+    });
+</script>
