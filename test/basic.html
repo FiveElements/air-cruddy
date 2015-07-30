@@ -48,51 +48,97 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         setup(function() {
             server = sinon.fakeServer.create();
+            // Get
             server.respondWith(
                     'GET',
-                    /\/responds_with_json\/id1/,
+                    /\/responds_with_json\/leelooId/,
                     [
                         200,
                         '{"Content-Type":"application/json"}',
-                        '{ "_id": "id1",  "_version": 1, "_source": { "firstname": "Leeloominaï", "lastname": "Lekatariba Lamina-Tchaï Ekbat De Sebat" } }'
+                        '{ "_id": "leelooId",  "_version": 1, "_source": { "firstname": "Leeloominaï", "lastname": "Lekatariba Lamina-Tchaï Ekbat De Sebat" } }'
+
                     ]
             );
+
             server.respondWith(
-                    'POST',
-                    /\/responds_with_json.*/,
+                    'GET',
+                    /\/responds_with_json\/korbenId/,
                     [
                         200,
                         '{"Content-Type":"application/json"}',
-                        '{"success":true}'
+                        '{ "_id": "korbenId",  "_version": 1, "_source": { "firstname": "Dallas", "lastname": "Korben" } }'
                     ]
             );
             server.respondWith(
                     'GET',
-                    /\/responds_with_error.*/,
+                    /\/responds_with_json\/badId/,
                     [
                         404,
                         '{"Content-Type":"application/text"}',
-                        '{"success":false}'
+                        '{"_index":"5elements","_type":"5elements","_id":"badId","found":false}'
                     ]
             );
+
+            // Update
+            server.respondWith(
+                    'PUT',
+                    /\/responds_with_json\/leelooId/,
+                    [
+                        200,
+                        '{"Content-Type":"application/json"}',
+                        '{"_index":"5elements","_type":"5elements","_id":"1","_version":2,"created":false}'
+                    ]
+            );
+
+
+            // Create
+
+
+
         });
         teardown(function() {
             server.restore();
         });
 
-        test('Get with entity Id', function(done) {
-            form = fixture('Basic', {userId: 'id1' });
+        test('Get entity leelooI : 200', function(done) {
+            var entityId = 'leelooId';
+            form = fixture('Basic', {userId: entityId });
             form.addEventListener('air-cruddy-response-get', function (event) {
                 var detail = event.detail;
-                var response = detail.response;
-
+                // Detail Status
                 expect(detail.status).to.be.equal(200);
-                assert.equal(response._id, 'id1');
-                assert.equal(form.data._id, 'id1');
+                // Response
+                var response = detail.response;
+                assert.equal(response._id, entityId);
+                assert.equal(response._version, 1);
+                // Components
+                assert.equal(form.data._id, entityId);
+                // End
                 done();
             });
             server.respond();
         });
+
+        test('Get entity badId : 404', function(done) {
+            var entityId = 'badId';
+            form = fixture('Basic', {userId: entityId });
+            form.addEventListener('air-cruddy-error-get', function (event) {
+                var detail = event.detail;
+               // var response = detail.error;
+                console.log('TEST response' + JSON.stringify(detail) + '//');
+                // Detail Status
+                expect(detail.status).to.be.equal(404);
+                // Error
+                expect(response).to.be.ok;
+               // assert.equal(response._id, entityId);
+                // Components
+                expect(form.data).to.be.a('null');
+                // End
+                done();
+            });
+            server.respond();
+        });
+
 
     });
 </script>

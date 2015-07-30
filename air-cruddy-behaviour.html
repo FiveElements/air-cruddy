@@ -98,13 +98,14 @@
             this.set('data._version', newVersion);
         },
         _setDataId: function (newDataId) {
-            this.entityId = newDataId;
             this.set('data._id', newDataId);
+            this.entityId = newDataId;
         },
         _unsetDataId: function () {
-            this.entityId = null;
             this.set('data', null);
+            this.entityId = null;
         },
+
         _createEmptyEntity: function () {
             return {
                 _id: null,
