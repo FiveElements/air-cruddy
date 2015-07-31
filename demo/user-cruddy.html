@@ -54,6 +54,10 @@ The `user-form` provides
                 <iron-icon icon="add"></iron-icon>
                 <span>Create New User</span>
             </paper-button>
+            <paper-button on-tap="entityDeleteUser">
+                <iron-icon icon="delete"></iron-icon>
+                <span>Delete User</span>
+            </paper-button>
             <paper-button on-tap="loadUser1">
                 <iron-icon icon="user"></iron-icon>
                 <span>Load LeiLoo</span>
@@ -151,6 +155,9 @@ The `user-form` provides
                 // this.set('userId', null);
                 // this.userId= '';
                 this.$.userCrud.newEntity();
+            },
+            entityDeleteUser: function(){
+                this.$.userCrud.entityDelete();
             },
             loadUser1: function () {
                 console.log('Load User with Id 1');
