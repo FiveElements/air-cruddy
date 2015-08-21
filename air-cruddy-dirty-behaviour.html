@@ -17,13 +17,20 @@
 
             /**
              * The Crud Status :
+             * mode:
              *  C : Creating, (Need to be Save)
              *  R : Read for service, (No modification)
              *  U : Updating, Read and is Modify (Need to be Save)
              */
             crudStatus: {
-                type: String,
-                notify: true
+                type: Object,
+                notify: true,
+                value: function () {
+                    return {
+                        isDirty: false,
+                        mode: undefined
+                    };
+                }
             },
 
             autoSave: {
@@ -83,13 +90,14 @@
         // --- ---------------------
 
         isDataDirty: function () {
-            switch (this.crudStatus) {
-                case 'C':
-                case 'U':
-                    return true;
-                default :
-                    return false;
-            }
+//            switch (this.crudStatus) {
+//                case 'C':
+//                case 'U':
+//                    return true;
+//                default :
+//                    return false;
+//            }
+            return this.crudStatus.isDirty;
         },
 
 
@@ -108,8 +116,11 @@
                 }
             }
            // console.log('--- --- --- Crud Status : ---> ', status);
-            this.crudStatus = status;
-            return status;
+            this.crudStatus.isDirty = isDiff;
+            this.crudStatus.mode= status;
+
+           // this.crudStatus = status;
+
         },
 
         // --- Value Comparator

@@ -221,7 +221,8 @@
         },
 
         save: function () {
-            this.debounce('air-cruddy-save', this._save.bind(this), this.saveWait);
+            this._save();
+//            this.debounce('air-cruddy-save', this._save.bind(this), this.saveWait);
         },
 
         _save: function () {
