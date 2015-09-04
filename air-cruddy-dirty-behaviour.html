@@ -25,6 +25,7 @@
             crudStatus: {
                 type: Object,
                 notify: true,
+                observer: '_fireStatusChanged', 
                 value: function () {
                     return {
                         isDirty: false,
@@ -62,7 +63,8 @@
         },
 
         observers: [
-            'dataSourceChanged(data.*)'
+            'dataSourceChanged(data.*)',
+            '_fireStatusChanged(crudStatus.*)'
         ],
 
 
@@ -115,12 +117,14 @@
                     status = 'R';
                 }
             }
-           // console.log('--- --- --- Crud Status : ---> ', status);
             this.crudStatus.isDirty = isDiff;
             this.crudStatus.mode= status;
-
+            console.log('--- --- --- Crud Status : ---> ', this.crudStatus.isDirty);
            // this.crudStatus = status;
+        },
 
+        _fireStatusChanged: function (status) {
+            this.fire('air-cruddy-status', this.crudStatus);
         },
 
         // --- Value Comparator
