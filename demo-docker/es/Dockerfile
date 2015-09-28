@@ -8,7 +8,7 @@ ENV HOME="/root" DEBIAN_FRONTEND="noninteractive"
 
 # Config proxy env
 # #######################
-ENV http_proxy="http://webcache.groupe.generali.fr:3128" no_proxy="*.groupe.generali.fr"
+ENV http_proxy="http://singapour.groupe.generali.fr:3128" no_proxy="*.groupe.generali.fr"
 ENV https_proxy="$http_proxy"  HTTP_PROXY="$http_proxy" HTTPS_PROXY="$http_proxy" NO_PROXY="$no_proxy"
 
  

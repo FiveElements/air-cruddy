@@ -7,7 +7,7 @@ INSTALL_ES_VERSION=elasticsearch-1.7.0
 
 function installTools {
   echo ""
-  echo "### Install  Base Tools"
+  echo "### ES : Install  Base Tools"
   echo "### ########################################################"
   apt-get update
   apt-get -y install curl
@@ -16,7 +16,7 @@ function installTools {
 
 function installEs {
   echo ""
-  echo "### Install ElasticSearch in : $ES_HOME"
+  echo "### ES : Install ElasticSearch in : $ES_HOME"
   echo "### ########################################################"
   curl -L -s -o /opt/elasticsearch.tar.gz https://download.elastic.co/elasticsearch/elasticsearch/$INSTALL_ES_VERSION.tar.gz
   tar -xzf /opt/elasticsearch.tar.gz -C  /opt/
@@ -27,7 +27,7 @@ function installEs {
 function configProxy {
  if [ -n $HTTP_PROXY ]; then
     echo ""
-    echo "### Config Proxy :  $HTTP_PROXY"
+    echo "### ES : Config Proxy :  $HTTP_PROXY"
     echo "### ########################################################"
     # extract the protocol
     proto="$(echo $HTTP_PROXY | grep :// | sed -e's,^\(.*://\).*,\1,g')"
@@ -56,7 +56,7 @@ function configProxy {
 
 function installEsPlugins {
   echo ""
-  echo "### Install ElasticSearch Plugins"
+  echo "### ES : Install ElasticSearch Plugins"
   echo "### ########################################################"
   echo "### Install ElasticSearch Plugins : head"
   /opt/elasticsearch/bin/plugin -install mobz/elasticsearch-head
@@ -67,7 +67,7 @@ function installEsPlugins {
 
 function configEs {
   echo ""
-  echo "### Config Elasticsearch"
+  echo "### ES : Config Elasticsearch"
   echo "### ########################################################"
   # Set to true to instruct the operating system to never swap the ElasticSearch process
   sed -i'' 's/#bootstrap.mlockall: true/bootstrap.mlockall: true/' $ES_HOME/config/elasticsearch.yml
@@ -95,11 +95,11 @@ function configEs {
 
 function printEs {
   echo ""
-  echo "### Print Config Elasticsearch"
+  echo "### ES : Print Config Elasticsearch"
   echo "### ########################################################"
   grep -v '^#' /opt/elasticsearch/config/elasticsearch.yml | grep ":"
   echo ""
-  echo "### Print Config Elasticsearch"
+  echo "### ES : Print Config Elasticsearch"
   echo "### ########################################################"
   grep -v '^#' /etc/security/limits.conf
 }
@@ -107,7 +107,7 @@ function printEs {
 
 function cleanBuildInstall {
   echo ""
-  echo "### Clean Docker Image"
+  echo "### ES : Clean Docker Image"
   echo "### ########################################################"
   apt-get purge -y software-properties-common python-software-properties  curl
   apt-get -y autoremove
