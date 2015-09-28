@@ -1,6 +1,6 @@
 module.exports = {
     expanded: true,
-    persistent:  true,
+    persistent:  false,
     plugins: {
         local: {
             browsers: ['chrome']

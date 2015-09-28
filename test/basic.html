@@ -122,9 +122,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         test('Get entity badId : 404', function(done) {
             var entityId = 'badId';
             form = fixture('Basic', {userId: entityId });
-            form.addEventListener('air-cruddy-error-get', function (event) {
+            form.addEventListener('air-cruddy-error-get', function getEntityBadIdCallback (event) {
                 var detail = event.detail;
-               // var response = detail.error;
+                var response = detail.error;
                 //console.log('TEST response' + JSON.stringify(detail) + '//');
                 // Detail Status
                 expect(detail.status).to.be.equal(404);
