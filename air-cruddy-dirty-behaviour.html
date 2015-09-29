@@ -25,7 +25,6 @@
             crudStatus: {
                 type: Object,
                 notify: true,
-                observer: '_fireStatusChanged', 
                 value: function () {
                     return {
                         isDirty: false,
@@ -33,6 +32,7 @@
                     };
                 }
             },
+
 
             autoSave: {
                 type: Boolean,
@@ -63,10 +63,10 @@
         },
 
         observers: [
-            'dataSourceChanged(data.*)',
-            '_fireStatusChanged(crudStatus.*)'
+            'dataSourceChanged(data.*)'
+            , '_fireStatusChanged(crudStatus.*)'
         ],
-
+//
 
         // --- Life Cycle
         // --- ---------------------------
@@ -117,13 +117,21 @@
                     status = 'R';
                 }
             }
-            this.crudStatus.isDirty = isDiff;
-            this.crudStatus.mode= status;
-            console.log('--- --- --- Crud Status : ---> ', this.crudStatus.isDirty);
+            // Set
+            this.set('crudStatus', {
+                isDirty: isDiff,
+                mode: status
+            });
+
+            this.set('crudStatus.isDirty', isDiff);
+            this.set('crudStatus.mode', status);
+           // console.log('--- --- --- Crud Status : ---> ', this.crudStatus.isDirty);
            // this.crudStatus = status;
+           // this._fireStatusChanged();
         },
 
         _fireStatusChanged: function (status) {
+            console.log('_fireStatusChanged from air-cruddy');
             this.fire('air-cruddy-status', this.crudStatus);
         },
 
