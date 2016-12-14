@@ -1,34 +1,30 @@
 <!doctype html>
-<html>
-<head>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <title>air-cruddy demos</title>
+    <title>air-cruddy demo</title>
 
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
     <link rel="import" href="../air-cruddy.html">
-    <link rel="import" href="user-cruddy.html">
-    <link rel="import" href="slider-bug.html">
 
-    <link rel="import" href="../../paper-styles/classes/typography.html">
-    <link rel="import" href="../../iron-flex-layout/classes/iron-flex-layout.html">
-    <link rel="stylesheet" href="../../paper-styles/demo.css">
-
-</head>
-<body>
-
-<template is="dom-bind">
-    <h1>Test param</h1>
-
-    <div class="horizontal center-center layout">
-        <div>
-            <h4>method="get"</h4>
-            <div class="horizontal-section">
-                <user-cruddy user-id="AAApkZAAOAAAQJsAAs"></user-cruddy>
-                <!--<slider-bug></slider-bug>-->
-            </div>
-        </div>
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+      </style>
+    </custom-style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Basic air-cruddy demo</h3>
+      <demo-snippet>
+        <template>
+          <air-cruddy></air-cruddy>
+        </template>
+      </demo-snippet>
     </div>
-</template>
-
-</body>
+  </body>
 </html>

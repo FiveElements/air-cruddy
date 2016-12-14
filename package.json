@@ -1,43 +1,22 @@
 {
   "name": "air-cruddy",
   "version": "0.0.1",
-  "description": "Crud WebComponent for managing all service Interaction with Http Server",
-  "private": true,
-  "main": "src/index.js",
+  "description": "Polymer CRUD management",
+  "main": "index.html",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FiveElements/air-cruddy.git"
+  },
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
-    "npmdeps": "npm-check-updates",
-    "start": "node  --harmony src/index.js"
+    "lint": "polymer lint  --no-follow-dependencies  --include-dependencies bower_components/*  --input *.html",
+    "dev": "polymer serve -p 8080 | npm run watch",
+    "test": "polymer test",
+    "dev-install": "npm install -g bower polymer-cli browser-sync",
+    "watch": "browser-sync start --proxy localhost:8080 --startPath /components/air-cruddy/demo/ --files *.html,*.js,demo/*"
   },
-  "dependencies": {
-    "bell": "^5.0.1",
-    "boom": "^2.8.0",
-    "confidence": "^1.1.0",
-    "glib": "0.0.3",
-    "good": "^6.3.0",
-    "good-console": "^5.0.2",
-    "hapi": "^8.8.1",
-    "hkp-client": "0.0.2",
-    "hoek": "^2.14.0",
-    "joi": "^6.6.1",
-    "kbpgp": "^2.0.35",
-    "lodash": "^3.10.0"
-  },
-  "devDependencies": {
-    "aguid": "^1.0.3",
-    "browser-sync": "^2.8.2",
-    "del": "^1.2.0",
-    "gulp": "^3.9.0",
-    "gulp-cached": "^1.1.0",
-    "gulp-changed": "^1.2.1",
-    "gulp-debug": "^2.0.1",
-    "gulp-install": "^0.4.0",
-    "gulp-jshint": "^1.11.2",
-    "gulp-livereload": "^3.8.0",
-    "gulp-load-plugins": "^1.0.0-rc",
-    "gulp-nodemon": "^2.0.3",
-    "gulp-shell": "^0.4.2",
-    "jshint-stylish": "^2.0.1",
-    "proxy-middleware": "^0.13.0",
-    "web-component-tester": "^3.3.6"
-  }
+  "author": "FiveElements",
+  "license": "ISC"
 }

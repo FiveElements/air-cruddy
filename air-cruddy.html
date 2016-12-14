@@ -1,124 +1,49 @@
 <link rel="import" href="../polymer/polymer.html">
 
-
-<link rel="import" href="air-cruddy-behaviour.html">
-<link rel="import" href="air-cruddy-cloudy-init-behaviour.html">
-<link rel="import" href="air-cruddy-response-409-behaviour.html">
-<link rel="import" href="../air-cascade-validator/air-cascade-validator-behaviour.html">
-<link rel="import" href="air-cruddy-dirty-behaviour.html">
-<link rel="import" href="air-cruddy-element-behaviour.html">
-
-
 <!--
+`air-cruddy`
+An Polymer element that manage CRUD Operations
 
 The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retrieve, Update, Delete) Operations on an REST Api with all the expected services :
  - Validation
  - Conflict Resolution on 409
  - Auto Save Feature
 
-
-
-
-    <air-cruddy entity-id="{{entityid}}" data="{{data}}" endpoint="/v1/users" autosave>
-        <section>
-           <paper-input-decorator floatingLabel label="First name" autoValidate>
-              <input is="core-input" value="{{data._source.firstname}}" required>
-           </paper-input-decorator>
-           <paper-input-decorator floatingLabel label="First name" autoValidate>
-              <input is="core-input" value="{{data._source.lastname}}" required>
-           </paper-input-decorator>
-        </section>
-    </air-cruddy>
-
-### Server Data Format
-Example of Get Entity Server Format:
-
-    { _id: "AAApkZAAOAAAQYEAAJ",
-      _version: 1,
-      _source: {
-        firstname: "Leeloominaï",
-        lastname: "Lekatariba Lamina-Tchaï Ekbat De Sebat"
-      }
-    }
-
-
-
-### Validation
-TODO
-
-
-
-### Conflict Resolution
-When Save Error 409 is raised from server
-AutoSave
----------
-Attribute available:
- - autosave
- - autocreate
- - autoupdate
-
-@group Air Elements
-@element air-cruddy
+@group air-elements
 @demo demo/index.html
 -->
 
 <dom-module id="air-cruddy">
-
+  <template>
     <style>
-        :host {
-            display: block;
-        }
-
-        .content-wrapper-hide {
-            display: none;
-        }
-
+      :host {
+        display: block;
+      }
     </style>
-    <template>
-        <div id="contentWrapper" class="content-wrapper-hide">
-            <content></content>
-        </div>
-    </template>
-</dom-module>
+    <h2>Hello [[endpoint]]</h2>
+  </template>
 
-<script>
-    (function () {
-        'use strict';
+  <script>
+    customElements.define('air-cruddy', class extends Polymer.Element {
+      static get is() { return 'air-cruddy'; }
 
-        Polymer({
-            is: 'air-cruddy',
-
-            properties: {
-
+      static get config() {
+        return {
+          properties: {
+            endpoint: {
+              type: String,
+              value: 'air-cruddy'
             },
-
-            observers: [
-                'dataChanged(data)'
-            ],
-
-            behaviors: [
-                FiveElements.AirCruddyBehavior
-                , FiveElements.AirCruddyAjaxInitBehavior
-                , FiveElements.AirCruddyResponse409Behavior
-                , FiveElements.AirCascadeValidatorBehavior
-                , FiveElements.AirCruddyDirtyBehavior
-                , FiveElements.AirCruddyElementBehavior
-            ],
-
-            dataChanged: function (newValue) {
-                if (newValue) {
-                    this._showContent(true);
-                } else {
-                    this._showContent(false);
-                }
+            entityId: {
+              type: String,
+              notify: true
             },
-
-            _showContent: function (toShow) {
-                this.toggleClass('content-wrapper-hide', !toShow, this.$.contentWrapper);
+            data: {
+              type: Object
             }
-
-
-
-        });
-    })();
-</script>
+          }
+        };
+      }
+    });
+  </script>
+</dom-module>

@@ -1,21 +1,25 @@
-# air-cruddy
-The air-cruddy element for CRUD operations with Http Server
+# \<air-cruddy\>
 
-## Demo
+An Polymer element that manage CRUD Operations
 
-### Configure demo project
-```shell
-npm install
+This custom element depends on [Polymer 2.0-preview](https://github.com/polymer/polymer/tree/2.0-preview).
+
+## Developer Notes
+
+Use [Polymer CLI](https://www.npmjs.com/package/polymer-cli) to serve a local demo or to run unit tests.
+
+### Viewing a demo
+
+```
+$ polymer serve -o
 ```
 
-```shell
-bower install
+### Running Tests
+
+```
+$ polymer test
 ```
 
-### Run demo project
-```shell
-gulp serve
-``` 
+### Known Issues
 
-# Les Elementaires
-http://wiki.sorcellerie.net/Print.aspx?Page=Elementale-La-Magie
+ * `polymer test` or `wct` may fail with `<BROWSERNAME> failed to maximize` ([wct #411](https://github.com/Polymer/web-component-tester/issues/411))
