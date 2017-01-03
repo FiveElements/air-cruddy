@@ -1,5 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 
+<link rel="import" href="air-cruddy-mixin.html">
+
 <!--
 `air-cruddy`
 An Polymer element that manage CRUD Operations
@@ -44,6 +46,57 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
           }
         };
       }
+
+        // --- Changed Observer
+        // --- ---------------------------
+
+
+        // --- API Adapter
+        // --- ---------------------------
+
+        _fetchOptDefault(){
+          let opt =    {
+              mode: 'cors',
+              cache: 'default'
+          };
+          return opt;
+        };
+
+        _fetchOptCreate(){
+            let opt = this._fetchOptDefault();
+            opt.method= 'PUT';
+            return opt;
+        };
+
+        _fetchOptRetrieve(){
+            let opt = this._fetchOptDefault();
+            opt.method= 'GET';
+            return opt;
+        };
+
+        _fetchOptUpdate(){
+            let opt = this._fetchOptDefault();
+            opt.method= 'PUT';
+            return opt;
+        };
+
+        _fetchOptDelete(){
+            let opt = this._fetchOptDefault();
+            opt.method= 'DELETE';
+            return opt;
+        };
+
+
+        // --- API
+        // --- ---------------------------
+
+        _fetchPromise(url, init) {
+            return fetch(url, init).then(response => {
+                return response.json();
+            });
+        };
+
+
     });
   </script>
 </dom-module>
