@@ -16,87 +16,147 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
 -->
 
 <dom-module id="air-cruddy">
-  <template>
-    <style>
-      :host {
-        display: block;
-      }
-    </style>
-    <h2>Hello [[endpoint]]</h2>
-  </template>
-
-  <script>
-    customElements.define('air-cruddy', class extends Polymer.Element {
-      static get is() { return 'air-cruddy'; }
-
-      static get config() {
-        return {
-          properties: {
-            endpoint: {
-              type: String,
-              value: 'air-cruddy'
-            },
-            entityId: {
-              type: String,
-              notify: true
-            },
-            data: {
-              type: Object
+    <template>
+        <style>
+            :host {
+                display: block;
             }
-          }
-        };
-      }
+        </style>
+        <h2>Hello [[endpoint]]</h2>
+    </template>
 
-        // --- Changed Observer
-        // --- ---------------------------
+    <script>
+        customElements.define('air-cruddy', class extends Polymer.Element {
+            static get is() {
+                return 'air-cruddy';
+            }
 
+            static get config() {
+                return {
+                    properties: {
+                        url: {
+                            type: String
+                        },
+                        entityId: {
+                            type: String,
+                            notify: true
+                        },
+                        data: {
+                            type: Object
+                        }
+                    }
+                };
+            }
 
-        // --- API Adapter
-        // --- ---------------------------
-
-        _fetchOptDefault(){
-          let opt =    {
-              mode: 'cors',
-              cache: 'default'
-          };
-          return opt;
-        };
-
-        _fetchOptCreate(){
-            let opt = this._fetchOptDefault();
-            opt.method= 'PUT';
-            return opt;
-        };
-
-        _fetchOptRetrieve(){
-            let opt = this._fetchOptDefault();
-            opt.method= 'GET';
-            return opt;
-        };
-
-        _fetchOptUpdate(){
-            let opt = this._fetchOptDefault();
-            opt.method= 'PUT';
-            return opt;
-        };
-
-        _fetchOptDelete(){
-            let opt = this._fetchOptDefault();
-            opt.method= 'DELETE';
-            return opt;
-        };
+            // --- Changed Observer
+            // --- ---------------------------
 
 
-        // --- API
-        // --- ---------------------------
+            // --- API
+            // --- ---------------------------
 
-        _fetchPromise(url, init) {
-            return fetch(url, init).then(response => {
-                return response.json();
-            });
-        };
+            create() {
+
+            };
+
+            retrieve() {
+                this._fetchPromiseRetrieve().then(response => {
+                    if(response.ok) {
+
+                    }
+                });
+            };
+
+            update() {
+
+            };
+
+            delete() {
+
+            };
+
+            // --- API Adapter
+            // --- ---------------------------
+
+            _defaultHearders(content) {
+                let headers =  new Headers({
+                    'Content-Type': 'application/json' // "text/plain"
+                });
+                if (content) {
+                    headers.append("Content-Length", content.length.toString());
+                }
+                return headers;
+            }
+
+            _defaultOptions(method, data) {
+                let content = undefined;
+                if (data) {
+                    content = this._dataSerializerEntity(data);
+                }
+                let headers = this._defaultHearders(content);
+                let opt = {
+                    method: method,
+                    mode: 'cors',
+                    cache: 'default',
+                    redirect: 'follow',
+                    headers: headers
+                };
+                if (content) {
+                    opt.body = content;
+                }
+                return opt;
+            };
+
+            _fetchUrlEntityId() {
+                return this.url + '/' + this.entityId;
+            };
+
+            _fetchUrlCreate() {
+                return this.url ;
+            };
 
 
-    });
-  </script>
+            // --- Data Serialiser
+            // --- ---------------------------
+            _dataSerializerEntity(data) {
+                return JSON.stringify(data);
+            }
+
+            // --- API Adapter
+            // --- ---------------------------
+            _fetchPromiseRetrieve() {
+                let opt = this._defaultOptions('GET');
+                return fetch(this._fetchUrlEntityId(), opt);
+            };
+
+
+            _fetchPromiseCreate() {
+                let opt = this._defaultOptions('POST',this.data);
+                return fetch(this._fetchUrlCreate(), opt);
+            };
+
+
+            _fetcPromiseUpdate() {
+                let opt = this._defaultOptions( 'PUT',this.data );
+                return fetch(this._fetchUrlEntityId(), opt);
+            };
+
+            _fetchPromiseDelete() {
+                let opt = this._defaultOptions('DELETE' );
+                return fetch(this._fetchUrlEntityId(), opt);
+            };
+
+
+            // --- API
+            // --- ---------------------------
+
+            _fetchPromise(url, init) {
+                return fetch(url, init).then(response => {
+                    return response.json();
+                });
+            };
+
+
+        });
+    </script>
 </dom-module>
