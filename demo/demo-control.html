@@ -1,0 +1,34 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<!--
+`demo-control`
+
+
+@demo demo/index.html 
+-->
+
+<dom-module id="demo-control">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
+        <h2>Hello [[prop1]]</h2>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'demo-control',
+
+            properties: {
+                prop1: {
+                    type: String,
+                    value: 'demo-control',
+                },
+            },
+
+        });
+    </script>
+</dom-module>

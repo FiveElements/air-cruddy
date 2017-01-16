@@ -12,17 +12,20 @@
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
     <link rel="import" href="../air-cruddy.html">
 
-    <custom-style>
+    <link rel="import" href="demo-editor-tweet.html">
+    <link rel="import" href="demo-control.html">
+
       <style is="custom-style" include="demo-pages-shared-styles">
       </style>
-    </custom-style>
   </head>
   <body>
     <div class="vertical-section-container centered">
       <h3>Basic air-cruddy demo</h3>
       <demo-snippet>
-        <template>
-          <air-cruddy></air-cruddy>
+        <template is="dom-bind" id="demo">
+          <demo-control></demo-control>
+          <air-cruddy data="{{data}}" url="http://localhost:9200/twitter/tweet" entity-id="1"></air-cruddy>
+          <demo-editor-tweet data="{{data}}"></demo-editor-tweet>
         </template>
       </demo-snippet>
     </div>

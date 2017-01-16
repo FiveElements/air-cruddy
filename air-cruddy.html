@@ -1,6 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
 
-<link rel="import" href="air-cruddy-mixin.html">
 
 <!--
 `air-cruddy`
@@ -22,28 +21,29 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                 display: block;
             }
         </style>
-        <h2>Hello [[url]]</h2>
+        <button on-tap="retrieve">Retrieve</button>
+        <button on-tap="update">Update</button>
+        <h2 on-tap="retrieve">Hello [[url]]</h2>
     </template>
 
     <script>
 
         Polymer({
 
-              is: 'air-cruddy',
+            is: 'air-cruddy',
 
-
-                    properties: {
-                        url: {
-                            type: String
-                        },
-                        entityId: {
-                            type: String,
-                            notify: true
-                        },
-                        data: {
-                            type: Object
-                        }
-                    },
+            properties: {
+                url: {
+                    type: String
+                },
+                entityId: {
+                    type: String,
+                    notify: true
+                },
+                data: {
+                    type: Object
+                }
+            },
 
             // --- Changed Observer
             // --- ---------------------------
@@ -53,27 +53,28 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
             // --- ---------------------------
 
 
-            retrieve:function () {
-                this._fetchPromiseRetrieve().then(function(response){
-                    if(response.ok) {
+            retrieve: function () {
+                console.log("Request Retrieve");
+                this._fetchPromiseRetrieve().then(function (response) {
 
-                    }
+                        console.log("Request Retrieve   ---> OK");
+
                 });
             },
 
-            update:function () {
-
+            update: function () {
+                console.log("Request Update");
             },
 
-            delete:function () {
+            delete: function () {
 
             },
 
             // --- API Adapter
             // --- ---------------------------
 
-            _defaultHearders:function (content) {
-                var headers =  new Headers({
+            _defaultHearders: function (content) {
+                var headers = new Headers({
                     'Content-Type': 'application/json' // "text/plain"
                 });
                 if (content) {
@@ -82,7 +83,7 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                 return headers;
             },
 
-            _defaultOptions:function (method, data) {
+            _defaultOptions: function (method, data) {
                 var content = undefined;
                 if (data) {
                     content = this._dataSerializerEntity(data);
@@ -90,7 +91,7 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                 var headers = this._defaultHearders(content);
                 var opt = {
                     method: method,
-                    mode: 'cors',
+                    mode: 'no-cors', // FIXME
                     cache: 'default',
                     redirect: 'follow',
                     headers: headers
@@ -101,42 +102,42 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                 return opt;
             },
 
-            _fetchUrlEntityId:function () {
+            _fetchUrlEntityId: function () {
                 return this.url + '/' + this.entityId;
             },
 
-            _fetchUrlCreate:function () {
-                return this.url ;
+            _fetchUrlCreate: function () {
+                return this.url;
             },
 
 
             // --- Data Serialiser
             // --- ---------------------------
-            _dataSerializerEntity:function (data) {
+            _dataSerializerEntity: function (data) {
                 return JSON.stringify(data);
             },
 
             // --- API Adapter
             // --- ---------------------------
-            _fetchPromiseRetrieve:function () {
+            _fetchPromiseRetrieve: function () {
                 var opt = this._defaultOptions('GET');
-                return fetch(this._fetchUrlEntityId(), opt);
+                return this._fetchPromise(this._fetchUrlEntityId(), opt);
             },
 
 
-            _fetchPromiseCreate:function () {
-                var opt = this._defaultOptions('POST',this.data);
+            _fetchPromiseCreate: function () {
+                var opt = this._defaultOptions('POST', this.data);
                 return fetch(this._fetchUrlCreate(), opt);
             },
 
 
-            _fetcPromiseUpdate:function () {
-                var opt = this._defaultOptions( 'PUT',this.data );
+            _fetcPromiseUpdate: function () {
+                var opt = this._defaultOptions('PUT', this.data);
                 return fetch(this._fetchUrlEntityId(), opt);
             },
 
-            _fetchPromiseDelete:function () {
-                var opt = this._defaultOptions('DELETE' );
+            _fetchPromiseDelete: function () {
+                var opt = this._defaultOptions('DELETE');
                 return fetch(this._fetchUrlEntityId(), opt);
             },
 
@@ -144,9 +145,15 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
             // --- API
             // --- ---------------------------
 
-            _fetchPromise:function (url, init) {
-                return fetch(url, init).then(function(response ) {
+            _fetchPromise: function (url, init) {
+                console.log("Fetch URL", url, init);
+                return fetch(url, init).then(function (response) {
+                    console.log("Status Response", response.status);
+                    console.log("Fetch Response", response);
+//                    if (response.ok) {}
                     return response.json();
+                }).catch(function (err) {
+                    console.error(err);
                 });
             },
 

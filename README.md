@@ -1,9 +1,7 @@
 # \<air-cruddy\>
 
 An Polymer element that manage CRUD Operations
-
-This custom element depends on [Polymer 2.0-preview](https://github.com/polymer/polymer/tree/2.0-preview).
-
+ 
 
 ## External Documentation
 * https://en.wikipedia.org/wiki/Create,_read,_update_and_delete
@@ -15,4 +13,13 @@ This custom element depends on [Polymer 2.0-preview](https://github.com/polymer/
 
  
  
+## Dev  Install
  
+### Elasticsearch as Server
+ 
+ 
+``` 
+curl -XPUT 'http://localhost:9200/twitter/tweet/1?pretty' -d'{ "user" : "kimchy", "post_date" : "2009-11-15T14:12:12",  "message" : "trying out Elasticsearch" }'
+
+``` 
+
