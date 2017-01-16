@@ -41,6 +41,10 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                     notify: true
                 },
                 data: {
+                    type: Object,
+                    notify: true
+                },
+                _dataOrigin: {
                     type: Object
                 }
             },
@@ -74,13 +78,15 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
             // --- ---------------------------
 
             _defaultHearders: function (content) {
-                var headers = new Headers({
+                var myHeaders = new Headers({
                     'Content-Type': 'application/json' // "text/plain"
                 });
                 if (content) {
-                    headers.append("Content-Length", content.length.toString());
+                    console.log('Content-Length', content.length.toString());
+                    myHeaders.append('Content-Length', content.length.toString());
                 }
-                return headers;
+                console.log(myHeaders);
+                return myHeaders;
             },
 
             _defaultOptions: function (method, data) {
@@ -88,13 +94,13 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                 if (data) {
                     content = this._dataSerializerEntity(data);
                 }
-                var headers = this._defaultHearders(content);
+                var myHeaders = this._defaultHearders(content);
+                console.log('Content-Type', myHeaders.get('Content-Type')); // false
                 var opt = {
                     method: method,
-                    mode: 'no-cors', // FIXME
-                    cache: 'default',
-                    redirect: 'follow',
-                    headers: headers
+                    mode: 'cors', // FIXME
+//                    cache: 'default', redirect: 'follow',
+                    headers: myHeaders
                 };
                 if (content) {
                     opt.body = content;
@@ -121,9 +127,17 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
             // --- ---------------------------
             _fetchPromiseRetrieve: function () {
                 var opt = this._defaultOptions('GET');
-                return this._fetchPromise(this._fetchUrlEntityId(), opt);
+                var urlGet = this._fetchUrlEntityId();
+                return window.fetch(urlGet, opt).then(function (response) {
+                    return response.json();
+                }).then(this._hydrateFetchRetrieve.bind(this));
             },
 
+            _hydrateFetchRetrieve(response) {
+                console.log(response);
+                this.data = response._source;
+                return response;
+            },
 
             _fetchPromiseCreate: function () {
                 var opt = this._defaultOptions('POST', this.data);
@@ -146,10 +160,13 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
             // --- ---------------------------
 
             _fetchPromise: function (url, init) {
-                console.log("Fetch URL", url, init);
-                return fetch(url, init).then(function (response) {
+                console.log("Fetch URL", url, JSON.stringify(init));
+                return window.fetch(url, init).then(function (response) {
+                    var contentType = response.headers.get("content-type");
+                    console.log("contentType Response", contentType);
+                    console.log("OK Response", response.ok);
                     console.log("Status Response", response.status);
-                    console.log("Fetch Response", response);
+                    console.log("Fetch Response",  response);
 //                    if (response.ok) {}
                     return response.json();
                 }).catch(function (err) {
