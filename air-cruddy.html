@@ -22,17 +22,16 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                 display: block;
             }
         </style>
-        <h2>Hello [[endpoint]]</h2>
+        <h2>Hello [[url]]</h2>
     </template>
 
     <script>
-        customElements.define('air-cruddy', class extends Polymer.Element {
-            static get is() {
-                return 'air-cruddy';
-            }
 
-            static get config() {
-                return {
+        Polymer({
+
+              is: 'air-cruddy',
+
+
                     properties: {
                         url: {
                             type: String
@@ -44,9 +43,7 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                         data: {
                             type: Object
                         }
-                    }
-                };
-            }
+                    },
 
             // --- Changed Observer
             // --- ---------------------------
@@ -55,46 +52,43 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
             // --- API
             // --- ---------------------------
 
-            create() {
 
-            };
-
-            retrieve() {
-                this._fetchPromiseRetrieve().then(response => {
+            retrieve:function () {
+                this._fetchPromiseRetrieve().then(function(response){
                     if(response.ok) {
 
                     }
                 });
-            };
+            },
 
-            update() {
+            update:function () {
 
-            };
+            },
 
-            delete() {
+            delete:function () {
 
-            };
+            },
 
             // --- API Adapter
             // --- ---------------------------
 
-            _defaultHearders(content) {
-                let headers =  new Headers({
+            _defaultHearders:function (content) {
+                var headers =  new Headers({
                     'Content-Type': 'application/json' // "text/plain"
                 });
                 if (content) {
                     headers.append("Content-Length", content.length.toString());
                 }
                 return headers;
-            }
+            },
 
-            _defaultOptions(method, data) {
-                let content = undefined;
+            _defaultOptions:function (method, data) {
+                var content = undefined;
                 if (data) {
                     content = this._dataSerializerEntity(data);
                 }
-                let headers = this._defaultHearders(content);
-                let opt = {
+                var headers = this._defaultHearders(content);
+                var opt = {
                     method: method,
                     mode: 'cors',
                     cache: 'default',
@@ -105,56 +99,56 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                     opt.body = content;
                 }
                 return opt;
-            };
+            },
 
-            _fetchUrlEntityId() {
+            _fetchUrlEntityId:function () {
                 return this.url + '/' + this.entityId;
-            };
+            },
 
-            _fetchUrlCreate() {
+            _fetchUrlCreate:function () {
                 return this.url ;
-            };
+            },
 
 
             // --- Data Serialiser
             // --- ---------------------------
-            _dataSerializerEntity(data) {
+            _dataSerializerEntity:function (data) {
                 return JSON.stringify(data);
-            }
+            },
 
             // --- API Adapter
             // --- ---------------------------
-            _fetchPromiseRetrieve() {
-                let opt = this._defaultOptions('GET');
+            _fetchPromiseRetrieve:function () {
+                var opt = this._defaultOptions('GET');
                 return fetch(this._fetchUrlEntityId(), opt);
-            };
+            },
 
 
-            _fetchPromiseCreate() {
-                let opt = this._defaultOptions('POST',this.data);
+            _fetchPromiseCreate:function () {
+                var opt = this._defaultOptions('POST',this.data);
                 return fetch(this._fetchUrlCreate(), opt);
-            };
+            },
 
 
-            _fetcPromiseUpdate() {
-                let opt = this._defaultOptions( 'PUT',this.data );
+            _fetcPromiseUpdate:function () {
+                var opt = this._defaultOptions( 'PUT',this.data );
                 return fetch(this._fetchUrlEntityId(), opt);
-            };
+            },
 
-            _fetchPromiseDelete() {
-                let opt = this._defaultOptions('DELETE' );
+            _fetchPromiseDelete:function () {
+                var opt = this._defaultOptions('DELETE' );
                 return fetch(this._fetchUrlEntityId(), opt);
-            };
+            },
 
 
             // --- API
             // --- ---------------------------
 
-            _fetchPromise(url, init) {
-                return fetch(url, init).then(response => {
+            _fetchPromise:function (url, init) {
+                return fetch(url, init).then(function(response ) {
                     return response.json();
                 });
-            };
+            },
 
 
         });
