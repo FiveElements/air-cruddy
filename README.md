@@ -41,5 +41,9 @@ curl -XPOST 'http://localhost:9200/twitter/tweet/_search?pretty'
  ``` 
  
  
- #### test
+#### test
+ 
  http://httpstat.us/500
+
+#### JSON LD
+https://developers.google.com/web/updates/2015/03/creating-semantic-sites-with-web-components-and-jsonld

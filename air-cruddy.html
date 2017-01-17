@@ -58,14 +58,15 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
             // --- ---------------------------
 
 
-
             // --- mock
             // --- ---------------------------
 
             retrieveById: function (entityId) {
                 console.log("Request Retrieve: ", entityId);
                 this.entityId = '404';
-                this._fetchPromiseRetrieve();
+                this._fetchPromiseRetrieve().catch(function (error) {
+                    console.log('post error', error);
+                });
             },
 
 
@@ -89,7 +90,7 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
             // --- API Adapter
             // --- ---------------------------
 
-            _defaultHearders: function(content) {
+            _defaultHearders: function (content) {
                 var myHeaders = new Headers({
                     'Content-Type': 'application/json' // "text/plain"
                 });
@@ -97,7 +98,6 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                     console.log('Content-Length', content.length.toString());
                     myHeaders.append('Content-Length', content.length.toString());
                 }
-                console.log(myHeaders);
                 return myHeaders;
             },
 
@@ -107,7 +107,6 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                     content = this._dataSerializerEntity(data);
                 }
                 var myHeaders = this._defaultHearders(content);
-                console.log('Content-Type', myHeaders.get('Content-Type')); // false
                 var opt = {
                     method: method,
                     mode: this.mode,
@@ -169,21 +168,21 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
             },
 
             _fetchUrlUpdate: function () {
-                 return this._fetchUrlEntityId();
-             },
+                return this._fetchUrlEntityId();
+            },
 
             _fetchUrlDelete: function () {
                 return this._fetchUrlEntityId();
             },
 
-             _fetchUrlCreate: function () {
-                 return this._fetchUrlRoot();
-             },
+            _fetchUrlCreate: function () {
+                return this._fetchUrlRoot();
+            },
 
-             // --- Component linker
+            // --- Component linker
             // --- ---------------------------
             _handleResponseRetrieve: function (response) {
-                console.log(response);
+//                console.log(response);
                 var dataClone = JSON.parse(JSON.stringify(response));
                 this.data = response;
                 this._dataOrigin = dataClone;
@@ -197,20 +196,40 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                 return response;
             },
 
+
+            // --- Error handling
+            // --- ---------------------------
+
+            _handleRetrieveError: function (error) {
+                console.log('--- error', error);
+                console.log('--- error.response', error.response);
+                console.log('--- error.response.status', error.response.status);
+            },
+
             // --- API Internal
             // --- ---------------------------
 
+            _checkResponseStatus: function (response) {
+                if (!response.ok) {
+                    return response.text().then(function (text) {
+                        var error = new Error(text || response.statusText || response.status);
+                        return Promise.reject(Object.assign(error, {response}));
+                    });
+
+                }
+                return response;
+            },
+
+
             _fetchPromiseRetrieve: function () {
                 var opt = this._defaultOptions('GET');
-                return window.fetch(this._fetchUrlRetrieve(), opt).then(function (response) {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        consol
-                        return Promise.reject()
-                    }
-                }).then(this._transformFromServerRetrieve.bind(this))
-                    .then(this._handleResponseRetrieve.bind(this));
+                return window.fetch(this._fetchUrlRetrieve(), opt)
+                        .then(this._checkResponseStatus.bind(this))
+                        .then(function (response) {
+                            return response.json();
+                        }).then(this._transformFromServerRetrieve.bind(this))
+                        .then(this._handleResponseRetrieve.bind(this))
+                        .catch(this._handleRetrieveError.bind(this));
             },
 
             _fetcPromiseUpdate: function () {
@@ -226,7 +245,6 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                     return response.json();
                 }).then(this._handleResponseCreate.bind(this));
             },
-
 
 
             _fetchPromiseDelete: function () {
