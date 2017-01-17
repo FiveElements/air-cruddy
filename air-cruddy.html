@@ -204,6 +204,7 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                 console.log('--- error', error);
                 console.log('--- error.response', error.response);
                 console.log('--- error.response.status', error.response.status);
+                console.log('--- error.status', error.status);
 
             },
 
@@ -213,10 +214,12 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
             _checkResponseStatus: function (response) {
                 if (!response.ok) {
                     return response.text().then(function (text) {
-                        var error = new Error(response.status + '('+ response.statusText  + ') : '+ text);
-                        return Promise.reject(Object.assign(error, {response}));
+                        var error = new Error(response.status + '(' + response.statusText + ') : ' + text);
+                        return Promise.reject(Object.assign(error, {response}, {
+                            status: response.status,
+                            statusText: response.statusText
+                        }));
                     });
-
                 }
                 return response;
             },
