@@ -217,7 +217,8 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                         var error = new Error(response.status + '(' + response.statusText + ') : ' + text);
                         return Promise.reject(Object.assign(error, {response}, {
                             status: response.status,
-                            statusText: response.statusText
+                            statusText: response.statusText,
+                            responseText: text
                         }));
                     });
                 }
