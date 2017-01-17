@@ -39,3 +39,7 @@ curl -XPUT 'http://localhost:9200/twitter/tweet/1?pretty' -d'{ "user" : "kimchy"
 ``` 
 curl -XPOST 'http://localhost:9200/twitter/tweet/_search?pretty' 
  ``` 
+ 
+ 
+ #### test
+ http://httpstat.us/500
