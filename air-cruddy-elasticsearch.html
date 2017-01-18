@@ -1,0 +1,35 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="air-cruddy-mixin.html">
+
+<!--
+`air-cruddy-elasticsearch`
+Polymer Element air-cruddy-elasticsearch
+
+@demo demo/index.html 
+-->
+
+<dom-module id="air-cruddy-elasticsearch">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
+        <slot></slot>
+    </template>
+
+    <script>
+        'use strict';
+        Polymer({
+
+            is: 'air-cruddy-elasticsearch',
+
+            behaviors: [
+                FiveElements.AirCruddyBehavior
+            ],
+
+
+        });
+    </script>
+</dom-module>
