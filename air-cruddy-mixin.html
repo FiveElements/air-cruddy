@@ -422,6 +422,8 @@
             return response;
         },
 
+        // --- Fetch Promise Logic
+        // --- ---------------------------
 
         _fetchPromiseRetrieve: function (entityId) {
             return this._fetchInitRetrieve(entityId)
@@ -430,6 +432,7 @@
                     .then(this._transformResponseJson.bind(this))
                     .then(this._adapterResponseRetrieve.bind(this))
                     .then(this._handleResponseRetrieve.bind(this))
+                    .then(this._fireResponseRetrieve.bind(this))
                     .catch(this._handleErrorRetrieve.bind(this));
         },
 
@@ -443,6 +446,7 @@
                     .then(this._transformResponseJson.bind(this))
                     .then(this._adapterResponseUpdate.bind(this))
                     .then(this._handleResponseUpdate.bind(this))
+                    .then(this._fireResponseUpdate.bind(this))
                     .catch(this._handleErrorUpdate.bind(this));
         },
 
@@ -453,6 +457,7 @@
                     .then(this._transformResponseJson.bind(this))
                     .then(this._adapterResponseDelete.bind(this))
                     .then(this._handleResponseDelete.bind(this))
+                    .then(this._fireResponseDelete.bind(this))
                     .catch(this._handleErrorDelete.bind(this));
         },
 
@@ -467,6 +472,7 @@
                     .then(this._transformResponseJson.bind(this))
                     .then(this._adapterResponseCreate.bind(this))
                     .then(this._handleResponseCreate.bind(this))
+                    .then(this._fireResponseCreate.bind(this))
                     .catch(this._handleErrorCreate.bind(this));
         },
 
@@ -480,7 +486,6 @@
             this.data = responseJson;
             this._dataOrigin = dataClone;
             this.entityId = dataClone.id;
-            this._fireResponseRetrieve(responseJson);
             return responseJson;
         },
 
@@ -488,7 +493,6 @@
             this.data.id = responseJson._id;
             this.entityId = responseJson._id;
             this.data.version = responseJson._version;
-            this._fireResponseCreate(responseJson);
             return responseJson;
         },
 
@@ -497,12 +501,10 @@
             if (responseJson.version) {
                 this.data.version = responseJson.version;
             }
-            this._fireResponseUpdate(responseJson);
             return responseJson;
         },
 
         _handleResponseDelete: function (responseJson) {
-            this._fireResponseDelete(responseJson);
             return responseJson;
         },
 
