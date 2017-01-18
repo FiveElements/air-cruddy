@@ -403,68 +403,7 @@
             return (contentType && contentType.indexOf('application/json') !== -1)
         },
 
-        _handleResponseRetrieve: function (response) {
-//                console.log(response);
-            var dataClone = Object.freeze(JSON.parse(JSON.stringify(response)));
-            this.data = response;
-            this._dataOrigin = dataClone;
-            this.entityId = dataClone.id;
-            return response;
-        },
 
-        _handleResponseCreate: function (responseJson) {
-            var self = this;
-            this.data.id = responseJson._id;
-            this.entityId = responseJson._id;
-            this.data.version = responseJson._version;
-            return responseJson;
-        },
-
-
-        _handleResponseUpdate: function (responseJson) {
-            if (responseJson.version) {
-                this.data.version = responseJson.version;
-            }
-            return responseJson;
-        },
-
-        _handleResponseDelete: function (responseJson) {
-            return responseJson;
-        },
-
-        // --- Conflict resolution handling
-        // --- ---------------------------
-        _handleConflictResolution: function (error) {
-
-        },
-
-        // --- Error handling
-        // --- ---------------------------
-
-        _handleErrorRetrieve: function (error) {
-            console.log('--- error', error);
-            console.log('--- error.response', error.response);
-            console.log('--- error.response.status', error.response.status);
-            console.log('--- error.status', error.status);
-            this._fireErrorRetrieve(error);
-        },
-
-        _handleErrorUpdate: function (error) {
-            console.log('--- error', error);
-            if (error.status === 409) { // 409 Conflict Resolution
-                return this._handleConflictResolution(error);
-            }
-            this._fireErrorUpdate(error);
-        },
-        _handleErrorCreate: function (error) {
-            console.log('--- error', error);
-
-            this._fireErrorCreate(error);
-        },
-        _handleErrorDelete: function (error) {
-            console.log('--- error', error);
-            this._fireErrorDelete(error);
-        },
 
         // --- API Internal
         // --- ---------------------------
@@ -532,6 +471,107 @@
         },
 
 
+
+        // --- Response Handler
+        // --- ---------------------------
+
+        _handleResponseRetrieve: function (responseJson) {
+            var dataClone = Object.freeze(JSON.parse(JSON.stringify(responseJson)));
+            this.data = responseJson;
+            this._dataOrigin = dataClone;
+            this.entityId = dataClone.id;
+            this._fireResponseRetrieve(responseJson);
+            return responseJson;
+        },
+
+        _handleResponseCreate: function (responseJson) {
+            this.data.id = responseJson._id;
+            this.entityId = responseJson._id;
+            this.data.version = responseJson._version;
+            this._fireResponseCreate(responseJson);
+            return responseJson;
+        },
+
+
+        _handleResponseUpdate: function (responseJson) {
+            if (responseJson.version) {
+                this.data.version = responseJson.version;
+            }
+            this._fireResponseUpdate(responseJson);
+            return responseJson;
+        },
+
+        _handleResponseDelete: function (responseJson) {
+            this._fireResponseDelete(responseJson);
+            return responseJson;
+        },
+
+
+        // --- Error handling
+        // --- ---------------------------
+
+        _logError: function (error) {
+            console.log('--- error', error);
+            console.log('--- error.response', error.response);
+            console.log('--- error.response.status', error.response.status);
+            console.log('--- error.status', error.status);
+        },
+
+        _handleErrorRetrieve: function (error) {
+            this._logError(error);
+            var handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorRetrieve', error);
+            if (handlerStatus) {
+                return handlerStatus(error);
+            }
+            this._fireErrorRetrieve(error);
+        },
+
+        _handleErrorUpdate: function (error) {
+            this._logError(error);
+            var handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorUpdate', error);
+            if (handlerStatus) {
+                return handlerStatus(error);
+            }
+            this._fireErrorUpdate(error);
+        },
+
+        _handleErrorCreate: function (error) {
+            this._logError(error);
+            var handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorCreate', error);
+            if (handlerStatus) {
+                return handlerStatus(error);
+            }
+            this._fireErrorCreate(error);
+        },
+        _handleErrorDelete: function (error) {
+            this._logError(error);
+            var handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorDelete', error);
+            if (handlerStatus) {
+                return handlerStatus(error);
+            }
+            this._fireErrorDelete(error);
+        },
+
+
+        // --- Specific Error handling
+        // --- ---------------------------
+        _getHandlerResponseWithSpecificStatus: function (baseErrorFuncName, response) {
+            var status = response.status;
+            if (status) {
+                var errorStatusFunc = baseErrorFuncName + status;
+                var handlerForStatus = this[errorStatusFunc];
+                if (typeof  handlerForStatus === 'function') {
+                    // Manage Method Like : _handleErrorUpdate409
+                   return handlerForStatus;
+                }
+            }
+            return null;
+        },
+
+        _handleErrorUpdate409: function (error) {
+            // TODO
+        },
+
         // --- Event Response
         // --- ---------------------------
 
@@ -542,6 +582,33 @@
          */
         _fireResponseRetrieve: function (response) {
             this.fire('air-cruddy-retrieve', response);
+        },
+
+        /**
+         * Fired when a resource are updated.
+         *
+         * @event air-cruddy-update
+         */
+        _fireResponseUpdate: function (response) {
+            this.fire('air-cruddy-update', response);
+        },
+
+        /**
+         * Fired when a resource are created.
+         *
+         * @event air-cruddy-create
+         */
+        _fireResponseCreate: function (response) {
+            this.fire('air-cruddy-create', response);
+        },
+
+        /**
+         * Fired when a resource are deleted.
+         *
+         * @event air-cruddy-delete
+         */
+        _fireResponseDelete: function (response) {
+            this.fire('air-cruddy-delete', response);
         },
 
         // --- Event Error
