@@ -120,7 +120,7 @@
         },
 
         update: function () {
-            this._fetcPromiseUpdate(this.entityId, this.data);
+            this._fetchPromiseUpdate(this.entityId, this.data);
         },
 
         delete: function () {
@@ -436,7 +436,7 @@
                     .catch(this._handleErrorRetrieve.bind(this));
         },
 
-        _fetcPromiseUpdate: function (entityId, data) {
+        _fetchPromiseUpdate: function (entityId, data) {
             return this._fetchInitUpdate(entityId, data)
                     .then(function (init) {
                         return this._fetchInitAddData(init, data);
