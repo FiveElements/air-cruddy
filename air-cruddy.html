@@ -343,6 +343,7 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                 if (this._isResponseJson(response)) {
                     return response.json().then(function (responseJson) {
                         self.data.id = responseJson._id;
+                        self.entityId = responseJson._id;
                         self.data.version = responseJson._version;
                         return response;
                     });
