@@ -24,6 +24,8 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
         <button on-tap="retrieve">Retrieve</button>
         <button on-tap="retrieveById">Retrieve 404</button>
         <button on-tap="update">Update</button>
+        <button on-tap="delete">Delete</button>
+
         <h2 on-tap="retrieve">Hello [[url]]</h2>
     </template>
 
@@ -64,7 +66,7 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
             retrieveById: function (entityId) {
                 console.log("Request Retrieve: ", entityId);
                 this.entityId = '404';
-                this._fetchPromiseRetrieve().catch(function (error) {
+                this._fetchPromiseRetrieve('404').catch(function (error) {
                     console.log('post error', error);
                 });
             },
@@ -72,19 +74,17 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
 
             // --- API
             // --- ---------------------------
-
-
             retrieve: function () {
                 console.log("Request Retrieve");
-                this._fetchPromiseRetrieve();
+                this._fetchPromiseRetrieve(this.entityId);
             },
 
             update: function () {
-                console.log("Request Update");
+                this._fetcPromiseUpdate(this.entityId, this.data);
             },
 
             delete: function () {
-
+                this._fetchPromiseDelete(this.entityId, this.data);
             },
 
             // --- API Adapter
@@ -94,33 +94,61 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                 var myHeaders = new Headers({
                     'Content-Type': 'application/json' // "text/plain"
                 });
-                if (content) {
-                    console.log('Content-Length', content.length.toString());
-                    myHeaders.append('Content-Length', content.length.toString());
-                }
                 return myHeaders;
             },
 
+            /**
+             *
+             * @param method
+             * @param data
+             * @returns {{method: *, mode: *, headers: *}}
+             * @private
+             */
             _defaultOptions: function (method, data) {
                 var content = undefined;
-                if (data) {
-                    content = this._dataSerializerEntity(data);
-                }
                 var myHeaders = this._defaultHearders(content);
-                var opt = {
+                // https://developer.mozilla.org/en-US/docs/Web/API/Request/Request
+                // method: The request method, e.g., GET, POST.
+                // headers: Any headers you want to add to your request
+                // body: Any body that you want to add to your request
+                // mode: The mode you want to use for the request, e.g., cors, no-cors, same-origin, or navigate.
+                // credentials: The request credentials you want to use for the request: omit, same-origin, or include. The default is omit.
+                // cache: The cache mode you want to use for the request.
+                // redirect: The redirect mode to use: follow, error, or manual. In Chrome the default is follow
+                // referrer: A USVString specifying no-referrer, client, or a URL. The default is client.
+                // integrity: Contains the subresource integrity value of the request (e.g., sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=). (https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity)
+                var init = {
                     method: method,
                     mode: this.mode,
 //                    cache: 'default', redirect: 'follow',
                     headers: myHeaders
                 };
-                if (content) {
-                    opt.body = content;
-                }
-                return opt;
+                return init;
             },
 
-            _fetchUrlEntityId: function () {
-                return this.url + '/' + this.entityId;
+            _fetchInitAddData: function (init, data) {
+                var content = undefined;
+                if (data) {
+                    content = this._dataSerializerEntity(data);
+                }
+                if (content) {
+                    var contentLength = content.length;
+                    init.body = content;
+                    var myHeaders = init.headers || new Headers();
+                    console.log('Add Header Content-Length', contentLength);
+                    myHeaders.append("Content-Length", contentLength.toString());
+                    ;
+                }
+                return init;
+            },
+
+
+            _fetchUrlEntityId: function (entityId, version) {
+                var url = this.url + '/' + entityId;
+                if (version) {
+                    url += '?version=' + version;
+                }
+                return url;
             },
 
             _fetchUrlRoot: function () {
@@ -130,17 +158,39 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
 
             // --- Data Serialiser
             // --- ---------------------------
+
+            // --- Internal Promise
+            // --- ---------------------------
+            _transformResponseJson: function (response) {
+                return response.json();
+            },
+
+            _fetchRequest: function (init) {
+                var url = init.url;
+                delete init.url;
+                return window.fetch(url, init);
+            },
+
+            _handleResponseRetrieve: function (response) {
+//                console.log(response);
+                var dataClone = JSON.parse(JSON.stringify(response));
+                this.data = response;
+                this._dataOrigin = dataClone;
+                this.entityId = dataClone.id;
+                return response;
+            },
+
+
+            // --- Elasticsearch API Transformer
+            // --- ---------------------------
             _dataSerializerEntity: function (data) {
                 return JSON.stringify(data);
             },
 
-            // --- Elasticsearch API Transformer
-            // --- ---------------------------
-
-            _transformFromServerRetrieve: function (response) {
-                var data = JSON.parse(JSON.stringify(response._source));
-                data.id = response._id;
-                data.version = response._version;
+            _transformFromServerRetrieve: function (responseJson) {
+                var data = JSON.parse(JSON.stringify(responseJson._source));
+                data.id = responseJson._id;
+                data.version = responseJson._version;
                 return data;
             },
 
@@ -161,38 +211,96 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                 };
             },
 
-            // --- Elasticsearch Response Handler
+            // --- Elasticsearch API
             // --- -------------------------------
-            _fetchUrlRetrieve: function () {
-                return this._fetchUrlEntityId();
+            _fetchUrlRetrieve: function (entityId, version) {
+                return this._fetchUrlEntityId(entityId, version);
             },
 
-            _fetchUrlUpdate: function () {
-                return this._fetchUrlEntityId();
+            _fetchUrlUpdate: function (entityId, version) {
+                return this._fetchUrlEntityId(entityId, version);
             },
 
-            _fetchUrlDelete: function () {
-                return this._fetchUrlEntityId();
+            _fetchUrlDelete: function (entityId, version) {
+                return this._fetchUrlEntityId(entityId, version);
             },
 
-            _fetchUrlCreate: function () {
+            _fetchUrlCreate: function (entityId, version) {
                 return this._fetchUrlRoot();
             },
 
+            // --- Fetch Request
+            // --- -------------------------------
+
+            _fetchInitRetrieve: function (entityId) {
+                var self = this;
+                return new Promise(function (resolve, reject) {
+                    var urlGet = self._fetchUrlRetrieve(entityId);
+                    var opt = self._defaultOptions('GET');
+                    resolve(Object.assign(opt, {url: urlGet}));
+                });
+            },
+
+            _fetchInitUpdate: function (entityId, data) {
+                var self = this;
+                return new Promise(function (resolve, reject) {
+                    var version = data ? data.version : null;
+                    var urlUpdate = self._fetchUrlUpdate(entityId, version);
+                    var opt = self._defaultOptions('PUT', data);
+                    resolve(Object.assign(opt, {url: urlUpdate}));
+                });
+            },
+
+
+            _fetchInitDelete: function (entityId, data) {
+                var self = this;
+                return new Promise(function (resolve, reject) {
+                    var version = data ? data.version : null;
+                    var urlDelete = self._fetchUrlDelete(entityId, version);
+                    var opt = self._defaultOptions('DELETE', data);
+                    resolve(Object.assign(opt, {url: urlDelete}));
+                });
+            },
+
+            _fetchInitCreate: function (entityId, data) {
+                var self = this;
+                return new Promise(function (resolve, reject) {
+                    var urlCreate = self._fetchUrlCreate(entityId, data);
+                    var opt = self._defaultOptions('POST', data);
+                    resolve(Object.assign(opt, {url: urlCreate}));
+                });
+            },
+
+
             // --- Component linker
             // --- ---------------------------
-            _handleResponseRetrieve: function (response) {
-//                console.log(response);
-                var dataClone = JSON.parse(JSON.stringify(response));
-                this.data = response;
-                this._dataOrigin = dataClone;
-                return response;
-            },
+
             _handleResponseCreate: function (response) {
                 return response;
             },
 
+            __printResponseHeaders: function (response) {
+                var myHeaders = response.headers;
+                for (var pair of myHeaders.entries()) {
+                    console.log(pair[0]+ ': '+ pair[1]);
+                }
+                return response;
+            },
+
             _handleResponseUpdate: function (response) {
+                var self = this;
+                var contentType = response.headers.get('content-type');
+                if(contentType && contentType.indexOf('application/json') !== -1) {
+                    return response.json().then(function (responseJson) {
+                    self.data.version = responseJson.version;
+                        return response;
+                    });
+                } else {
+                    return response;
+                }
+            },
+
+            _handleResponseDelete: function (response) {
                 return response;
             },
 
@@ -200,12 +308,22 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
             // --- Error handling
             // --- ---------------------------
 
-            _handleRetrieveError: function (error) {
+            _handleErrorRetrieve: function (error) {
                 console.log('--- error', error);
                 console.log('--- error.response', error.response);
                 console.log('--- error.response.status', error.response.status);
                 console.log('--- error.status', error.status);
 
+            },
+
+            _handleErrorUpdate: function (error) {
+                console.log('--- error', error);
+            },
+            _handleErrorCreate: function (error) {
+                console.log('--- error', error);
+            },
+            _handleErrorDelete: function (error) {
+                console.log('--- error', error);
             },
 
             // --- API Internal
@@ -215,7 +333,7 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                 if (!response.ok) {
                     return response.text().then(function (text) {
                         var error = new Error(response.status + '(' + response.statusText + ') : ' + text);
-                        return Promise.reject(Object.assign(error, {response}, {
+                        return Promise.reject(Object.assign(error, {response: response}, {
                             status: response.status,
                             statusText: response.statusText,
                             responseText: text
@@ -226,35 +344,46 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
             },
 
 
-            _fetchPromiseRetrieve: function () {
-                var opt = this._defaultOptions('GET');
-                return window.fetch(this._fetchUrlRetrieve(), opt)
-                        .then(this._checkResponseStatus.bind(this))
-                        .then(function (response) {
-                            return response.json();
-                        }).then(this._transformFromServerRetrieve.bind(this))
-                        .then(this._handleResponseRetrieve.bind(this))
-                        .catch(this._handleRetrieveError.bind(this));
+            _fetchPromiseRetrieve: function (entityId) {
+                return this._fetchInitRetrieve(entityId)
+                    .then(this._fetchRequest.bind(this))
+                    .then(this._checkResponseStatus.bind(this))
+                    .then(this._transformResponseJson.bind(this))
+                    .then(this._transformFromServerRetrieve.bind(this))
+                    .then(this._handleResponseRetrieve.bind(this))
+                    .catch(this._handleErrorRetrieve.bind(this));
             },
 
-            _fetcPromiseUpdate: function () {
-                var opt = this._defaultOptions('PUT', this.data);
-                return fetch(this._fetchUrlUpdate(), opt).then(function (response) {
-                    return response.json();
-                }).then(this._handleResponseUpdate.bind(this));
+            _fetcPromiseUpdate: function (entityId, data) {
+                return this._fetchInitUpdate(entityId, data)
+                    .then(function (init) {
+                        return this._fetchInitAddData(init, data);
+                    }.bind(this))
+                    .then(this._fetchRequest.bind(this))
+                    .then(this._checkResponseStatus.bind(this))
+                    .then(this._handleResponseUpdate.bind(this))
+                    .catch(this._handleErrorUpdate.bind(this));
             },
 
-            _fetchPromiseCreate: function () {
-                var opt = this._defaultOptions('POST', this.data);
-                return fetch(this._fetchUrlCreate(), opt).then(function (response) {
-                    return response.json();
-                }).then(this._handleResponseCreate.bind(this));
+            _fetchPromiseDelete: function (entityId, data) {
+                return this._fetchInitDelete(entityId, data)
+                    .then(this._fetchRequest.bind(this))
+                    .then(this._checkResponseStatus.bind(this))
+                    .then(this._handleResponseDelete.bind(this))
+                    .catch(this._handleErrorDelete.bind(this));
             },
 
 
-            _fetchPromiseDelete: function () {
-                var opt = this._defaultOptions('DELETE');
-                return fetch(this._fetchUrlEntityId(), opt);
+            _fetchPromiseCreate: function (entityId, data) {
+                return this._fetchInitCreate(entityId, data)
+                    .then(function (init) {
+                        return this._fetchInitAddData(init, data);
+                    }.bind(this))
+                    .then(this._fetchRequest.bind(this))
+                    .then(this._checkResponseStatus.bind(this))
+                    .then(this._transformResponseJson.bind(this))
+                    .then(this._handleResponseCreate.bind(this))
+                    .catch(this._handleErrorCreate.bind(this));
             },
 
 
