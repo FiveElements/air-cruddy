@@ -25,6 +25,8 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
         <button on-tap="retrieveById">Retrieve 404</button>
         <button on-tap="update">Update</button>
         <button on-tap="delete">Delete</button>
+        <button on-tap="newEntity">New</button>
+        <button on-tap="create">Create</button>
 
         <h2 on-tap="retrieve">Hello [[url]]</h2>
     </template>
@@ -50,9 +52,39 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                 _dataOrigin: {
                     type: Object
                 },
+                /**
+                 * Fetch Configuration
+                 *  mode: The mode you want to use for the request, e.g., cors, no-cors, same-origin, or navigate.
+                 */
                 mode: {
                     type: String,
                     value: 'cors'
+                },
+
+                /**
+                 * Fetch Configuration
+                 * cache: The cache mode you want to use for the request.
+                 */
+                cache: {
+                    type: String,
+                    value: 'default'
+                },
+
+                /**
+                 * Fetch Configuration
+                 * redirect: The redirect mode to use: follow, error, or manual. In Chrome the default is follow
+                 */
+                redirect: {
+                    type: String,
+                    value: 'follow'
+                },
+                /**
+                 * Fetch Configuration
+                 * referrer: A USVString specifying no-referrer, client, or a URL. The default is client.
+                 */
+                referrer: {
+                    type: String,
+                    value: 'client'
                 }
             },
 
@@ -85,6 +117,23 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
 
             delete: function () {
                 this._fetchPromiseDelete(this.entityId, this.data);
+            },
+
+            create: function () {
+                console.log('create data add ',  this.data);
+                this._fetchPromiseCreate(null, this.data);
+            },
+
+            newEntity: function () {
+                this.entityId = null;
+                this.data = {};
+
+            },
+
+            clean: function () {
+                this.entityId = null;
+                this.data = null;
+                this._dataOrigin = null;
             },
 
             // --- API Adapter
@@ -120,13 +169,15 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                 var init = {
                     method: method,
                     mode: this.mode,
-//                    cache: 'default', redirect: 'follow',
+                    cache: this.cache,
+                    redirect: this.redirect,
+                    referrer: this.referrer,
                     headers: myHeaders
                 };
                 return init;
             },
 
-            _fetchInitAddData: function (init, data) {
+            _fetchInitAddData: function (init, data) { 
                 var content = undefined;
                 if (data) {
                     content = this._dataSerializerEntity(data);
@@ -137,7 +188,6 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                     var myHeaders = init.headers || new Headers();
                     console.log('Add Header Content-Length', contentLength);
                     myHeaders.append("Content-Length", contentLength.toString());
-                    ;
                 }
                 return init;
             },
@@ -274,25 +324,41 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
 
             // --- Component linker
             // --- ---------------------------
-
-            _handleResponseCreate: function (response) {
-                return response;
-            },
-
             __printResponseHeaders: function (response) {
                 var myHeaders = response.headers;
                 for (var pair of myHeaders.entries()) {
-                    console.log(pair[0]+ ': '+ pair[1]);
+                    console.log(pair[0] + ': ' + pair[1]);
                 }
                 return response;
             },
 
+            _isResponseJson: function (response) {
+                var contentType = response.headers.get('content-type');
+                return (contentType && contentType.indexOf('application/json') !== -1)
+            },
+
+
+            _handleResponseCreate: function (response) {
+                var self = this;
+                if (this._isResponseJson(response)) {
+                    return response.json().then(function (responseJson) {
+                        self.data.id = responseJson._id;
+                        self.data.version = responseJson._version;
+                        return response;
+                    });
+                } else {
+                    return response;
+                }
+                return response;
+            },
+
+
+            
             _handleResponseUpdate: function (response) {
                 var self = this;
-                var contentType = response.headers.get('content-type');
-                if(contentType && contentType.indexOf('application/json') !== -1) {
+                if (this._isResponseJson(response)) {
                     return response.json().then(function (responseJson) {
-                    self.data.version = responseJson.version;
+                        self.data.version = responseJson.version;
                         return response;
                     });
                 } else {
@@ -381,7 +447,6 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
                     }.bind(this))
                     .then(this._fetchRequest.bind(this))
                     .then(this._checkResponseStatus.bind(this))
-                    .then(this._transformResponseJson.bind(this))
                     .then(this._handleResponseCreate.bind(this))
                     .catch(this._handleErrorCreate.bind(this));
             },
