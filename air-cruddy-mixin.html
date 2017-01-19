@@ -191,20 +191,7 @@
             return init;
         },
 
-        _fetchInitAddData: function (init, data) {
-            var content = undefined;
-            if (data) {
-                content = this._dataSerializerEntity(data);
-            }
-            if (content) {
-                var contentLength = content.length;
-                init.body = content;
-                // Complete Headers
-                var myHeaders = init.headers || new Headers();
-                myHeaders.append("Content-Length", contentLength.toString());
-            }
-            return init;
-        },
+
 
 //            _computeDataIntegrity: function(content) {
 //                var integrityAlgo = 'SHA-256'; // allowed prefixes are sha256, sha384, and sha512
@@ -436,6 +423,52 @@
 //                if (this._isResponseJson(response)) {
             return response.json();
         },
+
+        // --- Fetch Data Helper
+        // --- ---------------------------
+        _fetchDataPrepare: function (init, data) {
+            return {
+                init: init,
+                data: data
+            };
+        },
+
+        _fetchDataContentSerializer(opt) {
+            if (opt.data) {
+                opt.content = this._dataSerializerEntity(opt.data);
+            }
+            return opt;
+        },
+
+        _fetchDataContentRegister(opt) {
+            var init = opt.init;
+            var content = opt.content;
+            if (content) {
+                var contentLength = content.length;
+                init.body = content;
+                // Complete Headers
+                var myHeaders = init.headers || new Headers();
+                myHeaders.append("Content-Length", contentLength.toString());
+                init.headers = myHeaders;
+            }
+            return init;
+        },
+
+        _fetchInitAddData: function (init, data) {
+            var content = undefined;
+            if (data) {
+                content = this._dataSerializerEntity(data);
+            }
+            if (content) {
+                var contentLength = content.length;
+                init.body = content;
+                // Complete Headers
+                var myHeaders = init.headers || new Headers();
+                myHeaders.append("Content-Length", contentLength.toString());
+            }
+            return init;
+        },
+
         // --- Fetch Promise Logic
         // --- ---------------------------
 
