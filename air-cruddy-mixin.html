@@ -140,11 +140,23 @@
 
         clean: function () {
             this.entityId = null;
-            this.data = null;
-            this._dataOrigin = null;
+            this._setDataAndOrigin(null);
         },
 
-        // --- API Adapter
+        reset: function () {
+          this.data = JSON.parse(JSON.stringify(this._dataOrigin));
+        },
+        // --- Utility
+        // --- ---------------------------
+        _setDataAndOrigin: function (data) {
+            var dataClone = data ? JSON.parse(JSON.stringify(data)) : null;
+            this.data = data;
+            this._dataOrigin = dataClone;
+        },
+
+
+
+        // --- Fetch Configuration
         // --- ---------------------------
 
         _defaultHearders: function () {
@@ -187,6 +199,7 @@
             if (content) {
                 var contentLength = content.length;
                 init.body = content;
+                // Complete Headers
                 var myHeaders = init.headers || new Headers();
                 myHeaders.append("Content-Length", contentLength.toString());
             }
@@ -220,16 +233,7 @@
 
         // --- Internal Promise
         // --- ---------------------------
-        _transformResponseJson: function (response) {
-//                if (this._isResponseJson(response)) {
-            return response.json();
-        },
 
-        _fetchRequest: function (init) {
-            var url = init.url;
-            delete init.url;
-            return window.fetch(url, init);
-        },
 
 
         // --- Elasticsearch API Transformer
@@ -390,12 +394,13 @@
 
         // --- Component linker
         // --- ---------------------------
-        __printResponseHeaders: function (response) {
+        _extractResponseHeaders: function (response) {
             var myHeaders = response.headers;
+            var headers = {};
             for (var pair of myHeaders.entries()) {
-                console.log(pair[0] + ': ' + pair[1]);
+                headers[ pair[0] ] = pair[1];
             }
-            return response;
+            return headers;
         },
 
         _isResponseJson: function (response) {
@@ -405,8 +410,13 @@
 
 
 
-        // --- API Internal
+        // --- Fetch Helper
         // --- ---------------------------
+        _fetchRequest: function (init) {
+            var url = init.url;
+            delete init.url;
+            return window.fetch(url, init);
+        },
 
         _checkResponseStatus: function (response) {
             if (!response.ok) {
@@ -422,6 +432,10 @@
             return response;
         },
 
+        _transformResponseJson: function (response) {
+//                if (this._isResponseJson(response)) {
+            return response.json();
+        },
         // --- Fetch Promise Logic
         // --- ---------------------------
 
@@ -482,29 +496,35 @@
         // --- ---------------------------
 
         _handleResponseRetrieve: function (responseJson) {
-            var dataClone = Object.freeze(JSON.parse(JSON.stringify(responseJson)));
-            this.data = responseJson;
-            this._dataOrigin = dataClone;
-            this.entityId = dataClone.id;
+            this._setDataAndOrigin(responseJson);
+            this.entityId = responseJson.id;
             return responseJson;
         },
 
         _handleResponseCreate: function (responseJson) {
-            this.data.id = responseJson._id;
-            this.entityId = responseJson._id;
-            this.data.version = responseJson._version;
+            var data = this.data;
+            // Hydrate
+            data.id = responseJson.id;
+            if (responseJson.version) {
+                data.version = responseJson.version;
+            }
+            this.entityId = data.id;
+            this._setDataAndOrigin(data);
             return responseJson;
         },
 
 
         _handleResponseUpdate: function (responseJson) {
+            var data = this.data;
             if (responseJson.version) {
-                this.data.version = responseJson.version;
+                data.version = responseJson.version;
             }
+            this._setDataAndOrigin(data);
             return responseJson;
         },
 
         _handleResponseDelete: function (responseJson) {
+            this.clean();
             return responseJson;
         },
 
