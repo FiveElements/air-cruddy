@@ -169,7 +169,7 @@
          * Restore the dat from with the last request retrieve.
          */
         reset: function () {
-          this.data = JSON.parse(JSON.stringify(this._dataOrigin));
+            this.data = JSON.parse(JSON.stringify(this._dataOrigin));
         },
 
         // --- Utility
@@ -179,7 +179,6 @@
             this.data = data;
             this._dataOrigin = dataClone;
         },
-
 
 
         // --- Fetch Configuration
@@ -218,16 +217,6 @@
         },
 
 
-
-//            _computeDataIntegrity: function(content) {
-//                var integrityAlgo = 'SHA-256'; // allowed prefixes are sha256, sha384, and sha512
-//                var buffer = new TextEncoder("utf-8").encode(content);
-//                return crypto.subtle.digest(integrityAlgo, buffer).then(function (hash) {
-//                    return base64(hash);
-//                };
-//            },
-
-
         _fetchUrlEntityId: function (entityId, version) {
             var url = this.url + '/' + entityId;
             if (version) {
@@ -239,14 +228,6 @@
         _fetchUrlRoot: function () {
             return this.url;
         },
-
-
-        // --- Data Serialiser
-        // --- ---------------------------
-
-        // --- Internal Promise
-        // --- ---------------------------
-
 
 
         // --- Elasticsearch API Transformer
@@ -358,6 +339,7 @@
             return this._adapterFetchInitData(opt);
         },
 
+
         _transformToServerSavePartial: function (dataToSave) {
             // Manage Differential
             var data = JSON.parse(JSON.stringify(dataToSave));
@@ -405,7 +387,7 @@
                 var version = data ? data.version : null;
                 var urlGet = self._fetchUrlRetrieve(entityId, version);
                 var opt = self._defaultOptions('GET');
-                resolve( {init: opt, url: urlGet});
+                resolve({init: opt, url: urlGet});
             });
         },
 
@@ -426,7 +408,7 @@
                 var version = data ? data.version : null;
                 var urlUpdate = self._fetchUrlUpdate(entityId, version);
                 var opt = self._defaultOptions('PUT', data);
-                resolve( {init: opt, url: urlUpdate, data: data});
+                resolve({init: opt, url: urlUpdate, data: data});
             });
         },
 
@@ -446,7 +428,7 @@
                 var version = data ? data.version : null;
                 var urlDelete = self._fetchUrlDelete(entityId, version);
                 var opt = self._defaultOptions('DELETE', data);
-                resolve( {init: opt, url: urlDelete, data: data});
+                resolve({init: opt, url: urlDelete, data: data});
             });
         },
 
@@ -465,7 +447,7 @@
             return new Promise(function (resolve, reject) {
                 var urlCreate = self._fetchUrlCreate(entityId, data);
                 var opt = self._defaultOptions('POST', data);
-                resolve( {init: opt, url: urlCreate, data: data});
+                resolve({init: opt, url: urlCreate, data: data});
             });
         },
 
@@ -476,7 +458,7 @@
             var myHeaders = response.headers;
             var headers = {};
             for (var pair of myHeaders.entries()) {
-                headers[ pair[0] ] = pair[1];
+                headers[pair[0]] = pair[1];
             }
             return headers;
         },
@@ -485,7 +467,6 @@
             var contentType = response.headers.get('content-type');
             return (contentType && contentType.indexOf('application/json') !== -1)
         },
-
 
 
         // --- Fetch Helper
@@ -539,61 +520,97 @@
         },
 
 
+        /**
+         * Compute Fetch Integrity Prefix for hash algo.
+         */
+        _getFetchIntegrityPrefix:function(algo) {
+            var prefix;
+            switch (algo) {
+                case 'SHA-256':
+                    prefix = 'sha256-';
+                    break;
+                case 'SHA-384':
+                    prefix = 'sha384-';
+                    break;
+                case 'SHA-512':
+                    prefix = 'sha512-';
+                    break;
+                default:
+                    throw new Error('Not Fetch prefix for algo ' + algo);
+                    break;
+            }
+            return prefix;
+        },
+
+//        _fetchInitDataIntegrity: function (opt) {
+//            var content = opt.content;
+//            if (content) {
+//                var integrityAlgo = 'SHA-256'; // allowed prefixes are sha256, sha384, and sha512
+//                var buffer = new TextEncoder("utf-8").encode(content);
+//                return crypto.subtle.digest(integrityAlgo, buffer).then(function (hash) {
+//                    return base64(hash);
+//                }).then(function (base64Hash) {
+//                    var prefix = this._getFetchIntegrityPrefix(integrityAlgo);
+//                    return opt;
+//                });
+//            }
+//            return opt;
+//        },
+
 
         // --- Fetch Promise Logic
         // --- ---------------------------
 
         _fetchPromiseRetrieve: function (entityId) {
             return this._fetchInitRetrieve(entityId)
-                    .then(this._fetchRequest.bind(this)) // Do Request
-                    .then(this._checkResponseStatus.bind(this))
-                    .then(this._transformResponseJson.bind(this))
-                    .then(this._adapterResponseRetrieve.bind(this))
-                    .then(this._handleResponseRetrieve.bind(this))
-                    .then(this._fireResponseRetrieve.bind(this))
-                    .catch(this._handleErrorRetrieve.bind(this));
+                .then(this._fetchRequest.bind(this)) // Do Request
+                .then(this._checkResponseStatus.bind(this))
+                .then(this._transformResponseJson.bind(this))
+                .then(this._adapterResponseRetrieve.bind(this))
+                .then(this._handleResponseRetrieve.bind(this))
+                .then(this._fireResponseRetrieve.bind(this))
+                .catch(this._handleErrorRetrieve.bind(this));
         },
 
         _fetchPromiseUpdate: function (entityId, data) {
             return this._fetchInitUpdate(entityId, data)
-                 .then(this._adapterFetchInitDataUpdate.bind(this))
-                    .then(this._fetchInitDataContentSerializer.bind(this))
-                    .then(this._fetchInitDataContentRegister.bind(this))
-                    .then(this._fetchRequest.bind(this)) // Do Request
-                    .then(this._checkResponseStatus.bind(this))
-                    .then(this._transformResponseJson.bind(this))
-                    .then(this._adapterResponseUpdate.bind(this))
-                    .then(this._handleResponseUpdate.bind(this))
-                    .then(this._fireResponseUpdate.bind(this))
-                    .catch(this._handleErrorUpdate.bind(this));
+                .then(this._adapterFetchInitDataUpdate.bind(this))
+                .then(this._fetchInitDataContentSerializer.bind(this))
+                .then(this._fetchInitDataContentRegister.bind(this))
+                .then(this._fetchRequest.bind(this)) // Do Request
+                .then(this._checkResponseStatus.bind(this))
+                .then(this._transformResponseJson.bind(this))
+                .then(this._adapterResponseUpdate.bind(this))
+                .then(this._handleResponseUpdate.bind(this))
+                .then(this._fireResponseUpdate.bind(this))
+                .catch(this._handleErrorUpdate.bind(this));
         },
 
         _fetchPromiseDelete: function (entityId, data) {
             return this._fetchInitDelete(entityId, data)
-                    .then(this._fetchRequest.bind(this)) // Do Request
-                    .then(this._checkResponseStatus.bind(this))
-                    .then(this._transformResponseJson.bind(this))
-                    .then(this._adapterResponseDelete.bind(this))
-                    .then(this._handleResponseDelete.bind(this))
-                    .then(this._fireResponseDelete.bind(this))
-                    .catch(this._handleErrorDelete.bind(this));
+                .then(this._fetchRequest.bind(this)) // Do Request
+                .then(this._checkResponseStatus.bind(this))
+                .then(this._transformResponseJson.bind(this))
+                .then(this._adapterResponseDelete.bind(this))
+                .then(this._handleResponseDelete.bind(this))
+                .then(this._fireResponseDelete.bind(this))
+                .catch(this._handleErrorDelete.bind(this));
         },
 
 
         _fetchPromiseCreate: function (entityId, data) {
             return this._fetchInitCreate(entityId, data)
-                    .then(this._adapterFetchInitDataCreate.bind(this))
-                    .then(this._fetchInitDataContentSerializer.bind(this))
-                    .then(this._fetchInitDataContentRegister.bind(this))
-                    .then(this._fetchRequest.bind(this)) // Do Request
-                    .then(this._checkResponseStatus.bind(this))
-                    .then(this._transformResponseJson.bind(this))
-                    .then(this._adapterResponseCreate.bind(this))
-                    .then(this._handleResponseCreate.bind(this))
-                    .then(this._fireResponseCreate.bind(this))
-                    .catch(this._handleErrorCreate.bind(this));
+                .then(this._adapterFetchInitDataCreate.bind(this))
+                .then(this._fetchInitDataContentSerializer.bind(this))
+                .then(this._fetchInitDataContentRegister.bind(this))
+                .then(this._fetchRequest.bind(this)) // Do Request
+                .then(this._checkResponseStatus.bind(this))
+                .then(this._transformResponseJson.bind(this))
+                .then(this._adapterResponseCreate.bind(this))
+                .then(this._handleResponseCreate.bind(this))
+                .then(this._fireResponseCreate.bind(this))
+                .catch(this._handleErrorCreate.bind(this));
         },
-
 
 
         // --- Response Handler
@@ -688,7 +705,7 @@
                 var handlerForStatus = this[errorStatusFunc];
                 if (typeof  handlerForStatus === 'function') {
                     // Manage Method Like : _handleErrorUpdate409
-                   return handlerForStatus;
+                    return handlerForStatus;
                 }
             }
             return null;
