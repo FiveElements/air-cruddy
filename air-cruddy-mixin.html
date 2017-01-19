@@ -153,7 +153,7 @@
          */
         newEntity: function () {
             this.entityId = null;
-            this.data = {};
+            this._setDataAndOrigin({});
 
         },
 
@@ -172,11 +172,38 @@
             this.data = JSON.parse(JSON.stringify(this._dataOrigin));
         },
 
+        // --- Validation
+        // --- ---------------------------
+
+        validate: function () {
+            console.log('--- Validate', this.$.slot);
+            var distributed = this.getContentChildren('#crudContent');
+            console.log('--- Validate', distributed.length);
+            console.log('--- Validate', Polymer.dom(this).children);
+            var validateNodes = this._getValidateNodes();
+            var isValid = validateNodes.reduce(function (acc, node) {
+                var validateFunc = node['validate'];
+                var isValidNode = validateFunc();
+                return acc;
+            }, false);
+        },
+
+        _getValidateNodes: function () {
+//            var nodes = Polymer.dom(this).children;
+            var nodes = Polymer.dom(this).getEffectiveChildNodes();
+            return Array.prototype.filter.call(nodes, function (n) {
+                var validateFunc = n['validate'];
+                var isValidateNode = (typeof  validateFunc === 'function');
+                return isValidateNode;
+            });
+        },
+
         // --- Utility
         // --- ---------------------------
         _setDataAndOrigin: function (data) {
             var dataClone = data ? JSON.parse(JSON.stringify(data)) : null;
             this.data = data;
+            console.log('set Data ', data);
             this._dataOrigin = dataClone;
         },
 
@@ -523,7 +550,7 @@
         /**
          * Compute Fetch Integrity Prefix for hash algo.
          */
-        _getFetchIntegrityPrefix:function(algo) {
+        _getFetchIntegrityPrefix: function (algo) {
             var prefix;
             switch (algo) {
                 case 'SHA-256':

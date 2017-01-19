@@ -30,9 +30,11 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
         <button on-tap="newEntity">New</button>
         <button on-tap="create">Create</button>
 
+        <button on-tap="validate">Validate</button>
+
         <h2 on-tap="retrieve">Hello [[url]]</h2>
 
-        <slot></slot>
+        <slot id="crudContent"></slot>
 
     </template>
 

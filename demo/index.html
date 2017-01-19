@@ -24,8 +24,9 @@
       <demo-snippet>
         <template is="dom-bind" id="demo">
           <demo-control></demo-control>
-          <air-cruddy data="{{data}}" url="http://localhost:9200/twitter/tweet" entity-id="1"></air-cruddy>
-          <demo-editor-tweet data="{{data}}"></demo-editor-tweet>
+          <air-cruddy data="{{data}}" url="http://localhost:9200/twitter/tweet" entity-id="1">
+            <demo-editor-tweet data="{{data}}"></demo-editor-tweet>
+          </air-cruddy>
         </template>
       </demo-snippet>
     </div>

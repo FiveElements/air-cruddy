@@ -18,5 +18,10 @@
     "watch": "browser-sync start --proxy localhost:8080 --startPath /components/air-cruddy/demo/ --files *.html,*.js,demo/*"
   },
   "author": "FiveElements",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^2.18.6",
+    "gulp": "^3.9.1",
+    "proxy-middleware": "^0.15.0"
+  }
 }
