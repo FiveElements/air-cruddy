@@ -23,6 +23,7 @@
             },
             /**
              * Url endpoint of the Rest Web-Service
+             *
              */
             url: {
                 type: String
@@ -48,8 +49,9 @@
                 type: Object
             },
             /**
-             * Fetch Configuration
-             *  mode: The mode you want to use for the request, e.g., cors, no-cors, same-origin, or navigate.
+             * Fetch Configuration :
+             *
+             * The mode you want to use for the request, e.g., cors, no-cors, same-origin, or navigate.
              */
             mode: {
                 type: String,
@@ -57,8 +59,9 @@
             },
 
             /**
-             * Fetch Configuration
-             * cache: The cache mode you want to use for the request.
+             * Fetch Configuration :
+             *
+             * The cache mode you want to use for the request.
              */
             cache: {
                 type: String,
@@ -66,16 +69,18 @@
             },
 
             /**
-             * Fetch Configuration
-             * redirect: The redirect mode to use: follow, error, or manual. In Chrome the default is follow
+             * Fetch Configuration :
+             *
+             * The redirect mode to use: follow, error, or manual. In Chrome the default is follow
              */
             redirect: {
                 type: String,
                 value: 'follow'
             },
             /**
-             * Fetch Configuration
-             * referrer: A USVString specifying no-referrer, client, or a URL. The default is client.
+             * Fetch Configuration :
+             *
+             * A USVString specifying no-referrer, client, or a URL. The default is client.
              */
             referrer: {
                 type: String,
@@ -110,42 +115,63 @@
         // --- API
         // --- ---------------------------
         /**
-         * Retrieve the resource from the Rest Web Service
+         * Send Retrieve request to the Rest Web Service Server
          * @param entityId The entityId to load or if not defined the entityId deine in the 'air-cruddy' Web-Componnent
          */
         retrieve: function (entityId) {
 //                var loadId = entityId || this.entityId;
             var loadId = this.entityId;
+            loadId = 'AVmyiew8OdPym37e2QYA';
             this._fetchPromiseRetrieve(loadId);
         },
+
+        /**
+         * Send Update request to Server.
+         */
 
         update: function () {
             this._fetchPromiseUpdate(this.entityId, this.data);
         },
 
+        /**
+         * Send Delete request to Server.
+         */
         delete: function () {
             this._fetchPromiseDelete(this.entityId, this.data);
         },
 
+        /**
+         * Send Create request to Server.
+         */
         create: function () {
             console.log('create data add ', this.data);
             this._fetchPromiseCreate(null, this.data);
         },
 
+        /**
+         * Create new empty entity
+         */
         newEntity: function () {
             this.entityId = null;
             this.data = {};
 
         },
 
+        /**
+         * Clean all component State, like data loaded or entityid definition.
+         */
         clean: function () {
             this.entityId = null;
             this._setDataAndOrigin(null);
         },
 
+        /**
+         * Restore the dat from with the last request retrieve.
+         */
         reset: function () {
           this.data = JSON.parse(JSON.stringify(this._dataOrigin));
         },
+
         // --- Utility
         // --- ---------------------------
         _setDataAndOrigin: function (data) {
@@ -231,13 +257,13 @@
 
         /**
          * Adapt response from Retrieve Web-Service o the expected format
-         * '''
+         * ```
          * {
              *   id: '',
              *   version: '',
              *   ...
              * }
-         * '''
+         * ```
          */
         _adapterResponseRetrieve: function (responseJson) {
             var data = JSON.parse(JSON.stringify(responseJson._source));
@@ -247,13 +273,13 @@
         },
         /**
          * Adapt response from Update Web-Service o the expected format
-         * '''
+         * ```
          * {
              *   id: '',
              *   version: '',
              *   ...
              * }
-         * '''
+         * ```
          */
         _adapterResponseUpdate: function (responseJson) {
             var adaptJson = {
@@ -265,13 +291,13 @@
 
         /**
          * Adapt response from Delete Web-Service o the expected format
-         * '''
+         * ```
          * {
              *   id: 'The new entity Id',
              *   version: 'The version',
              *   ...
              * }
-         * '''
+         * ```
          */
         _adapterResponseDelete: function (responseJson) {
             var adaptJson = {
@@ -283,13 +309,13 @@
 
         /**
          * Adapt response from Create Web-Service o the expected format
-         * '''
+         * ```
          * {
              *   id: 'The new entity Id',
              *   version: 'The version',
              *   ...
              * }
-         * '''
+         * ```
          */
         _adapterResponseCreate: function (responseJson) {
             var adaptJson = {
@@ -299,12 +325,37 @@
             return Object.assign(adaptJson, {origin: responseJson});
         },
 
-
-        _transformToServerSave: function (dataToSave) {
-            var data = JSON.parse(JSON.stringify(dataToSave));
+        /**
+         * Adapt data model For Update or Create request
+         *
+         * @param opt Fetch configuration in format ``` { url:'', init:{}, data:{}}```
+         */
+        _adapterFetchInitData: function (opt) {
+            // Create New Structure
+            var data = JSON.parse(JSON.stringify(opt.data));
             delete data.id;
             delete data.version;
-            return data;
+            // Register Data
+            opt.data = data;
+            return opt;
+        },
+
+        /**
+         * Adapt data model For Update request
+         *
+         * @param opt Fetch configuration in format ``` { url:'', init:{}, data:{}}```
+         */
+        _adapterFetchInitDataUpdate: function (opt) {
+            return this._adapterFetchInitData(opt);
+        },
+
+        /**
+         * Adapt data model For Create request
+         *
+         * @param opt Fetch configuration in format ``` { url:'', init:{}, data:{}}```
+         */
+        _adapterFetchInitDataCreate: function (opt) {
+            return this._adapterFetchInitData(opt);
         },
 
         _transformToServerSavePartial: function (dataToSave) {
@@ -338,43 +389,83 @@
         // --- Fetch Request
         // --- -------------------------------
 
-        _fetchInitRetrieve: function (entityId) {
+        /**
+         * Fetch configuration for Retrieve request in format
+         * ```js
+         * {
+         *   url: 'String',
+         *   init: {},
+         *   data: {}
+         * }
+         * ```
+         */
+        _fetchInitRetrieve: function (entityId, data) {
             var self = this;
-            console.log('entityId', entityId);
             return new Promise(function (resolve, reject) {
-                var urlGet = self._fetchUrlRetrieve(entityId);
+                var version = data ? data.version : null;
+                var urlGet = self._fetchUrlRetrieve(entityId, version);
                 var opt = self._defaultOptions('GET');
-                resolve(Object.assign(opt, {url: urlGet}));
+                resolve( {init: opt, url: urlGet});
             });
         },
 
+
+        /**
+         * Fetch configuration for Update request in format
+         * ```js
+         * {
+         *   url: 'String',
+         *   init: {},
+         *   data: {}
+         * }
+         * ```
+         */
         _fetchInitUpdate: function (entityId, data) {
             var self = this;
             return new Promise(function (resolve, reject) {
                 var version = data ? data.version : null;
                 var urlUpdate = self._fetchUrlUpdate(entityId, version);
                 var opt = self._defaultOptions('PUT', data);
-                resolve(Object.assign(opt, {url: urlUpdate}));
+                resolve( {init: opt, url: urlUpdate, data: data});
             });
         },
 
-
+        /**
+         * Fetch configuration for Delete request in format
+         * ```js
+         * {
+         *   url: 'String',
+         *   init: {},
+         *   data: {}
+         * }
+         * ```
+         */
         _fetchInitDelete: function (entityId, data) {
             var self = this;
             return new Promise(function (resolve, reject) {
                 var version = data ? data.version : null;
                 var urlDelete = self._fetchUrlDelete(entityId, version);
                 var opt = self._defaultOptions('DELETE', data);
-                resolve(Object.assign(opt, {url: urlDelete}));
+                resolve( {init: opt, url: urlDelete, data: data});
             });
         },
 
+        /**
+         * Fetch configuration for Create request in format
+         * ```js
+         * {
+         *   url: 'String',
+         *   init: {}
+         *   data: {}
+         * }
+         * ```
+         */
         _fetchInitCreate: function (entityId, data) {
             var self = this;
             return new Promise(function (resolve, reject) {
                 var urlCreate = self._fetchUrlCreate(entityId, data);
                 var opt = self._defaultOptions('POST', data);
-                resolve(Object.assign(opt, {url: urlCreate}));
+                resolve( {init: opt, url: urlCreate, data: data});
             });
         },
 
@@ -399,10 +490,9 @@
 
         // --- Fetch Helper
         // --- ---------------------------
-        _fetchRequest: function (init) {
-            var url = init.url;
-            delete init.url;
-            return window.fetch(url, init);
+        _fetchRequest: function (opt) {
+            console.log('Fetch opt', JSON.stringify(opt));
+            return window.fetch(opt.url, opt.init);
         },
 
         _checkResponseStatus: function (response) {
@@ -426,21 +516,15 @@
 
         // --- Fetch Data Helper
         // --- ---------------------------
-        _fetchDataPrepare: function (init, data) {
-            return {
-                init: init,
-                data: data
-            };
-        },
 
-        _fetchDataContentSerializer(opt) {
+        _fetchInitDataContentSerializer: function (opt) {
             if (opt.data) {
                 opt.content = this._dataSerializerEntity(opt.data);
             }
             return opt;
         },
 
-        _fetchDataContentRegister(opt) {
+        _fetchInitDataContentRegister: function (opt) {
             var init = opt.init;
             var content = opt.content;
             if (content) {
@@ -451,30 +535,17 @@
                 myHeaders.append("Content-Length", contentLength.toString());
                 init.headers = myHeaders;
             }
-            return init;
+            return opt;
         },
 
-        _fetchInitAddData: function (init, data) {
-            var content = undefined;
-            if (data) {
-                content = this._dataSerializerEntity(data);
-            }
-            if (content) {
-                var contentLength = content.length;
-                init.body = content;
-                // Complete Headers
-                var myHeaders = init.headers || new Headers();
-                myHeaders.append("Content-Length", contentLength.toString());
-            }
-            return init;
-        },
+
 
         // --- Fetch Promise Logic
         // --- ---------------------------
 
         _fetchPromiseRetrieve: function (entityId) {
             return this._fetchInitRetrieve(entityId)
-                    .then(this._fetchRequest.bind(this))
+                    .then(this._fetchRequest.bind(this)) // Do Request
                     .then(this._checkResponseStatus.bind(this))
                     .then(this._transformResponseJson.bind(this))
                     .then(this._adapterResponseRetrieve.bind(this))
@@ -485,10 +556,10 @@
 
         _fetchPromiseUpdate: function (entityId, data) {
             return this._fetchInitUpdate(entityId, data)
-                    .then(function (init) {
-                        return this._fetchInitAddData(init, data);
-                    }.bind(this))
-                    .then(this._fetchRequest.bind(this))
+                 .then(this._adapterFetchInitDataUpdate.bind(this))
+                    .then(this._fetchInitDataContentSerializer.bind(this))
+                    .then(this._fetchInitDataContentRegister.bind(this))
+                    .then(this._fetchRequest.bind(this)) // Do Request
                     .then(this._checkResponseStatus.bind(this))
                     .then(this._transformResponseJson.bind(this))
                     .then(this._adapterResponseUpdate.bind(this))
@@ -499,7 +570,7 @@
 
         _fetchPromiseDelete: function (entityId, data) {
             return this._fetchInitDelete(entityId, data)
-                    .then(this._fetchRequest.bind(this))
+                    .then(this._fetchRequest.bind(this)) // Do Request
                     .then(this._checkResponseStatus.bind(this))
                     .then(this._transformResponseJson.bind(this))
                     .then(this._adapterResponseDelete.bind(this))
@@ -511,10 +582,10 @@
 
         _fetchPromiseCreate: function (entityId, data) {
             return this._fetchInitCreate(entityId, data)
-                    .then(function (init) {
-                        return this._fetchInitAddData(init, data);
-                    }.bind(this))
-                    .then(this._fetchRequest.bind(this))
+                    .then(this._adapterFetchInitDataCreate.bind(this))
+                    .then(this._fetchInitDataContentSerializer.bind(this))
+                    .then(this._fetchInitDataContentRegister.bind(this))
+                    .then(this._fetchRequest.bind(this)) // Do Request
                     .then(this._checkResponseStatus.bind(this))
                     .then(this._transformResponseJson.bind(this))
                     .then(this._adapterResponseCreate.bind(this))
@@ -623,9 +694,6 @@
             return null;
         },
 
-        _handleErrorUpdate409: function (error) {
-            // TODO
-        },
 
         // --- Event Response
         // --- ---------------------------
