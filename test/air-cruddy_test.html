@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
@@ -10,24 +10,69 @@
     <script src="../../web-component-tester/browser.js"></script>
 
     <link rel="import" href="../air-cruddy.html">
-  </head>
-  <body>
-    <test-fixture id="basic">
-      <template>
-        <air-cruddy></air-cruddy>
-      </template>
-    </test-fixture>
+</head>
+<body>
+<test-fixture id="basic">
+    <template is="dom-template">
+        <air-cruddy url="[[url]]" entity-id="[[entityId]]"></air-cruddy>
+    </template>
+</test-fixture>
 
-    <script>
-      suite('air-cruddy', function() {
-        test('instantiating the element works', function() {
-          var element = fixture('basic');
-          // FIXME: This fails for some reason unless it's run async
-          setTimeout(function() {
+<script>
+    suite('air-cruddy', function () {
+        test('instantiating the element works', function () {
+            var element = fixture('basic');
             assert.equal(element.is, 'air-cruddy');
-          });
         });
-      });
-    </script>
-  </body>
+    });
+
+
+    suite('air-cruddy fetch', function () {
+        var server;
+        var responseHeaders = {
+            'Content-Type': 'application/json'
+        };
+
+        setup(function () {
+            // 1. Initialize the fake server
+            server = sinon.fakeServer.create();
+            server.autoRespond = true;
+
+            // 2. Set up auto response rules
+            server.respondWith('GET', '/v1/element/3', [200, responseHeaders,
+                '{"id": "3", "version": 4, "group": "air"}'
+            ]);
+        });
+
+        teardown(function () {
+            server.restore();
+        });
+
+        test('instantiating the element works', function (done) {
+
+            var element = fixture('basic', {
+                url: '/v1/element',
+                entityId: '3'
+            });
+
+            var promise = element.retrieve().then(function (response) {
+                console.log('response : ' + JSON.stringify(response));
+                expect(response).to.be.an('object');
+            });
+
+//            server.respond();
+
+            element.addEventListener('air-cruddy-error-retrieve', function (e) {
+                assert(e.detail.status === 404);
+                done();
+            });
+
+        });
+
+
+    });
+
+
+</script>
+</body>
 </html>

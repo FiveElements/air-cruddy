@@ -121,8 +121,8 @@
         retrieve: function (entityId) {
 //                var loadId = entityId || this.entityId;
             var loadId = this.entityId;
-            loadId = 'AVmyiew8OdPym37e2QYA';
-            this._fetchPromiseRetrieve(loadId);
+//            loadId = 'AVmyiew8OdPym37e2QYA';
+            return this._fetchPromiseRetrieve(loadId);
         },
 
         /**
@@ -130,14 +130,14 @@
          */
 
         update: function () {
-            this._fetchPromiseUpdate(this.entityId, this.data);
+            return this._fetchPromiseUpdate(this.entityId, this.data);
         },
 
         /**
          * Send Delete request to Server.
          */
         delete: function () {
-            this._fetchPromiseDelete(this.entityId, this.data);
+            return this._fetchPromiseDelete(this.entityId, this.data);
         },
 
         /**
@@ -145,7 +145,7 @@
          */
         create: function () {
             console.log('create data add ', this.data);
-            this._fetchPromiseCreate(null, this.data);
+            return this._fetchPromiseCreate(null, this.data);
         },
 
         /**
@@ -154,7 +154,6 @@
         newEntity: function () {
             this.entityId = null;
             this._setDataAndOrigin({});
-
         },
 
         /**
@@ -749,6 +748,7 @@
          */
         _fireResponseRetrieve: function (response) {
             this.fire('air-cruddy-retrieve', response);
+            return response;
         },
 
         /**
@@ -758,6 +758,7 @@
          */
         _fireResponseUpdate: function (response) {
             this.fire('air-cruddy-update', response);
+            return response;
         },
 
         /**
@@ -767,6 +768,7 @@
          */
         _fireResponseCreate: function (response) {
             this.fire('air-cruddy-create', response);
+            return response;
         },
 
         /**
@@ -776,6 +778,7 @@
          */
         _fireResponseDelete: function (response) {
             this.fire('air-cruddy-delete', response);
+            return response;
         },
 
         // --- Event Error
@@ -788,7 +791,7 @@
          */
         _fireErrorRetrieve: function (error) {
             this.fire('air-cruddy-error-retrieve', error);
-            this._fireError(error, 'retrieve');
+            return this._fireError(error, 'retrieve');
         },
         /**
          * Fired error when a resource are loaded.
@@ -797,7 +800,7 @@
          */
         _fireErrorUpdate: function (error) {
             this.fire('air-cruddy-error-update', error);
-            this._fireError(error, 'update');
+            return this._fireError(error, 'update');
 
         },
         /**
@@ -807,7 +810,7 @@
          */
         _fireErrorDelete: function (error) {
             this.fire('air-cruddy-error-delete', error);
-            this._fireError(error, 'delete');
+            return this._fireError(error, 'delete');
         },
         /**
          * Fired error when a resource are loaded.
@@ -816,7 +819,7 @@
          */
         _fireErrorCreate: function (error) {
             this.fire('air-cruddy-error-create', error);
-            this._fireError(error, 'create');
+            return this._fireError(error, 'create');
         },
 
         /**
@@ -826,6 +829,7 @@
          */
         _fireError: function (error) {
             this.fire('air-cruddy-error', error);
+            return error;
         },
     }
 
