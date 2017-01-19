@@ -89,7 +89,8 @@
         },
 
         observers: [
-            '_autosaveObserver(autoSave,data.*)'
+            '_autosaveObserver(autoSave,data.*)',
+            '_dataChangeObserver(data.*)'
         ],
 
         // --- Changed Observer
@@ -100,6 +101,18 @@
             }
         },
 
+        // --- Dirty Changed
+        // --- ---------------------
+        _dataChangeObserver: function (changeRecord) {
+            // https://github.com/FiveElements/air-cruddy/blob/iron-ajax/air-cruddy-dirty-behaviour.html
+            console.log('### ', changeRecord.path + ' changed to ' + changeRecord.value, ' // ', changeRecord);
+
+            // Compare the Change to Origin loaded data
+            // -----------------------------------------
+            // Extract the object prefix : 'data.'.length = 5
+            var pathChanged = changeRecord.path.slice(5);
+        },
+        
         // --- mock
         // --- ---------------------------
 
@@ -586,13 +599,16 @@
 
         // --- Fetch Promise Logic
         // --- ---------------------------
+        _fetchPromiseRetrieveRequest: function (entityId) {
+            return this._fetchInitRetrieve(entityId)
+                    .then(this._fetchRequest.bind(this)) // Do Request
+                    .then(this._checkResponseStatus.bind(this))
+                    .then(this._transformResponseJson.bind(this))
+                    .then(this._adapterResponseRetrieve.bind(this))
+        },
 
         _fetchPromiseRetrieve: function (entityId) {
-            return this._fetchInitRetrieve(entityId)
-                .then(this._fetchRequest.bind(this)) // Do Request
-                .then(this._checkResponseStatus.bind(this))
-                .then(this._transformResponseJson.bind(this))
-                .then(this._adapterResponseRetrieve.bind(this))
+            return this._fetchPromiseRetrieveRequest(entityId)
                 .then(this._handleResponseRetrieve.bind(this))
                 .then(this._fireResponseRetrieve.bind(this))
                 .catch(this._handleErrorRetrieve.bind(this));
