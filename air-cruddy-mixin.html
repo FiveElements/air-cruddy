@@ -90,7 +90,9 @@
 
         observers: [
             '_autosaveObserver(autoSave,data.*)',
-            '_dataChangeObserver(data.*)'
+            '_dataChangeObserver(data.*)',
+            '_entityIdChangeObserver(entityId)',
+
         ],
 
         // --- Changed Observer
@@ -98,6 +100,12 @@
         _autosaveObserver: function (autoSave, dataChange) {
             if (autoSave) {
 //                    this.save();
+            }
+        },
+
+        _entityIdChangeObserver: function (entityId) {
+            if (entityId) {
+                this.retrieve(entityId);
             }
         },
 
@@ -352,11 +360,13 @@
          */
         _adapterFetchInitData: function (opt) {
             // Create New Structure
-            var data = JSON.parse(JSON.stringify(opt.data));
-            delete data.id;
-            delete data.version;
-            // Register Data
-            opt.data = data;
+            if (opt.data) {
+                var data = JSON.parse(JSON.stringify(opt.data));
+                delete data.id;
+                delete data.version;
+                // Register Data
+                opt.data = data;
+            }
             return opt;
         },
 
@@ -379,14 +389,17 @@
         },
 
 
-        _transformToServerSavePartial: function (dataToSave) {
+        _transformToServerSavePartial: function (opt) {
             // Manage Differential
-            var data = JSON.parse(JSON.stringify(dataToSave));
-            delete data.id;
-            delete data.version;
-            return {
-                "doc": data
-            };
+            if (opt.data) {
+                var data = JSON.parse(JSON.stringify(opt.data));
+                delete data.id;
+                delete data.version;
+                opt.data= {
+                    "doc": data
+                };
+            }
+            return opt;
         },
 
         // --- Elasticsearch API
