@@ -1,4 +1,4 @@
-# \<air-cruddy\>
+# \<air-cruddy\> [![Build Status](https://travis-ci.org/FiveElements/air-cruddy.svg?branch=master)](https://travis-ci.org/FiveElements/air-cruddy)
 
 An Polymer element that manage CRUD Operations
  
