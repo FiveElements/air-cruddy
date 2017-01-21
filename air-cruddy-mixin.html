@@ -176,12 +176,14 @@
          */
         newEntity: function () {
             this.entityId = null;
+            this._dataOrigin = null;
             this.data=this._createEmptyEntity();
         },
 
         _createEmptyEntity: function () {
           return {};
         },
+
         /**
          * Clean all component State, like data loaded or entityid definition.
          */
