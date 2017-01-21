@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
@@ -14,21 +14,24 @@
 
     <link rel="import" href="demo-editor-tweet.html">
     <link rel="import" href="demo-control.html">
+    <link rel="import" href="demo-event-catcher.html">
 
-      <style is="custom-style" include="demo-pages-shared-styles">
-      </style>
-  </head>
-  <body>
-    <div class="vertical-section-container centered">
-      <h3>Basic air-cruddy demo</h3>
-      <demo-snippet>
+    <style is="custom-style" include="demo-pages-shared-styles">
+    </style>
+</head>
+<body>
+<div class="vertical-section-container centered">
+    <h3>Basic air-cruddy demo</h3>
+    <demo-snippet>
         <template is="dom-bind" id="demo">
-          <demo-control></demo-control>
-          <air-cruddy data="{{data}}" url="http://localhost:9200/twitter/tweet" entity-id="1">
-            <demo-editor-tweet data="{{data}}"></demo-editor-tweet>
-          </air-cruddy>
+            <demo-control></demo-control>
+            <demo-event-catcher>
+                <air-cruddy data="{{data}}" url="http://localhost:9200/twitter/tweet" entity-id="1">
+                    <demo-editor-tweet data="{{data}}"></demo-editor-tweet>
+                </air-cruddy>
+            </demo-event-catcher>
         </template>
-      </demo-snippet>
-    </div>
-  </body>
+    </demo-snippet>
+</div>
+</body>
 </html>

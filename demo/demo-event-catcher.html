@@ -1,0 +1,87 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<link rel="import" href="../../paper-toast/paper-toast.html">
+
+<!--
+`demo-event-catcher`
+Polymer Element demo-event-catcher
+
+@demo demo/index.html 
+-->
+
+<dom-module id="demo-event-catcher">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+            #toastError {
+                --paper-toast-background-color: red;
+                --paper-toast-color: white;
+            }
+            #toastResponse {
+                --paper-toast-background-color: green;
+                --paper-toast-color: white;
+            }
+        </style>
+        <paper-toast id="toastResponse" class="capsule" text="[[lastResponse]]"></paper-toast>
+        <paper-toast id="toastError" class="capsule" horizontal-align="right" text="[[lastError]]"></paper-toast>
+
+        <slot></slot>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'demo-event-catcher',
+
+            properties: {
+                lastError: {
+                    type: String,
+                    value: 'Error is Raised',
+                },
+                lastResponse: {
+                    type: String,
+                    value: 'Response is Receive',
+                },
+            },
+
+            listeners: {
+                'air-cruddy-retrieve': '_handleResponseRetrieve',
+                'air-cruddy-update': '_handleResponseUpdate',
+                'air-cruddy-create': '_handleResponseCreate',
+                'air-cruddy-delete': '_handleResponseDelete',
+                'air-cruddy-error': '_handleError',
+            },
+
+            _handleResponseRetrieve: function (e) {
+                this._showToastResponse(e, 'Retrieve Success');
+            },
+            _handleResponseUpdate: function (e) {
+                this._showToastResponse(e, 'Update Success');
+            },
+            _handleResponseCreate: function (e) {
+                this._showToastResponse(e, 'Create Success');
+            },
+            _handleResponseDelete: function (e) {
+                this._showToastResponse(e, 'Delete Success');
+            },
+            _showToastResponse: function(e, message){
+                var detail = e.detail;
+                e.preventDefault();
+                console.log('Handle response : ', detail);
+                this.$.toastResponse.show(message);
+            },
+
+            _handleError: function (e) {
+                var detail = e.detail;
+                console.error('Handle Error : ', detail);
+                e.preventDefault();
+//                this.lastError = detail.message  || 'Error is Raised';
+//                this.$.toastError.open();
+                this.$.toastError.show(detail.message );
+            },
+
+        });
+    </script>
+</dom-module>
