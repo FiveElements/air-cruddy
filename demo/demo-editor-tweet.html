@@ -1,6 +1,8 @@
 <link rel="import" href="../../polymer/polymer.html">
 
 <link rel="import" href="../../paper-input/paper-input.html">
+<link rel="import" href="../../air-cascade-validator/air-cascade-validator.html">
+<link rel="import" href="../../air-cascade-validator/air-cascade-validator-behaviour.html">
 
 <!--
 `demo-editor-tweet`
@@ -29,6 +31,10 @@
 
             is: 'demo-editor-tweet',
 
+            behaviors: [
+                FiveElements.AirCascadeValidatorBehavior
+            ],
+
             properties: {
                 data: {
                     type: Object,
@@ -42,9 +48,7 @@
                 },
             },
 
-            validate: function () {
-                console.log('------------------------ HOURA');
-            }
+
 
         });
     </script>

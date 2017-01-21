@@ -1,5 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 
+<link rel="import" href="../fire-crypto/fire-crypto-digest-behaviour.html">
+
 <script>
     'use strict';
 
@@ -11,7 +13,7 @@
     /**
      * @polymerBehavior
      */
-    FiveElements.AirCruddyBehavior = {
+    FiveElements.AirCruddyBehaviorImpl = {
 
         properties: {
             /**
@@ -120,7 +122,7 @@
             // Extract the object prefix : 'data.'.length = 5
             var pathChanged = changeRecord.path.slice(5);
         },
-        
+
         // --- mock
         // --- ---------------------------
 
@@ -395,7 +397,7 @@
                 var data = JSON.parse(JSON.stringify(opt.data));
                 delete data.id;
                 delete data.version;
-                opt.data= {
+                opt.data = {
                     "doc": data
                 };
             }
@@ -571,43 +573,21 @@
             return opt;
         },
 
+        // --- Fetch Digest Content for Integrity
+        // --- ---------------------------
 
-        /**
-         * Compute Fetch Integrity Prefix for hash algo.
-         */
-        _getFetchIntegrityPrefix: function (algo) {
-            var prefix;
-            switch (algo) {
-                case 'SHA-256':
-                    prefix = 'sha256-';
-                    break;
-                case 'SHA-384':
-                    prefix = 'sha384-';
-                    break;
-                case 'SHA-512':
-                    prefix = 'sha512-';
-                    break;
-                default:
-                    throw new Error('Not Fetch prefix for algo ' + algo);
-                    break;
+        _fetchInitDataIntegrity: function (opt) {
+            var content = opt.content;
+            if (content) {
+                var integrityAlgo = 'SHA-384'; // allowed prefixes are sha256, sha384, and sha512
+                return this._digestPromise(integrityAlgo, content, 'base64')
+                        .then(function (integrityHash) {
+                            opt.integrity = integrityHash;
+                            return opt;
+                        });
             }
-            return prefix;
+            return opt;
         },
-
-//        _fetchInitDataIntegrity: function (opt) {
-//            var content = opt.content;
-//            if (content) {
-//                var integrityAlgo = 'SHA-256'; // allowed prefixes are sha256, sha384, and sha512
-//                var buffer = new TextEncoder("utf-8").encode(content);
-//                return crypto.subtle.digest(integrityAlgo, buffer).then(function (hash) {
-//                    return base64(hash);
-//                }).then(function (base64Hash) {
-//                    var prefix = this._getFetchIntegrityPrefix(integrityAlgo);
-//                    return opt;
-//                });
-//            }
-//            return opt;
-//        },
 
 
         // --- Fetch Promise Logic
@@ -622,49 +602,51 @@
 
         _fetchPromiseRetrieve: function (entityId) {
             return this._fetchPromiseRetrieveRequest(entityId)
-                .then(this._handleResponseRetrieve.bind(this))
-                .then(this._fireResponseRetrieve.bind(this))
-                .catch(this._handleErrorRetrieve.bind(this));
+                    .then(this._handleResponseRetrieve.bind(this))
+                    .then(this._fireResponseRetrieve.bind(this))
+                    .catch(this._handleErrorRetrieve.bind(this));
         },
 
         _fetchPromiseUpdate: function (entityId, data) {
             return this._fetchInitUpdate(entityId, data)
-                .then(this._adapterFetchInitDataUpdate.bind(this))
-                .then(this._fetchInitDataContentSerializer.bind(this))
-                .then(this._fetchInitDataContentRegister.bind(this))
-                .then(this._fetchRequest.bind(this)) // Do Request
-                .then(this._checkResponseStatus.bind(this))
-                .then(this._transformResponseJson.bind(this))
-                .then(this._adapterResponseUpdate.bind(this))
-                .then(this._handleResponseUpdate.bind(this))
-                .then(this._fireResponseUpdate.bind(this))
-                .catch(this._handleErrorUpdate.bind(this));
+                    .then(this._adapterFetchInitDataUpdate.bind(this))
+                    .then(this._fetchInitDataContentSerializer.bind(this))
+                    .then(this._fetchInitDataIntegrity.bind(this))
+                    .then(this._fetchInitDataContentRegister.bind(this))
+                    .then(this._fetchRequest.bind(this)) // Do Request
+                    .then(this._checkResponseStatus.bind(this))
+                    .then(this._transformResponseJson.bind(this))
+                    .then(this._adapterResponseUpdate.bind(this))
+                    .then(this._handleResponseUpdate.bind(this))
+                    .then(this._fireResponseUpdate.bind(this))
+                    .catch(this._handleErrorUpdate.bind(this));
         },
 
         _fetchPromiseDelete: function (entityId, data) {
             return this._fetchInitDelete(entityId, data)
-                .then(this._fetchRequest.bind(this)) // Do Request
-                .then(this._checkResponseStatus.bind(this))
-                .then(this._transformResponseJson.bind(this))
-                .then(this._adapterResponseDelete.bind(this))
-                .then(this._handleResponseDelete.bind(this))
-                .then(this._fireResponseDelete.bind(this))
-                .catch(this._handleErrorDelete.bind(this));
+                    .then(this._fetchRequest.bind(this)) // Do Request
+                    .then(this._checkResponseStatus.bind(this))
+                    .then(this._transformResponseJson.bind(this))
+                    .then(this._adapterResponseDelete.bind(this))
+                    .then(this._handleResponseDelete.bind(this))
+                    .then(this._fireResponseDelete.bind(this))
+                    .catch(this._handleErrorDelete.bind(this));
         },
 
 
         _fetchPromiseCreate: function (entityId, data) {
             return this._fetchInitCreate(entityId, data)
-                .then(this._adapterFetchInitDataCreate.bind(this))
-                .then(this._fetchInitDataContentSerializer.bind(this))
-                .then(this._fetchInitDataContentRegister.bind(this))
-                .then(this._fetchRequest.bind(this)) // Do Request
-                .then(this._checkResponseStatus.bind(this))
-                .then(this._transformResponseJson.bind(this))
-                .then(this._adapterResponseCreate.bind(this))
-                .then(this._handleResponseCreate.bind(this))
-                .then(this._fireResponseCreate.bind(this))
-                .catch(this._handleErrorCreate.bind(this));
+                    .then(this._adapterFetchInitDataCreate.bind(this))
+                    .then(this._fetchInitDataContentSerializer.bind(this))
+                    .then(this._fetchInitDataIntegrity.bind(this))
+                    .then(this._fetchInitDataContentRegister.bind(this))
+                    .then(this._fetchRequest.bind(this)) // Do Request
+                    .then(this._checkResponseStatus.bind(this))
+                    .then(this._transformResponseJson.bind(this))
+                    .then(this._adapterResponseCreate.bind(this))
+                    .then(this._handleResponseCreate.bind(this))
+                    .then(this._fireResponseCreate.bind(this))
+                    .catch(this._handleErrorCreate.bind(this));
         },
 
 
@@ -858,5 +840,10 @@
             return error;
         },
     }
+
+
+    FiveElements.AirCruddyBehavior = [
+        FiveElements.FireCryptoDigestBehavior, FiveElements.AirCruddyBehaviorImpl
+    ];
 
 </script>
