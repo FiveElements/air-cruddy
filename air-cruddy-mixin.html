@@ -229,7 +229,7 @@
             console.log('--- Validate', Polymer.dom(this).children);
             var validateNodes = this._getValidateNodes();
             var isValid = validateNodes.reduce(function (acc, node) {
-                var validateFunc = node['validate'];
+                var validateFunc = node['validate'].bind(node);
                 var isValidNode = validateFunc();
                 return acc;
             }, false);
