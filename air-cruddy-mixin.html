@@ -123,6 +123,10 @@
             var pathChanged = changeRecord.path.slice(5);
         },
 
+
+
+
+
         // --- mock
         // --- ---------------------------
 
@@ -196,7 +200,23 @@
          * Restore the dat from with the last request retrieve.
          */
         reset: function () {
-            this.data = JSON.parse(JSON.stringify(this._dataOrigin));
+            var cloned = this._dataOrigin;
+            this.data =  cloned? JSON.parse(JSON.stringify(cloned)) : cloned;
+        },
+
+        // --- Status
+        // --- ---------------------------
+        isStatusRetrieving: function (entityId, data, dataOrigin) {
+
+        },
+        isStatusUnset: function (data, dataOrigin) {
+            return  (dataOrigin === null);
+        },
+        isStatusCreate: function (data, dataOrigin) {
+            return (dataOrigin === undefined);
+        },
+        isStatusUpdate: function (data, dataOrigin) {
+            return !(dataOrigin);
         },
 
         // --- Validation

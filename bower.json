@@ -13,6 +13,7 @@
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0",
     "paper-input": "PolymerElements/paper-input#^1.1.22",
     "air-cascade-validator": "FiveElements/air-cascade-validator",
-    "paper-toast": "PolymerElements/paper-toast#^1.3.0"
+    "paper-toast": "PolymerElements/paper-toast#^1.3.0",
+    "ether-polyfill-fetch": "FiveElements/ether-polyfill-fetch"
   }
 }
