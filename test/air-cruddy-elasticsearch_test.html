@@ -137,7 +137,6 @@
     });
 
 
-
     suite('air-cruddy-elasticsearch Update', function () {
 
         setup(function () {
@@ -171,6 +170,30 @@
             });
         });
     });
+
+    suite('air-cruddy-elasticsearch Adapter', function () {
+        test('_adapterResponseUpdate', function () {
+            var element = fixture('basic');
+
+            var updateResponseEs = {
+                status: 200,
+                statusText: 'OK',
+                response : {
+                    "_index": "twitter",
+                    "_type": "tweet",
+                    "_id": "1",
+                    "_version": 13,
+                    "result": "updated",
+                    "_shards": {"total": 2, "successful": 1, "failed": 0},
+                    "created": false
+                }
+            };
+            var adaptResponse = element._adapterResponseUpdate(updateResponseEs);
+            assert.equal('1', adaptResponse.response.id);
+            assert.equal('13', adaptResponse.response.version);
+        });
+    });
+
 
 </script>
 </body>

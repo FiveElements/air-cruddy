@@ -341,12 +341,17 @@
              * }
          * ```
          */
-        _adapterResponseUpdate: function (responseJson) {
-            var adaptJson = {
-                id: responseJson._id,
-                version: responseJson._version
-            };
-            return Object.assign(adaptJson, {origin: responseJson});
+        _adapterResponseUpdate: function (res) {
+            var body = res.response;
+            if (body) {
+                var adaptJson = {
+                    id: body._id,
+                    version: body._version
+                };
+                body = Object.assign(adaptJson,body)
+                res.response = body;
+            }
+            return res;
         },
 
         /**
