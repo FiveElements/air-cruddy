@@ -216,17 +216,14 @@
             return (dataOrigin === undefined);
         },
         isStatusUpdate: function (data, dataOrigin) {
-            return !(dataOrigin);
+            return (dataOrigin);
         },
 
         // --- Validation
         // --- ---------------------------
 
         validate: function () {
-            console.log('--- Validate', this.$.slot);
             var distributed = this.getContentChildren('#crudContent');
-            console.log('--- Validate', distributed.length);
-            console.log('--- Validate', Polymer.dom(this).children);
             var validateNodes = this._getValidateNodes();
             var isValid = validateNodes.reduce(function (acc, node) {
                 var validateFunc = node['validate'].bind(node);
