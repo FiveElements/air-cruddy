@@ -19,6 +19,13 @@
             /**
              * Auto Save
              */
+            debug: {
+                type: Boolean,
+                value: false
+            },
+            /**
+             * Auto Save
+             */
             autoSave: {
                 type: Boolean,
                 value: false
@@ -124,16 +131,12 @@
         },
 
 
-
-
-
         // --- mock
         // --- ---------------------------
 
         retrieveById: function (entityId) {
             console.log("Request Retrieve: ", entityId);
-            this.entityId = '404';
-            this._fetchPromiseRetrieve('404').catch(function (error) {
+            this._fetchPromiseRetrieve(entityId).catch(function (error) {
                 console.log('post error', error);
             });
         },
@@ -181,11 +184,11 @@
         newEntity: function () {
             this.entityId = null;
             this._dataOrigin = null;
-            this.data=this._createEmptyEntity();
+            this.data = this._createEmptyEntity();
         },
 
         _createEmptyEntity: function () {
-          return {};
+            return {};
         },
 
         /**
@@ -201,7 +204,7 @@
          */
         reset: function () {
             var cloned = this._dataOrigin;
-            this.data =  cloned? JSON.parse(JSON.stringify(cloned)) : cloned;
+            this.data = cloned ? JSON.parse(JSON.stringify(cloned)) : cloned;
         },
 
         // --- Status
@@ -210,7 +213,7 @@
 
         },
         isStatusUnset: function (data, dataOrigin) {
-            return  (dataOrigin === null);
+            return (dataOrigin === null);
         },
         isStatusCreate: function (data, dataOrigin) {
             return (dataOrigin === undefined);
@@ -245,9 +248,9 @@
         // --- Utility
         // --- ---------------------------
         _setDataWithClone: function (data) {
-            var dataClone = data ? JSON.parse(JSON.stringify(data)) : data;
+            var dataClone = data ? Object.freeze(JSON.parse(JSON.stringify(data))) : data;
             this.data = data;
-            console.log('set Data ', data);
+            console.log('set Data : ' + JSON.stringify(data));
             this._dataOrigin = dataClone;
         },
 
@@ -317,13 +320,16 @@
              * }
          * ```
          */
-        _adapterResponseRetrieve: function (responseJson) {
-            console.log('adpat response ' + JSON.stringify(responseJson));
-            var data = JSON.parse(JSON.stringify(responseJson._source));
-            data.id = responseJson._id;
-            data.version = responseJson._version;
-            console.log('adpat response ==> ' + JSON.stringify(data));
-            return data;
+        _adapterResponseRetrieve: function (res) {
+            var responseJson = res.response;
+            if (responseJson) {
+                var data = JSON.parse(JSON.stringify(responseJson._source));
+                data.id = responseJson._id;
+                data.version = responseJson._version;
+                // define
+                res.response = data;
+            }
+            return res;
         },
         /**
          * Adapt response from Update Web-Service o the expected format
@@ -570,9 +576,14 @@
         },
 
         _transformResponseJson: function (response) {
-            console.log('transform response ' + JSON.stringify(response));
-            console.dir(response);
-            return response.json();
+            var res = {
+                status: response.status,
+                statusText: response.statusText,
+                url: response.url
+            };
+            return response.json().then(function (responseJson) {
+                return Object.assign(res, {response: responseJson});
+            });
         },
 
         // --- Fetch Data Helper
@@ -602,19 +613,19 @@
         // --- Fetch Digest Content for Integrity
         // --- ---------------------------
 
-        _fetchInitDataIntegrity: function (opt) {
-            var content = opt.content;
-            if (content) {
-                var integrityAlgo = 'SHA-384'; // allowed prefixes are sha256, sha384, and sha512
-                return this._digestPromise(integrityAlgo, content, 'base64')
-                        .then(function (integrityHash) {
-                            opt.integrity = integrityHash;
-                            console.log('integrity : ',opt);
-                            return opt;
-                        });
-            }
-            return opt;
-        },
+//        _fetchInitDataIntegrity: function (opt) {
+//            var content = opt.content;
+//            if (content) {
+//                var integrityAlgo = 'SHA-384'; // allowed prefixes are sha256, sha384, and sha512
+//                return this._digestPromise(integrityAlgo, content, 'base64')
+//                        .then(function (integrityHash) {
+//                            opt.integrity = integrityHash;
+//                            console.log('integrity : ',opt);
+//                            return opt;
+//                        });
+//            }
+//            return opt;
+//        },
 
 
         // --- Fetch Promise Logic
@@ -638,7 +649,7 @@
             return this._fetchInitUpdate(entityId, data)
                     .then(this._adapterFetchInitDataUpdate.bind(this))
                     .then(this._fetchInitDataContentSerializer.bind(this))
-//                    .then(this._fetchInitDataIntegrity.bind(this))
+                    //                    .then(this._fetchInitDataIntegrity.bind(this))
                     .then(this._fetchInitDataContentRegister.bind(this))
                     .then(this._fetchRequest.bind(this)) // Do Request
                     .then(this._checkResponseStatus.bind(this))
@@ -665,7 +676,7 @@
             return this._fetchInitCreate(entityId, data)
                     .then(this._adapterFetchInitDataCreate.bind(this))
                     .then(this._fetchInitDataContentSerializer.bind(this))
-//                    .then(this._fetchInitDataIntegrity.bind(this))
+                    //                    .then(this._fetchInitDataIntegrity.bind(this))
                     .then(this._fetchInitDataContentRegister.bind(this))
                     .then(this._fetchRequest.bind(this)) // Do Request
                     .then(this._checkResponseStatus.bind(this))
@@ -680,10 +691,11 @@
         // --- Response Handler
         // --- ---------------------------
 
-        _handleResponseRetrieve: function (responseJson) {
+        _handleResponseRetrieve: function (res) {
+            var responseJson = res.response;
             this._setDataWithClone(responseJson);
             this.entityId = responseJson.id;
-            return responseJson;
+            return res;
         },
 
         _handleResponseCreate: function (responseJson) {
@@ -718,17 +730,18 @@
         // --- ---------------------------
 
         _logError: function (error) {
-            console.log('--- error :'+ error);
+            console.log('--- error :' + error);
         },
 
         _handleErrorRetrieve: function (error) {
-            console.log('Error handle : ' + error);
             this._logError(error);
             var handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorRetrieve', error);
             if (handlerStatus) {
                 return handlerStatus(error);
             }
+            this._setDataWithClone(null);
             this._fireErrorRetrieve(error);
+            return error;
         },
 
         _handleErrorUpdate: function (error) {
@@ -738,6 +751,7 @@
                 return handlerStatus(error);
             }
             this._fireErrorUpdate(error);
+            return error;
         },
 
         _handleErrorCreate: function (error) {
@@ -747,6 +761,7 @@
                 return handlerStatus(error);
             }
             this._fireErrorCreate(error);
+            return error;
         },
         _handleErrorDelete: function (error) {
             this._logError(error);
@@ -755,6 +770,7 @@
                 return handlerStatus(error);
             }
             this._fireErrorDelete(error);
+            return error;
         },
 
 
@@ -784,6 +800,7 @@
          */
         _fireResponseRetrieve: function (response) {
             this.fire('air-cruddy-retrieve', response);
+            if (this.debug) console.log('Fire  air-cruddy-retrieve : ' + JSON.stringify(response));
             return response;
         },
 
@@ -870,8 +887,8 @@
     }
 
 
-//    FiveElements.AirCruddyBehavior = [
-//        FiveElements.FireCryptoDigestBehavior, FiveElements.AirCruddyBehaviorImpl
-//    ];
+    //    FiveElements.AirCruddyBehavior = [
+    //        FiveElements.FireCryptoDigestBehavior, FiveElements.AirCruddyBehaviorImpl
+    //    ];
 
 </script>

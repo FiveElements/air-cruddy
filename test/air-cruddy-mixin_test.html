@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>air-cruddy test</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../air-cruddy.html">
+</head>
+<body>
+<test-fixture id="basic">
+    <template is="dom-template">
+        <air-cruddy debug url="[[url]]" entity-id="[[entityId]]">
+        </air-cruddy>
+    </template>
+</test-fixture>
+
+<script>
+    suite('air-cruddy behaviour Utility', function () {
+        test('_setDataWithClone', function () {
+            var element = fixture('basic');
+            var data = {
+                id: 'dataToClone',
+                version: 1,
+                lastname: 'Leeloominaï Lekatariba Lamina-Tchaï Ekbat De Sebat',
+                firstname: 'Leeloo'
+            };
+            element._setDataWithClone(data);
+            assert.equal(element.data, data );
+            assert.notEqual(element.data, element._dataOrigin, 'the data need to be cloned');
+            assert.deepEqual(element.data, element._dataOrigin, 'the data need to be cloned but the same');
+            assert.frozen(element._dataOrigin);
+        });
+        test('_setDataWithClone with undefined', function () {
+            var element = fixture('basic');
+            var data = undefined;
+            element._setDataWithClone(data);
+            assert.equal(element.data, data );
+            assert.equal(element.data, element._dataOrigin, 'the data need to be cloned');
+            assert.frozen(element._dataOrigin);
+        });
+    });
+
+
+
+
+
+</script>
+</body>
+</html>

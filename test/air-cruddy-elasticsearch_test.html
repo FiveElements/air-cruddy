@@ -21,7 +21,7 @@
 <body>
 <test-fixture id="basic">
     <template is="dom-template">
-        <air-cruddy-elasticsearch url="[[url]]" entity-id="[[entityId]]">
+        <air-cruddy-elasticsearch debug url="[[url]]" entity-id="[[entityId]]">
         </air-cruddy-elasticsearch>
     </template>
 </test-fixture>
@@ -35,9 +35,9 @@
     });
 
 
-    var jsonOk = function jsonOk(body) {
+    var mockResponseJson = function (status, body) {
         var mockResponse = new window.Response(JSON.stringify(body), {
-            status: 200,
+            status: status,
             headers: {
                 'Content-type': 'application/json'
             }
@@ -45,31 +45,30 @@
         return Promise.resolve(mockResponse);
     };
 
-    var jsonError = function jsonError(status, body) {
-        var mockResponse = new window.Response(JSON.stringify(body), {
-            status: status,
-            headers: {
-                'Content-type': 'application/json'
-            }
-        });
-        return Promise.reject(mockResponse);
-    };
 
-
-    suite('air-cruddy-elasticsearch fetch', function () {
+    suite('air-cruddy-elasticsearch retrieve', function () {
 
         setup(function () {
             // 1. Initialize the fake server
             // https://rjzaworski.com/2015/06/testing-api-requests-from-window-fetch
             sinon.stub(window, 'fetch');
             // 2. Set up auto response rules
-            var responseJson = {
-                "_id": "3", "_version": 4,
+            window.fetch.withArgs('/v1/element/3').returns(mockResponseJson(200, {
+                "_id": "3",
+                "_version": 4,
                 "_source": {"group": "air"}
-            };
-            window.fetch.withArgs('/v1/element/3').returns(jsonOk(responseJson));
-            window.fetch.withArgs('/v1/element/4').returns(jsonOk({  "_id": "4", "_version": 8,  "_source": {"group": "air"} }));
-            window.fetch.withArgs('/v1/element/404').returns(jsonError(404, {"_index": "twitter", "_type": "tweet", "_id": "404", "found": false}));
+            }));
+            window.fetch.withArgs('/v1/element/4').returns(mockResponseJson(200, {
+                "_id": "4",
+                "_version": 8,
+                "_source": {"group": "fire"}
+            }));
+            window.fetch.withArgs('/v1/element/404').returns(mockResponseJson(404, {
+                "_index": "twitter",
+                "_type": "tweet",
+                "_id": "404",
+                "found": false
+            }));
         });
 
         teardown(function () {
@@ -79,9 +78,13 @@
         test('Fetch Retrieve - Request 3', function (done) {
             var element = fixture('basic', {url: '/v1/element', entityId: '3'});
             element.addEventListener('air-cruddy-retrieve', function (e) {
-                var detail = e.detail;
-                assert(detail.id === '3');
-                assert(detail.version === 4);
+                var response = e.detail.response;
+                assert(response.id === '3');
+                assert(response.version === 4);
+                assert(response.group === 'air');
+                assert.equal(element.entityId, response.id);
+                assert.deepEqual(element.data, response);
+                assert.deepEqual(element._dataOrigin, response);
                 done();
             });
         });
@@ -91,23 +94,83 @@
             element.addEventListener('air-cruddy-error-retrieve', function (e) {
                 var detail = e.detail;
                 assert(detail.status === 404);
+                assert.isNull(element.data);
+                assert.isNull(element._dataOrigin);
                 done();
             });
         });
 
-        test('Fetch Retrieve - Request 4', function (done) {
+        test('Fetch Retrieve - Request 4 & 404', function (done) {
             var element = fixture('basic', {url: '/v1/element', entityId: '4'});
-            element.addEventListener('air-cruddy-retrieve', function (e) {
+            var secondRetrieve404 = function (e) {
+                console.log('---- secondRetrieve404Consume ----');
                 var detail = e.detail;
-                assert(detail.id === '4');
-                assert(detail.version === 8);
+                assert(detail.status === 404);
+                assert.isNull(element.data);
+                assert.isNull(element._dataOrigin);
                 done();
-            });
+            };
+            var firstRetrieveConsume = false;
+            var firstRetrieve = function (e) {
+                if (!firstRetrieveConsume) {
+                    console.log('---- firstRetrieveConsume ----');
+                    var response = e.detail.response;
+                    console.log('response : ' + JSON.stringify(response));
+                    assert(e.detail.status === 200);
+                    assert(response.id === '4');
+                    assert(response.version === 8);
+                    assert(response.group === 'fire');
+                    assert.equal(element.entityId, response.id);
+                    assert.deepEqual(element.data, response);
+                    assert.deepEqual(element._dataOrigin, response);
+                    // register next event
+                    this.firstRetrieveConsume = true;
+                    element.removeEventListener('air-cruddy-retrieve', firstRetrieve);
+                    element.addEventListener('air-cruddy-error-retrieve', secondRetrieve404);
+                    element.entityId = '404';
+//                    element.retrieveById( '404');
+//                    done();
+                }
+            };
+            element.addEventListener('air-cruddy-retrieve', firstRetrieve);
         });
-
     });
 
 
+
+    suite('air-cruddy-elasticsearch Update', function () {
+
+        setup(function () {
+            // 1. Initialize the fake server
+            // https://rjzaworski.com/2015/06/testing-api-requests-from-window-fetch
+            sinon.stub(window, 'fetch');
+            // 2. Set up auto response rules
+            window.fetch.withArgs('/v1/element/3').returns(mockResponseJson(200, {
+                "_id": "3",
+                "_version": 4,
+                "_source": {"group": "air"}
+            }));
+
+        });
+
+        teardown(function () {
+            window.fetch.restore();
+        });
+
+        test('Fetch Retrieve - Request 3', function (done) {
+            var element = fixture('basic', {url: '/v1/element', entityId: '3'});
+            element.addEventListener('air-cruddy-retrieve', function (e) {
+                var response = e.detail.response;
+                assert(response.id === '3');
+                assert(response.version === 4);
+                assert(response.group === 'air');
+                assert.equal(element.entityId, response.id);
+                assert.deepEqual(element.data, response);
+                assert.deepEqual(element._dataOrigin, response);
+                done();
+            });
+        });
+    });
 
 </script>
 </body>

@@ -20,7 +20,7 @@
 <body>
 <test-fixture id="basic">
     <template is="dom-template">
-        <air-cruddy url="[[url]]" entity-id="[[entityId]]">
+        <air-cruddy debug url="[[url]]" entity-id="[[entityId]]">
 
         </air-cruddy>
     </template>
@@ -35,9 +35,9 @@
     });
 
 
-    var jsonOk = function jsonOk (body) {
+    var mockResponseJson = function(status,body) {
         var mockResponse = new window.Response(JSON.stringify(body), {
-            status: 200,
+            status: status,
             headers: {
                 'Content-type': 'application/json'
             }
@@ -46,48 +46,6 @@
     };
 
 
-    suite('air-cruddy fetch', function () {
-
-
-        var server;
-        var responseHeaders = {
-            'Content-Type': 'application/json'
-        };
-
-        setup(function () {
-            // 1. Initialize the fake server
-            // https://rjzaworski.com/2015/06/testing-api-requests-from-window-fetch
-            sinon.stub(window, 'fetch');
-            console.log('stub fetch');
-           var responseJson = {
-               "_id": "3", "_version": 4,
-               "_source":{ "group": "air"}
-           };
-            window.fetch.returns(jsonOk(responseJson));
-        });
-
-        teardown(function () {
-            console.log('stub fetch restore');
-            window.fetch.restore();
-        });
-
-        test('Fetch Retrieve Request', function (done) {
-
-            var element = fixture('basic', {
-                url: '/v1/element',
-                entityId: '3'
-            });
-            element.addEventListener('air-cruddy-retrieve', function (e) {
-                var detail = e.detail;
-                assert(detail.id === '3');
-                assert(detail.version === 4);
-                done();
-            });
-
-        });
-
-
-    });
 
 
 </script>
