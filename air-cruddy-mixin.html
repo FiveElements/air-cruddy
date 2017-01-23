@@ -13,7 +13,7 @@
     /**
      * @polymerBehavior
      */
-    FiveElements.AirCruddyBehaviorImpl = {
+    FiveElements.AirCruddyBehavior = {
 
         properties: {
             /**
@@ -321,9 +321,11 @@
          * ```
          */
         _adapterResponseRetrieve: function (responseJson) {
+            console.log('adpat response ' + JSON.stringify(responseJson));
             var data = JSON.parse(JSON.stringify(responseJson._source));
             data.id = responseJson._id;
             data.version = responseJson._version;
+            console.log('adpat response ==> ' + JSON.stringify(data));
             return data;
         },
         /**
@@ -556,10 +558,11 @@
         },
 
         _checkResponseStatus: function (response) {
+            console.log('check response : ' + response.ok);
             if (!response.ok) {
                 return response.text().then(function (text) {
-                    var error = new Error(response.status + '(' + response.statusText + ') : ' + text);
-                    return Promise.reject(Object.assign(error, {response: response}, {
+                    var error = new Error(response.status + '(' + response.statusText + ')');
+                    return Promise.reject(Object.assign(error, {
                         status: response.status,
                         statusText: response.statusText,
                         responseText: text
@@ -570,7 +573,8 @@
         },
 
         _transformResponseJson: function (response) {
-//                if (this._isResponseJson(response)) {
+            console.log('transform response ' + JSON.stringify(response));
+            console.dir(response);
             return response.json();
         },
 
@@ -717,10 +721,11 @@
         // --- ---------------------------
 
         _logError: function (error) {
-            console.log('--- error', error);
+            console.log('--- error :'+ error);
         },
 
         _handleErrorRetrieve: function (error) {
+            console.log('Error handle : ' + error);
             this._logError(error);
             var handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorRetrieve', error);
             if (handlerStatus) {
@@ -868,8 +873,8 @@
     }
 
 
-    FiveElements.AirCruddyBehavior = [
-        FiveElements.FireCryptoDigestBehavior, FiveElements.AirCruddyBehaviorImpl
-    ];
+//    FiveElements.AirCruddyBehavior = [
+//        FiveElements.FireCryptoDigestBehavior, FiveElements.AirCruddyBehaviorImpl
+//    ];
 
 </script>
