@@ -128,6 +128,7 @@
             // -----------------------------------------
             // Extract the object prefix : 'data.'.length = 5
             var pathChanged = changeRecord.path.slice(5);
+            var isValueEqual = true;
         },
 
 
@@ -170,6 +171,11 @@
             return this._fetchPromiseDelete(this.entityId, this.data);
         },
 
+        save: function () {
+          if (this.validate()) {
+
+          }
+        },
         /**
          * Send Create request to Server.
          */
@@ -216,10 +222,10 @@
             return (dataOrigin === null);
         },
         isStatusCreate: function (data, dataOrigin) {
-            return (dataOrigin === undefined);
+            return (data) && (dataOrigin === undefined);
         },
         isStatusUpdate: function (data, dataOrigin) {
-            return (dataOrigin);
+            return  (data) && (dataOrigin);
         },
 
         // --- Validation
@@ -805,6 +811,7 @@
          */
         _fireResponseRetrieve: function (response) {
             this.fire('air-cruddy-retrieve', response);
+//            this.dispatchEvent(new CustomEvent('air-cruddy-retrieve', { detail: response, bubbles: false }));
             if (this.debug) console.log('Fire  air-cruddy-retrieve : ' + JSON.stringify(response));
             return response;
         },
