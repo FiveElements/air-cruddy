@@ -30,6 +30,10 @@
                 type: Boolean,
                 value: false
             },
+            reloadOnCreate: {
+               type:Boolean,
+                value: false
+            },
             /**
              * Url endpoint of the Rest Web-Service
              *
@@ -114,7 +118,12 @@
 
         _entityIdChangeObserver: function (entityId) {
             if (entityId) {
-                this.retrieve(entityId);
+                if ( (!this.data) || (this.data.id !== entityId ) ){
+                    console.log('---- set entityId Observer :', entityId);
+                    this.retrieve(entityId);
+                }
+            } else {
+                this.clean();
             }
         },
 
@@ -129,8 +138,28 @@
             // Extract the object prefix : 'data.'.length = 5
             var pathChanged = changeRecord.path.slice(5);
             var isValueEqual = true;
+            switch (pathChanged) {
+                case '':
+                case 'id':
+                case 'version':
+                    isValueEqual = true;
+                    break;
+                default:
+                    var valueOri = this.get(pathChanged, this._dataOrigin);
+                    isValueEqual = this._isValueEqual(valueOri, changeRecord.value);
+            }
+            // Manage Change Field List
+            // -------------------------
+            if (isValueEqual) {
+               // delete this.dataSourceDirtyDetailStatus[pathChanged]
+            } else {
+               // this.dataSourceDirtyDetailStatus[pathChanged] = true;
+            }
         },
 
+        _isValueEqual: function (dataRef, data) {
+            return _.isEqual(dataRef, data);
+        },
 
         // --- mock
         // --- ---------------------------
@@ -173,18 +202,18 @@
         },
 
         save: function () {
-            console.log('saveEntity : '  );
-          if (this.validate()) {
-              console.log('is Create : ' + this.isStatusCreate(this.data, this._dataOrigin));
-              console.log('is Update : ' + this.isStatusUpdate(this.data, this._dataOrigin));
+            console.log('saveEntity : ');
+            if (this.validate()) {
+                console.log('is Create : ' + this.isStatusCreate(this.data, this._dataOrigin));
+                console.log('is Update : ' + this.isStatusUpdate(this.data, this._dataOrigin));
                 if (this.isStatusCreate(this.data, this._dataOrigin)) {
                     return this.create();
                 } else {
                     return this.update();
                 }
-          } else {
-              console.log('Data Not valid');
-          }
+            } else {
+                console.log('Data Not valid');
+            }
         },
         /**
          * Send Create request to Server.
@@ -193,9 +222,6 @@
             console.log('create data add ', this.data);
             return this._fetchPromiseCreate(null, this.data);
         },
-
-
-
 
 
         /**
@@ -260,19 +286,19 @@
             return (data !== null) && (dataOrigin === null);
         },
         isStatusUpdate: function (data, dataOrigin) {
-            return  (data !== null ) && (dataOrigin!== null );
+            return (data !== null ) && (dataOrigin !== null );
         },
 
         computeStatus: function (data, dataOrigin) {
-          if ( (data === null) || (data === undefined)) {
-              return 'unsetMode';
-          }  else {
-              if (dataOrigin === null) {
-                  return 'createMode';
-              } else {
-                  return 'updateMode';
-              }
-          }
+            if ((data === null) || (data === undefined)) {
+                return 'unsetMode';
+            } else {
+                if (dataOrigin === null) {
+                    return 'createMode';
+                } else {
+                    return 'updateMode';
+                }
+            }
         },
 
         // --- Validation
@@ -298,8 +324,6 @@
                 return isValidateNode;
             });
         },
-
-
 
 
         // --- Fetch Configuration
@@ -399,7 +423,7 @@
                     id: body._id,
                     version: body._version
                 };
-                body = Object.assign(adaptJson,body);
+                body = Object.assign(adaptJson, body);
                 delete body._id;
                 delete  body._version;
                 res.response = body;
@@ -632,12 +656,12 @@
         // --- Fetch Helper
         // --- ---------------------------
         _fetchRequest: function (opt) {
-//            console.log('Fetch opt', JSON.stringify(opt));
+//            console.log('______ Fetch opt', JSON.stringify(opt.init));
+            console.log('______ Fetch opt',  opt.init.method, ' ______');
             return window.fetch(opt.url, opt.init);
         },
 
         _checkResponseStatus: function (response) {
-            console.log('check response : ' + response.ok);
             if (!response.ok) {
                 return response.text().then(function (text) {
                     var error = new Error(response.status + ' (' + response.statusText + ')');
@@ -778,16 +802,30 @@
             console.log("_handleResponseCreate : " + JSON.stringify(res));
             var data = this.data;
             var responseJson = res.response;
+            var entityId = responseJson.id;
             // Hydrate
-            data.id = responseJson.id;
-            if (responseJson.version) {
-                data.version = responseJson.version;
+            if (this.reloadOnCreate) {
+                return this._fetchPromiseRetrieveRequest(entityId)
+                        .then(this._handleResponseRetrieve.bind(this))
+                        .then(function (resGet) {
+                           return res;
+                        });
+            } else {
+                return new Promise(function (resolve, reject) {
+                    data.id = entityId;
+                    if (responseJson.version) {
+                        data.version = responseJson.version;
+                    }
+                    this.entityId = entityId;
+                    // Propage Modification
+                    this._setDataWithClone(data);
+                    resolve(res);
+                }.bind(this));
             }
-            this.entityId = data.id;
-            // Propage Modification
-            this._setDataWithClone(data);
-            return responseJson;
+            return res;
         },
+
+
 
 
         _handleResponseUpdate: function (res) {
@@ -798,7 +836,7 @@
             }
             // Propage Modification
             this._setDataWithClone(data);
-            return responseJson;
+            return res;
         },
 
         _handleResponseDelete: function (res) {
