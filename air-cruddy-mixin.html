@@ -1,6 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 
-<link rel="import" href="../fire-crypto/fire-crypto-digest-behaviour.html">
+<link rel="import" href="../ether-lodash/ether-lodash-core.html">
 
 <script>
     'use strict';
@@ -254,13 +254,25 @@
 
         },
         isStatusUnset: function (data, dataOrigin) {
-            return (dataOrigin === null);
+            return (data === null);
         },
         isStatusCreate: function (data, dataOrigin) {
-            return (data) && (dataOrigin === undefined);
+            return (data !== null) && (dataOrigin === null);
         },
         isStatusUpdate: function (data, dataOrigin) {
-            return  (data) && (dataOrigin);
+            return  (data !== null ) && (dataOrigin!== null );
+        },
+
+        computeStatus: function (data, dataOrigin) {
+          if ( (data === null) || (data === undefined)) {
+              return 'unsetMode';
+          }  else {
+              if (dataOrigin === null) {
+                  return 'createMode';
+              } else {
+                  return 'updateMode';
+              }
+          }
         },
 
         // --- Validation
