@@ -657,7 +657,7 @@
         // --- ---------------------------
         _fetchRequest: function (opt) {
 //            console.log('______ Fetch opt', JSON.stringify(opt.init));
-            console.log('______ Fetch opt',  opt.init.method, ' ______');
+            if (this.debug)  console.log('____________ Fetch opt',  opt.init.method, ' ____________');
             return window.fetch(opt.url, opt.init);
         },
 
