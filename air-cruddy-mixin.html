@@ -575,7 +575,7 @@
             console.log('check response : ' + response.ok);
             if (!response.ok) {
                 return response.text().then(function (text) {
-                    var error = new Error(response.status + '(' + response.statusText + ')');
+                    var error = new Error(response.status + ' (' + response.statusText + ')');
                     return Promise.reject(Object.assign(error, {
                         status: response.status,
                         statusText: response.statusText,
@@ -709,31 +709,35 @@
             return res;
         },
 
-        _handleResponseCreate: function (responseJson) {
+        _handleResponseCreate: function (res) {
             var data = this.data;
+            var responseJson = res.response;
             // Hydrate
             data.id = responseJson.id;
             if (responseJson.version) {
                 data.version = responseJson.version;
             }
             this.entityId = data.id;
+            // Propage Modification
             this._setDataWithClone(data);
             return responseJson;
         },
 
 
-        _handleResponseUpdate: function (responseJson) {
+        _handleResponseUpdate: function (res) {
             var data = this.data;
+            var responseJson = res.response;
             if (responseJson.version) {
                 data.version = responseJson.version;
             }
+            // Propage Modification
             this._setDataWithClone(data);
             return responseJson;
         },
 
-        _handleResponseDelete: function (responseJson) {
+        _handleResponseDelete: function (res) {
             this.clean();
-            return responseJson;
+            return res;
         },
 
 
