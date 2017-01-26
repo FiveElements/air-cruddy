@@ -161,6 +161,7 @@
          */
 
         update: function () {
+            console.log('update data add ', this.data);
             return this._fetchPromiseUpdate(this.entityId, this.data);
         },
 
@@ -172,8 +173,17 @@
         },
 
         save: function () {
+            console.log('saveEntity : '  );
           if (this.validate()) {
-
+              console.log('is Create : ' + this.isStatusCreate(this.data, this._dataOrigin));
+              console.log('is Update : ' + this.isStatusUpdate(this.data, this._dataOrigin));
+                if (this.isStatusCreate(this.data, this._dataOrigin)) {
+                    return this.create();
+                } else {
+                    return this.update();
+                }
+          } else {
+              console.log('Data Not valid');
           }
         },
         /**
@@ -184,26 +194,9 @@
             return this._fetchPromiseCreate(null, this.data);
         },
 
-        /**
-         * Create new empty entity
-         */
-        newEntity: function () {
-            this.entityId = null;
-            this._dataOrigin = null;
-            this.data = this._createEmptyEntity();
-        },
 
-        _createEmptyEntity: function () {
-            return {};
-        },
 
-        /**
-         * Clean all component State, like data loaded or entityid definition.
-         */
-        clean: function () {
-            this.entityId = undefined;
-            this._setDataWithClone(undefined);
-        },
+
 
         /**
          * Restore the dat from with the last request retrieve.
@@ -212,6 +205,48 @@
             var cloned = this._dataOrigin;
             this.data = cloned ? JSON.parse(JSON.stringify(cloned)) : cloned;
         },
+
+        // --- Init Status
+        // --- ---------------------------
+        /**
+         * Clean all component State, like data loaded or entityId definition.
+         * TO have the save init State
+         */
+        clean: function () {
+            this.entityId = undefined;
+            this._setDataWithClone(undefined);
+        },
+
+        /**
+         * Create new empty entity in order to be saved
+         */
+        newEntity: function () {
+            this.entityId = null;
+            this._dataOrigin = null;
+            this.data = this._createEmptyEntityModel();
+        },
+
+        /**
+         *  Set Data with Clone When data is retrieve
+         */
+        _setDataWithClone: function (data) {
+            var dataClone = data ? Object.freeze(JSON.parse(JSON.stringify(data))) : data;
+            this.data = data;
+            console.log('set Data : ' + JSON.stringify(data));
+            this._dataOrigin = dataClone;
+        },
+
+        _unsetDataForError: function () {
+            this._setDataWithClone(null);
+        },
+
+        // ---Create API
+        // --- ---------------------------
+
+        _createEmptyEntityModel: function () {
+            return {};
+        },
+
 
         // --- Status
         // --- ---------------------------
@@ -237,8 +272,9 @@
             var isValid = validateNodes.reduce(function (acc, node) {
                 var validateFunc = node['validate'].bind(node);
                 var isValidNode = validateFunc();
-                return acc;
+                return isValidNode || acc;
             }, false);
+            return isValid;
         },
 
         _getValidateNodes: function () {
@@ -251,14 +287,7 @@
             });
         },
 
-        // --- Utility
-        // --- ---------------------------
-        _setDataWithClone: function (data) {
-            var dataClone = data ? Object.freeze(JSON.parse(JSON.stringify(data))) : data;
-            this.data = data;
-            console.log('set Data : ' + JSON.stringify(data));
-            this._dataOrigin = dataClone;
-        },
+
 
 
         // --- Fetch Configuration
@@ -337,63 +366,87 @@
             }
             return res;
         },
+
         /**
          * Adapt response from Update Web-Service o the expected format
          * ```
-         * {
-             *   id: '',
-             *   version: '',
-             *   ...
-             * }
+         * { status: 200,
+         *   statusText: 'OK',
+         *   response: {
+         *        id: '',
+         *        version: '',
+         *   ...
+         *   }
+         * }
          * ```
          */
-        _adapterResponseUpdate: function (res) {
+        _adapterResponseElasticsearch: function (res) {
             var body = res.response;
             if (body) {
                 var adaptJson = {
                     id: body._id,
                     version: body._version
                 };
-                body = Object.assign(adaptJson,body)
+                body = Object.assign(adaptJson,body);
+                delete body._id;
+                delete  body._version;
                 res.response = body;
             }
             return res;
         },
 
+
         /**
-         * Adapt response from Delete Web-Service o the expected format
+         * Adapt response from Update Web-Service o the expected format
          * ```
-         * {
-             *   id: 'The new entity Id',
-             *   version: 'The version',
-             *   ...
-             * }
+         * { status: 200,
+         *   statusText: 'OK',
+         *   response: {
+         *        id: '',
+         *        version: '',
+         *   ...
+         *   }
+         * }
          * ```
          */
-        _adapterResponseDelete: function (responseJson) {
-            var adaptJson = {
-                id: responseJson._id,
-                version: responseJson._version
-            };
-            return Object.assign(adaptJson, {origin: responseJson});
+        _adapterResponseUpdate: function (res) {
+            return this._adapterResponseElasticsearch(res);
         },
+
 
         /**
          * Adapt response from Create Web-Service o the expected format
          * ```
-         * {
-             *   id: 'The new entity Id',
-             *   version: 'The version',
-             *   ...
-             * }
+         * { status: 200,
+         *   statusText: 'OK',
+         *   response: {
+         *        id: 'The New entity Id',
+         *        version: 'The New version',
+         *   ...
+         *   }
+         * }
          * ```
          */
-        _adapterResponseCreate: function (responseJson) {
-            var adaptJson = {
-                id: responseJson._id,
-                version: responseJson._version
-            };
-            return Object.assign(adaptJson, {origin: responseJson});
+        _adapterResponseCreate: function (res) {
+            return this._adapterResponseElasticsearch(res);
+        },
+
+
+        /**
+         * Adapt response from Delete Web-Service o the expected format
+         * ```
+         * { status: 200,
+         *   statusText: 'OK',
+         *   response: {
+         *        id: 'The New entity Id',
+         *        version: 'The New version',
+         *   ...
+         *   }
+         * }
+         * ```
+         */
+        _adapterResponseDelete: function (res) {
+            return this._adapterResponseElasticsearch(res);
         },
 
         /**
@@ -710,6 +763,7 @@
         },
 
         _handleResponseCreate: function (res) {
+            console.log("_handleResponseCreate : " + JSON.stringify(res));
             var data = this.data;
             var responseJson = res.response;
             // Hydrate
@@ -754,7 +808,7 @@
             if (handlerStatus) {
                 return handlerStatus(error);
             }
-            this._setDataWithClone(null);
+            this._unsetDataForError(null);
             this._fireErrorRetrieve(error);
             return error;
         },
