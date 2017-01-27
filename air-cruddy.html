@@ -2,6 +2,8 @@
 
 <link rel="import" href="air-cruddy-mixin.html">
 
+<link rel="import" href="air-cruddy-adapter-elasticsearch-mixin.html">
+
 
 <!--
 `air-cruddy`
@@ -46,7 +48,9 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
             is: 'air-cruddy',
 
             behaviors: [
-                FiveElements.AirCruddyBehavior
+                FiveElements.AirCruddyBehavior,
+                FiveElements.AirCruddyAdapterElasticsearchBehavior
+
             ],
 
 

@@ -2,6 +2,9 @@
 
 <link rel="import" href="air-cruddy-mixin.html">
 
+<link rel="import" href="air-cruddy-adapter-elasticsearch-mixin.html">
+
+
 <!--
 `air-cruddy-elasticsearch`
 Polymer Element air-cruddy-elasticsearch
@@ -26,7 +29,8 @@ Polymer Element air-cruddy-elasticsearch
             is: 'air-cruddy-elasticsearch',
 
             behaviors: [
-                FiveElements.AirCruddyBehavior
+                FiveElements.AirCruddyBehavior,
+                FiveElements.AirCruddyAdapterElasticsearchBehavior
             ],
 
 

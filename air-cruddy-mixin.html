@@ -392,42 +392,6 @@
          * ```
          */
         _adapterResponseRetrieve: function (res) {
-            var responseJson = res.response;
-            if (responseJson) {
-                var data = JSON.parse(JSON.stringify(responseJson._source));
-                data.id = responseJson._id;
-                data.version = responseJson._version;
-                // define
-                res.response = data;
-            }
-            return res;
-        },
-
-        /**
-         * Adapt response from Update Web-Service o the expected format
-         * ```
-         * { status: 200,
-         *   statusText: 'OK',
-         *   response: {
-         *        id: '',
-         *        version: '',
-         *   ...
-         *   }
-         * }
-         * ```
-         */
-        _adapterResponseElasticsearch: function (res) {
-            var body = res.response;
-            if (body) {
-                var adaptJson = {
-                    id: body._id,
-                    version: body._version
-                };
-                body = Object.assign(adaptJson, body);
-                delete body._id;
-                delete  body._version;
-                res.response = body;
-            }
             return res;
         },
 
@@ -446,7 +410,7 @@
          * ```
          */
         _adapterResponseUpdate: function (res) {
-            return this._adapterResponseElasticsearch(res);
+            return res;
         },
 
 
@@ -464,7 +428,7 @@
          * ```
          */
         _adapterResponseCreate: function (res) {
-            return this._adapterResponseElasticsearch(res);
+            return res;
         },
 
 
@@ -482,7 +446,7 @@
          * ```
          */
         _adapterResponseDelete: function (res) {
-            return this._adapterResponseElasticsearch(res);
+            return res;
         },
 
         /**
@@ -521,18 +485,6 @@
         },
 
 
-        _transformToServerSavePartial: function (opt) {
-            // Manage Differential
-            if (opt.data) {
-                var data = JSON.parse(JSON.stringify(opt.data));
-                delete data.id;
-                delete data.version;
-                opt.data = {
-                    "doc": data
-                };
-            }
-            return opt;
-        },
 
         // --- Elasticsearch API
         // --- -------------------------------
