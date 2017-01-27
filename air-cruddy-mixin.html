@@ -119,10 +119,14 @@
         _entityIdChangeObserver: function (entityId) {
             if (entityId) {
                 if ( (!this.data) || (this.data.id !== entityId ) ){
-                    console.log('---- set entityId Observer :', entityId);
+                    if (this.debug) console.log('---- set entityId Observer :', entityId);
                     this.retrieve(entityId);
                 }
+            } else  if (entityId === null) {
+                if (this.debug) console.log('---- set entityId Observer : null ==> newEntity');
+                this.newEntity();
             } else {
+                if (this.debug) console.log('---- set entityId Observer : undefined ==> clean');
                 this.clean();
             }
         },
@@ -131,7 +135,7 @@
         // --- ---------------------
         _dataChangeObserver: function (changeRecord) {
             // https://github.com/FiveElements/air-cruddy/blob/iron-ajax/air-cruddy-dirty-behaviour.html
-            console.log('### ', changeRecord.path + ' changed to ' + changeRecord.value, ' // ', changeRecord);
+            if (this.debug) console.log('### ', changeRecord.path + ' changed to ' + changeRecord.value, ' // ', changeRecord);
 
             // Compare the Change to Origin loaded data
             // -----------------------------------------
