@@ -188,6 +188,27 @@
             return this._adapterResponseElasticsearch(res);
         },
 
+
+
+        /**
+         * Adapt data model For Update or Create request
+         *
+         * @param opt Fetch configuration in format ``` { url:'', init:{}, data:{}}```
+         */
+        _adapterFetchInitData: function (opt) {
+            // Create New Structure
+            if (opt.data) {
+                var data = JSON.parse(JSON.stringify(opt.data));
+                delete data.id;
+                delete data.version;
+                // Register Data
+                opt.data = data;
+            }
+            return opt;
+        },
+
+
+
     }
 
 

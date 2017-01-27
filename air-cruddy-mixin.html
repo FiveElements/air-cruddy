@@ -31,7 +31,7 @@
                 value: false
             },
             reloadOnCreate: {
-               type:Boolean,
+                type: Boolean,
                 value: false
             },
             /**
@@ -60,6 +60,19 @@
              */
             _dataOrigin: {
                 type: Object
+            },
+            /**
+             * A backup of the Data Load
+             */
+            _dataDirty: {
+                type: Object
+            },
+            /**
+             * The current edition mode.
+             * 'created', 'updating', 'unset'
+             */
+            _cruddyMode: {
+                type: String
             },
             /**
              * Fetch Configuration :
@@ -118,11 +131,11 @@
 
         _entityIdChangeObserver: function (entityId) {
             if (entityId) {
-                if ( (!this.data) || (this.data.id !== entityId ) ){
+                if ((!this.data) || (this.data.id !== entityId )) {
                     if (this.debug) console.log('---- set entityId Observer :', entityId);
                     this.retrieve(entityId);
                 }
-            } else  if (entityId === null) {
+            } else if (entityId === null) {
                 if (this.debug) console.log('---- set entityId Observer : null ==> newEntity');
                 this.newEntity();
             } else {
@@ -136,7 +149,9 @@
         _dataChangeObserver: function (changeRecord) {
             // https://github.com/FiveElements/air-cruddy/blob/iron-ajax/air-cruddy-dirty-behaviour.html
             if (this.debug) console.log('### ', changeRecord.path + ' changed to ' + changeRecord.value, ' // ', changeRecord);
-
+            if (!this._dataDirty) {
+                return ;
+            }
             // Compare the Change to Origin loaded data
             // -----------------------------------------
             // Extract the object prefix : 'data.'.length = 5
@@ -155,10 +170,13 @@
             // Manage Change Field List
             // -------------------------
             if (isValueEqual) {
-               // delete this.dataSourceDirtyDetailStatus[pathChanged]
+                delete this._dataDirty[pathChanged];
+//                this.isDirty = Object.keys(this._dataDirty).length > 0;
             } else {
-               // this.dataSourceDirtyDetailStatus[pathChanged] = true;
+                this._dataDirty[pathChanged] = true;
+//                this.isDirty=true;
             }
+            this._dataDirty =  this._dataDirty;
         },
 
         _isValueEqual: function (dataRef, data) {
@@ -185,7 +203,6 @@
         retrieve: function (entityId) {
 //                var loadId = entityId || this.entityId;
             var loadId = this.entityId;
-//            loadId = 'AVmyiew8OdPym37e2QYA';
             return this._fetchPromiseRetrieve(loadId);
         },
 
@@ -194,23 +211,22 @@
          */
 
         update: function () {
-            console.log('update data add ', this.data);
-            return this._fetchPromiseUpdate(this.entityId, this.data);
+            var entityId = this.data.id || this.entityId;
+            return this._fetchPromiseUpdate(entityId, this.data);
         },
 
         /**
          * Send Delete request to Server.
          */
         delete: function () {
-            return this._fetchPromiseDelete(this.entityId, this.data);
+            var entityId = this.data.id || this.entityId;
+            return this._fetchPromiseDelete(entityId, this.data);
         },
 
         save: function () {
-            console.log('saveEntity : ');
             if (this.validate()) {
-                console.log('is Create : ' + this.isStatusCreate(this.data, this._dataOrigin));
-                console.log('is Update : ' + this.isStatusUpdate(this.data, this._dataOrigin));
-                if (this.isStatusCreate(this.data, this._dataOrigin)) {
+                if (this._cruddyMode === 'create') {
+//                if (this.isStatusCreate(this.data, this._dataOrigin)) {
                     return this.create();
                 } else {
                     return this.update();
@@ -223,17 +239,16 @@
          * Send Create request to Server.
          */
         create: function () {
-            console.log('create data add ', this.data);
             return this._fetchPromiseCreate(null, this.data);
         },
 
 
         /**
-         * Restore the dat from with the last request retrieve.
+         * Restore the data from with the last request retrieve.
          */
         reset: function () {
-            var cloned = this._dataOrigin;
-            this.data = cloned ? JSON.parse(JSON.stringify(cloned)) : cloned;
+            var cloned = this._dataOrigin ? JSON.parse(JSON.stringify(this._dataOrigin)) : this._dataOrigin;
+            this._setCrudDataModeUpdate(cloned);
         },
 
         // --- Init Status
@@ -244,7 +259,7 @@
          */
         clean: function () {
             this.entityId = undefined;
-            this._setDataWithClone(undefined);
+            this._setCrudDataModeUnset(undefined);
         },
 
         /**
@@ -252,22 +267,38 @@
          */
         newEntity: function () {
             this.entityId = null;
-            this._dataOrigin = null;
-            this.data = this._createEmptyEntityModel();
+            this._setCrudDataModeCreate( this._createEmptyEntityModel());
         },
+
 
         /**
          *  Set Data with Clone When data is retrieve
          */
-        _setDataWithClone: function (data) {
-            var dataClone = data ? Object.freeze(JSON.parse(JSON.stringify(data))) : data;
+        _setCrudDataModeCreate: function (data) {
+            if (this.debug) console.log('~~~~~~~~ Create Mode ~~~~~~~~ ' );
+            this._cruddyMode = 'create';
+            this._dataDirty = {};
+            this._dataOrigin = null;
             this.data = data;
-            console.log('set Data : ' + JSON.stringify(data));
-            this._dataOrigin = dataClone;
+//            this.entityId = null;
         },
-
-        _unsetDataForError: function () {
-            this._setDataWithClone(null);
+        _setCrudDataModeUpdate: function (data) {
+            if (this.debug) console.log('~~~~~~~~ Update Mode ~~~~~~~~ ' );
+            this._cruddyMode = 'update';
+            this._dataDirty = {};
+            this._dataOrigin = data ? Object.freeze(JSON.parse(JSON.stringify(data))) : data;
+            this.data = data;
+            if (this.entityId !== data.id){
+                this.entityId = data.id;
+            }
+        },
+        _setCrudDataModeUnset: function (data) {
+            if (this.debug) console.log('~~~~~~~~ Unset Mode ~~~~~~~~ ' );
+            this._cruddyMode = 'unset';
+            this._dataDirty = undefined;
+            this._dataOrigin = undefined;
+            this.data = undefined;
+//            this.entityId = undefined;
         },
 
         // ---Create API
@@ -309,7 +340,7 @@
         // --- ---------------------------
 
         validate: function () {
-            var distributed = this.getContentChildren('#crudContent');
+//            var distributed = this.getContentChildren('#crudContent');
             var validateNodes = this._getValidateNodes();
             var isValid = validateNodes.reduce(function (acc, node) {
                 var validateFunc = node['validate'].bind(node);
@@ -459,14 +490,6 @@
          * @param opt Fetch configuration in format ``` { url:'', init:{}, data:{}}```
          */
         _adapterFetchInitData: function (opt) {
-            // Create New Structure
-            if (opt.data) {
-                var data = JSON.parse(JSON.stringify(opt.data));
-                delete data.id;
-                delete data.version;
-                // Register Data
-                opt.data = data;
-            }
             return opt;
         },
 
@@ -487,7 +510,6 @@
         _adapterFetchInitDataCreate: function (opt) {
             return this._adapterFetchInitData(opt);
         },
-
 
 
         // --- Elasticsearch API
@@ -612,8 +634,7 @@
         // --- Fetch Helper
         // --- ---------------------------
         _fetchRequest: function (opt) {
-//            console.log('______ Fetch opt', JSON.stringify(opt.init));
-            if (this.debug)  console.log('____________ Fetch opt',  opt.init.method, ' ____________');
+            if (this.debug)  console.log('____________ Fetch opt', opt.init.method, ' ____________');
             return window.fetch(opt.url, opt.init);
         },
 
@@ -749,13 +770,12 @@
 
         _handleResponseRetrieve: function (res) {
             var responseJson = res.response;
-            this._setDataWithClone(responseJson);
+            this._setCrudDataModeUpdate(responseJson);
             this.entityId = responseJson.id;
             return res;
         },
 
         _handleResponseCreate: function (res) {
-            console.log("_handleResponseCreate : " + JSON.stringify(res));
             var data = this.data;
             var responseJson = res.response;
             var entityId = responseJson.id;
@@ -764,7 +784,7 @@
                 return this._fetchPromiseRetrieveRequest(entityId)
                         .then(this._handleResponseRetrieve.bind(this))
                         .then(function (resGet) {
-                           return res;
+                            return res;
                         });
             } else {
                 return new Promise(function (resolve, reject) {
@@ -774,14 +794,12 @@
                     }
                     this.entityId = entityId;
                     // Propage Modification
-                    this._setDataWithClone(data);
+                    this._setCrudDataModeUpdate(data);
                     resolve(res);
                 }.bind(this));
             }
             return res;
         },
-
-
 
 
         _handleResponseUpdate: function (res) {
@@ -791,7 +809,7 @@
                 data.version = responseJson.version;
             }
             // Propage Modification
-            this._setDataWithClone(data);
+            this._setCrudDataModeUpdate(data);
             return res;
         },
 
@@ -814,7 +832,7 @@
             if (handlerStatus) {
                 return handlerStatus(error);
             }
-            this._unsetDataForError(null);
+            this._setCrudDataModeUnset(null);
             this._fireErrorRetrieve(error);
             return error;
         },
@@ -876,7 +894,7 @@
         _fireResponseRetrieve: function (response) {
             this.fire('air-cruddy-retrieve', response);
 //            this.dispatchEvent(new CustomEvent('air-cruddy-retrieve', { detail: response, bubbles: false }));
-            if (this.debug) console.log('Fire  air-cruddy-retrieve : ' + JSON.stringify(response));
+            if (this.debug) console.log('Fire  air-cruddy-retrieve : ', JSON.stringify(response));
             return response;
         },
 
