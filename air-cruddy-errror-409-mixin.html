@@ -14,12 +14,36 @@
     FiveElements.AirCruddyError409Behavior = {
 
         _handleErrorUpdate409: function (error) {
-            // TODO
-            var request = this._fetchPromiseRetrieveRequest(entityId);
 
+            // TODO
+            var request = this._fetchPromiseRetrieveRequest(entityId).then(function (res) {
+                console.log('response to merge : ', res);
+
+                var conflictData = {
+                    dataUser: this.data,
+                    dataOrigin: this._dataOrigin,
+                    dataServer: res.response
+                };
+                return conflictData;
+                // compute user diff
+                // diff between _dataOrigin and data
+
+                // Compute diff
+            }).then(this._conflictResolution.bind(this))
+                    .catch(function (err) {
+                console.error(err);
+            });
 
         },
 
+
+        _conflictResolution: function (conflictData) {
+            // Need to compute
+            var userChange; // diff dataUser <>  dataOrigin
+            var serverChange; // diff dataServer <>  dataOrigin
+            //
+
+        },
 
     }
 

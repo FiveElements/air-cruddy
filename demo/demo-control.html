@@ -1,5 +1,7 @@
 <link rel="import" href="../../polymer/polymer.html">
 
+<link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+
 <!--
 `demo-control`
 
@@ -14,7 +16,20 @@
                 display: block;
             }
         </style>
-        <h2>Hello [[prop1]]</h2>
+        <paper-icon-button icon=":create-new-folder" disabled$="[[status.isDirty]]"
+                           on-tap="_handleSave"></paper-icon-button>
+
+
+        <paper-icon-button icon="check" disabled$="[[!status.isDirty]]"
+                           on-tap="_handleSave"></paper-icon-button>
+
+        <paper-icon-button icon="restore" disabled$="[[!status.isDirty]]"
+                           on-tap="_handleReset"></paper-icon-button>
+
+        <paper-icon-button icon="delete" disabled$="[[!status.isDirty]]"
+                           on-tap="_handleDelete"></paper-icon-button>
+
+
     </template>
 
     <script>
@@ -23,9 +38,8 @@
             is: 'demo-control',
 
             properties: {
-                prop1: {
-                    type: String,
-                    value: 'demo-control',
+                status: {
+                    type: Object
                 },
             },
 
