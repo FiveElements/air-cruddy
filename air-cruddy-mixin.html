@@ -74,6 +74,21 @@
             _cruddyMode: {
                 type: String
             },
+            isDirty: {
+                type: Boolean,
+                notify: true,
+                value: false
+            },
+            status: {
+               type: Object,
+                notify: true,
+                value: function () {
+                    return {
+                        isDirty: false,
+                        mode: 'unset'
+                    }
+                }
+            },
             /**
              * Fetch Configuration :
              *
@@ -118,8 +133,22 @@
             '_autosaveObserver(autoSave,data.*)',
             '_dataChangeObserver(data.*)',
             '_entityIdChangeObserver(entityId)',
+            '_isDirtyModeObserver(isDirty, _cruddyMode)'
 
         ],
+
+        listeners: {
+            'focusout': '_handleFocusOut'
+        },
+
+        // --- Listener
+        // --- ---------------------------
+        _handleFocusOut: function (e) {
+            if (this.debug) console.log('- - - - - -> focusout :  isDirty(', this.isDirty, ') ');
+            if (this.autoSave && this.isDirty) {
+                this.save();
+            }
+        },
 
         // --- Changed Observer
         // --- ---------------------------
@@ -150,7 +179,7 @@
             // https://github.com/FiveElements/air-cruddy/blob/iron-ajax/air-cruddy-dirty-behaviour.html
             if (this.debug) console.log('### ', changeRecord.path + ' changed to ' + changeRecord.value, ' // ', changeRecord);
             if (!this._dataDirty) {
-                return ;
+                return;
             }
             // Compare the Change to Origin loaded data
             // -----------------------------------------
@@ -169,14 +198,38 @@
             }
             // Manage Change Field List
             // -------------------------
+            var isDirty  = undefined;
+            var dataDirty = this._dataDirty;
             if (isValueEqual) {
-                delete this._dataDirty[pathChanged];
-//                this.isDirty = Object.keys(this._dataDirty).length > 0;
+                delete dataDirty[pathChanged];
+                isDirty = Object.keys(dataDirty).length > 0;
             } else {
-                this._dataDirty[pathChanged] = true;
-//                this.isDirty=true;
+                dataDirty[pathChanged] = true;
+                isDirty = true;
             }
-            this._dataDirty =  this._dataDirty;
+            this._dataDirty = dataDirty;
+            this.isDirty = isDirty;
+        },
+
+        _isDirtyModeObserver: function (isDirty, cruddyMode) {
+//            var crudStatus = this.status;
+//            var notifyChange = false;
+//            if (crudStatus.isDirty !== isDirty) {
+//                crudStatus.isDirty = isDirty;
+//                notifyChange = true;
+//            }
+//            if (crudStatus.mode !== cruddyMode) {
+//                crudStatus.mode = cruddyMode;
+//                notifyChange = true;
+//            }
+            // Status
+            var crudStatus = {
+                isDirty: isDirty,
+                mode: cruddyMode
+            };
+//            if (notifyChange)
+            this.status = crudStatus;
+            if (this.debug) console.log('status : ', crudStatus);
         },
 
         _isValueEqual: function (dataRef, data) {
@@ -267,7 +320,7 @@
          */
         newEntity: function () {
             this.entityId = null;
-            this._setCrudDataModeCreate( this._createEmptyEntityModel());
+            this._setCrudDataModeCreate(this._createEmptyEntityModel());
         },
 
 
@@ -275,29 +328,32 @@
          *  Set Data with Clone When data is retrieve
          */
         _setCrudDataModeCreate: function (data) {
-            if (this.debug) console.log('~~~~~~~~ Create Mode ~~~~~~~~ ' );
+            if (this.debug) console.log('~~~~~~~~ Create Mode ~~~~~~~~ ');
             this._cruddyMode = 'create';
             this._dataDirty = {};
             this._dataOrigin = null;
             this.data = data;
+            this.isDirty = false;
 //            this.entityId = null;
         },
         _setCrudDataModeUpdate: function (data) {
-            if (this.debug) console.log('~~~~~~~~ Update Mode ~~~~~~~~ ' );
+            if (this.debug) console.log('~~~~~~~~ Update Mode ~~~~~~~~ ');
             this._cruddyMode = 'update';
             this._dataDirty = {};
             this._dataOrigin = data ? Object.freeze(JSON.parse(JSON.stringify(data))) : data;
             this.data = data;
-            if (this.entityId !== data.id){
+            this.isDirty = false;
+            if (this.entityId !== data.id) {
                 this.entityId = data.id;
             }
         },
         _setCrudDataModeUnset: function (data) {
-            if (this.debug) console.log('~~~~~~~~ Unset Mode ~~~~~~~~ ' );
+            if (this.debug) console.log('~~~~~~~~ Unset Mode ~~~~~~~~ ');
             this._cruddyMode = 'unset';
             this._dataDirty = undefined;
             this._dataOrigin = undefined;
             this.data = undefined;
+            this.isDirty = false;
 //            this.entityId = undefined;
         },
 
