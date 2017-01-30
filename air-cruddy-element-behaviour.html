@@ -1,0 +1,53 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+    'use strict';
+
+    /**
+     * FiveElements Namespace definition
+     */
+    var FiveElements = FiveElements || {};
+
+    /**
+     * @polymerBehavior
+     */
+    FiveElements.AirCruddyElementBehavior = {
+
+
+
+
+        properties: {
+            /**
+             * The form that the element is registered to.
+             */
+            _parentForm: {
+                type: Object
+            }
+        },
+
+        // --- Life Cycle
+        // --- ---------------------------
+        /**
+         * Fired when the element is added to an `iron-form`.
+         *
+         * @event air-cruddy-element-register
+         */
+        attached: function() {
+            this.fire('air-cruddy-element-register');
+        },
+
+        /**
+         * Fired when the element is removed from an `iron-form`.
+         *
+         * @event air-cruddy-element-unregister
+         */
+        detached: function() {
+            if (this._parentForm) {
+                this._parentForm.fire('air-cruddy-element-unregister', {target: this});
+                this._parentForm = undefined;
+            }
+        }
+
+    };
+
+</script>
