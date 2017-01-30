@@ -94,8 +94,8 @@
             element.addEventListener('air-cruddy-error-retrieve', function (e) {
                 var detail = e.detail;
                 assert(detail.status === 404);
-                assert.isNull(element.data);
-                assert.isNull(element._dataOrigin);
+                assert.isUndefined(element.data);
+                assert.isUndefined(element._dataOrigin);
                 done();
             });
         });
@@ -106,8 +106,8 @@
                 console.log('---- secondRetrieve404Consume ----');
                 var detail = e.detail;
                 assert(detail.status === 404);
-                assert.isNull(element.data);
-                assert.isNull(element._dataOrigin);
+                assert.isUndefined(element.data);
+                assert.isUndefined(element._dataOrigin);
                 done();
             };
             var firstRetrieveConsume = false;

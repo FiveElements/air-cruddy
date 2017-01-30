@@ -21,7 +21,7 @@
 
 <script>
     suite('air-cruddy behaviour Utility', function () {
-        test('_setDataWithClone', function () {
+        test('_setCrudDataModeUpdate', function () {
             var element = fixture('basic');
             var data = {
                 id: 'dataToClone',
@@ -29,19 +29,23 @@
                 lastname: 'Leeloominaï Lekatariba Lamina-Tchaï Ekbat De Sebat',
                 firstname: 'Leeloo'
             };
-            element._setDataWithClone(data);
+            element._setCrudDataModeUpdate(data);
             assert.equal(element.data, data );
             assert.notEqual(element.data, element._dataOrigin, 'the data need to be cloned');
             assert.deepEqual(element.data, element._dataOrigin, 'the data need to be cloned but the same');
             assert.frozen(element._dataOrigin);
+            assert.isFalse(element.isDirty );
+            assert.equal('update', element._cruddyMode);
         });
-        test('_setDataWithClone with undefined', function () {
+        test('_setCrudDataModeUnset with undefined', function () {
             var element = fixture('basic');
             var data = undefined;
-            element._setDataWithClone(data);
+            element._setCrudDataModeUnset(data);
             assert.equal(element.data, data );
             assert.equal(element.data, element._dataOrigin, 'the data need to be cloned');
             assert.frozen(element._dataOrigin);
+            assert.isFalse(element.isDirty );
+            assert.equal('unset', element._cruddyMode);
         });
     });
 

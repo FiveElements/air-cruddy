@@ -59,34 +59,41 @@
              * A backup of the Data Load
              */
             _dataOrigin: {
-                type: Object
+                type: Object,
+                readonly: true
             },
             /**
              * A backup of the Data Load
              */
             _dataDirty: {
-                type: Object
+                type: Object,
+                readonly: true
             },
             /**
              * The current edition mode.
              * 'created', 'updating', 'unset'
              */
             _cruddyMode: {
-                type: String
+                type: String,
+                notify: true,
+                readonly: true
             },
             isDirty: {
                 type: Boolean,
                 notify: true,
+                readonly: true,
                 value: false
             },
             isValid: {
                 type: Boolean,
                 notify: true,
+                readonly: true,
                 value: true
             },
             status: {
                type: Object,
                 notify: true,
+                readonly: true,
                 value: function () {
                     return {
                         isDirty: false,
@@ -131,7 +138,26 @@
             referrer: {
                 type: String,
                 value: 'client'
-            }
+            },
+            /**
+             *  Fetch Configuration :
+             *
+             *  integrity: Contains the subresource integrity value of the request (e.g., sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=). (https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity)
+             */
+            integrity: {
+                type: String
+            },
+            /**
+             *  Fetch Configuration :
+             *
+             * credentials: The request credentials you want to use for the request: omit, same-origin, or include. The default is omit.
+             * In Chrome the default is same-origin before Chrome 47
+             * and include starting with Chrome 47.
+             */
+            credentials: {
+                type: String,
+                value: 'omit'
+            },
         },
 
         observers: [
@@ -445,15 +471,18 @@
             // https://developer.mozilla.org/en-US/docs/Web/API/Request/Request
             // method: The request method, e.g., GET, POST.
             // credentials: The request credentials you want to use for the request: omit, same-origin, or include. The default is omit.
-            // integrity: Contains the subresource integrity value of the request (e.g., sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=). (https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity)
             var init = {
                 method: method,
                 mode: this.mode,
                 cache: this.cache,
                 redirect: this.redirect,
                 referrer: this.referrer,
+                credentials: this.credentials,
                 headers: myHeaders
             };
+            if (this.integrity) {
+                init.integrity = this.integrity;
+            }
             return init;
         },
 
