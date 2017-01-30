@@ -152,6 +152,9 @@
             if (this.debug) console.log('- - - - - -> focusout :  isDirty(', this.isDirty, ') ');
             if (this.autoSave && this.isDirty) {
                 this.save();
+            } else if (this.autoSave && !this.isDirty && !this.isValid) {
+                var isValid = this.validate();
+                this.isValid = isValid;
             }
         },
 
@@ -339,7 +342,7 @@
             if (this.debug) console.log('~~~~~~~~ Create Mode ~~~~~~~~ ');
             this._cruddyMode = 'create';
             this._dataDirty = {};
-            this._dataOrigin = null;
+            this._dataOrigin = data ? Object.freeze(JSON.parse(JSON.stringify(data))) : data;
             this.data = data;
             this.isDirty = false;
 //            this.entityId = null;

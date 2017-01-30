@@ -26,7 +26,7 @@
         <paper-icon-button icon="restore" disabled$="[[!status.isDirty]]"
                            on-tap="_handleReset"></paper-icon-button>
 
-        <paper-icon-button icon="delete" disabled$="[[!status.isDirty]]"
+        <paper-icon-button icon="delete" disabled$="[[status.isDirty]]"
                            on-tap="_handleDelete"></paper-icon-button>
 
 

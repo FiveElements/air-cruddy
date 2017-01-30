@@ -10,6 +10,10 @@
 
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+
+    <link rel="import" href="../../paper-toggle-button/paper-toggle-button.html">
+
+
     <link rel="import" href="../air-cruddy.html">
 
     <link rel="import" href="demo-editor-tweet.html">
@@ -24,9 +28,13 @@
     <h3>Basic air-cruddy demo</h3>
     <demo-snippet>
         <template is="dom-bind" id="demo">
-            <demo-control></demo-control>
+            <demo-control status="{{status}}"></demo-control>
+            <div>
+                <div>Options</div>
+                <paper-toggle-button checked="{{autoSave}}">Auto Save</paper-toggle-button>
+            </div>
             <demo-event-catcher>
-                <air-cruddy debug auto-save data="{{data}}" url="http://localhost:9200/twitter/tweet" entity-id="1">
+                <air-cruddy debug auto-save="[[autoSave]]" status="{{status}}" data="{{data}}" url="http://localhost:9200/twitter/tweet" entity-id="1">
                     <demo-editor-tweet data="{{data}}"></demo-editor-tweet>
                 </air-cruddy>
             </demo-event-catcher>
