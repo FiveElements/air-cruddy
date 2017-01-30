@@ -28,10 +28,10 @@
     <h3>Basic air-cruddy demo</h3>
     <demo-snippet>
         <template is="dom-bind" id="demo">
-            <demo-control status="{{status}}" debug="{{debug}}" auto-save="[[autoSave]]"></demo-control>
 
             <demo-event-catcher>
-                <air-cruddy debug="[[debug]]" auto-save="[[autoSave]]" status="{{status}}" data="{{data}}" url="http://localhost:9200/twitter/tweet" entity-id="1">
+                <demo-control status="{{status}}" debug="{{debug}}" auto-save="[[autoSave]]" command="{{command}}"></demo-control>
+                <air-cruddy debug="[[debug]]" auto-save="[[autoSave]]" status="{{status}}"  command="{{command}}" data="{{data}}" url="http://localhost:9200/twitter/tweet" entity-id="1">
                     <demo-editor-tweet data="{{data}}"></demo-editor-tweet>
                 </air-cruddy>
             </demo-event-catcher>

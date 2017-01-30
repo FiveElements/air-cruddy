@@ -58,6 +58,10 @@
                     notify:true,
                     value: true
                 },
+                command: {
+                    type: String,
+                    notify:true
+                },
             },
 
             _isCrudModeUpdate: function (crudMode) {
@@ -65,15 +69,16 @@
             },
 
             _handleNewEntity: function () {
-
+                this.command = 'newEntity';
             },
             _handleSave: function () {
-
+                this.command = 'save';
             },
             _handleReset: function () {
-
+                this.command = 'reset';
             },
             _handleDelete: function () {
+                this.command = 'delete';
 
             },
 

@@ -158,6 +158,14 @@
                 type: String,
                 value: 'omit'
             },
+            /**
+             * Remote Command
+             */
+            command: {
+                type:String,
+                notify: true,
+                observer: '_commandChanged'
+            }
         },
 
         observers: [
@@ -185,6 +193,18 @@
 
         // --- Changed Observer
         // --- ---------------------------
+        _commandChanged: function (newCommand) {
+            if (!newCommand) return;
+            var cmdFunc = this[newCommand];
+            if (this.debug) console.log('command : ', newCommand);
+            if (typeof cmdFunc === 'function') {
+                var action = cmdFunc.bind(this);
+                var self = this;
+                action().then(function (result) {
+                    self.command = undefined;
+                });
+            }
+        },
 
         _entityIdChangeObserver: function (entityId) {
             if (entityId) {
@@ -331,8 +351,11 @@
          * Restore the data from with the last request retrieve.
          */
         reset: function () {
-            var cloned = this._dataOrigin ? JSON.parse(JSON.stringify(this._dataOrigin)) : this._dataOrigin;
-            this._setCrudDataModeUpdate(cloned);
+            return new Promise(function (resolve, reject) {
+                var cloned = this._dataOrigin ? JSON.parse(JSON.stringify(this._dataOrigin)) : this._dataOrigin;
+                this._setCrudDataModeUpdate(cloned);
+                resolve(cloned);
+            }.bind(this));
         },
 
         // --- Init Status
@@ -350,8 +373,13 @@
          * Create new empty entity in order to be saved
          */
         newEntity: function () {
-            this.entityId = null;
-            this._setCrudDataModeCreate(this._createEmptyEntityModel());
+            return new Promise(function (resolve, reject) {
+                this.entityId = null;
+                var data = this._createEmptyEntityModel();
+                this._setCrudDataModeCreate(data);
+                resolve(data);
+            }.bind(this));
+
         },
 
 
@@ -374,9 +402,9 @@
             this._dataOrigin = data ? Object.freeze(JSON.parse(JSON.stringify(data))) : data;
             this.data = data;
             this.isDirty = false;
-            if (this.entityId !== data.id) {
-                this.entityId = data.id;
-            }
+//            if (this.entityId !== data.id) {
+//                this.entityId = data.id;
+//            }
         },
         _setCrudDataModeUnset: function (data) {
             if (this.debug) console.log('~~~~~~~~ Unset Mode ~~~~~~~~ ');
