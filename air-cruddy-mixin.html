@@ -79,6 +79,11 @@
                 notify: true,
                 value: false
             },
+            isValid: {
+                type: Boolean,
+                notify: true,
+                value: true
+            },
             status: {
                type: Object,
                 notify: true,
@@ -133,7 +138,7 @@
             '_autosaveObserver(autoSave,data.*)',
             '_dataChangeObserver(data.*)',
             '_entityIdChangeObserver(entityId)',
-            '_isDirtyModeObserver(isDirty, _cruddyMode)'
+            '_isDirtyModeObserver(isValid, isDirty, _cruddyMode)'
 
         ],
 
@@ -211,7 +216,7 @@
             this.isDirty = isDirty;
         },
 
-        _isDirtyModeObserver: function (isDirty, cruddyMode) {
+        _isDirtyModeObserver: function (isValid, isDirty, cruddyMode) {
 //            var crudStatus = this.status;
 //            var notifyChange = false;
 //            if (crudStatus.isDirty !== isDirty) {
@@ -224,6 +229,7 @@
 //            }
             // Status
             var crudStatus = {
+                isValid: isValid,
                 isDirty: isDirty,
                 mode: cruddyMode
             };
@@ -277,7 +283,9 @@
         },
 
         save: function () {
-            if (this.validate()) {
+            var isValid = this.validate();
+            this.isValid = isValid;
+            if (isValid) {
                 if (this._cruddyMode === 'create') {
 //                if (this.isStatusCreate(this.data, this._dataOrigin)) {
                     return this.create();
