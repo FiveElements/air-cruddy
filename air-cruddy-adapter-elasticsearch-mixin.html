@@ -94,7 +94,7 @@
          * ```
          */
         _adapterResponseRetrieve: function (res) {
-            console.log('-----> _adapterResponseRetrieve : ', JSON.stringify(res));
+            if (this.debug) console.log('-----> _adapterResponseRetrieve : ', JSON.stringify(res));
             var responseJson = res.response;
             if (responseJson) {
                 var data = JSON.parse(JSON.stringify(responseJson._source));

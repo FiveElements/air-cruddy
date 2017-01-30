@@ -16,18 +16,26 @@
                 display: block;
             }
         </style>
-        <paper-icon-button icon=":create-new-folder" disabled$="[[status.isDirty]]"
-                           on-tap="_handleSave"></paper-icon-button>
+        <div>
+            <div>Options</div>
+            <paper-toggle-button checked="{{autoSave}}">Auto Save</paper-toggle-button>
+            <paper-toggle-button checked="{{debug}}">Debug</paper-toggle-button>
+        </div>
+        <div class="control">
+            <paper-icon-button icon=":create-new-folder" disabled$="[[status.isDirty]]"
+                               on-tap="_handleNewEntity"></paper-icon-button>
 
 
-        <paper-icon-button icon="check" disabled$="[[!status.isDirty]]"
-                           on-tap="_handleSave"></paper-icon-button>
+            <paper-icon-button icon="check" disabled$="[[!status.isDirty]]"
+                               on-tap="_handleSave"></paper-icon-button>
 
-        <paper-icon-button icon="restore" disabled$="[[!status.isDirty]]"
-                           on-tap="_handleReset"></paper-icon-button>
+            <paper-icon-button icon="restore" disabled$="[[!status.isDirty]]"
+                               on-tap="_handleReset"></paper-icon-button>
 
-        <paper-icon-button icon="delete" disabled$="[[status.isDirty]]"
-                           on-tap="_handleDelete"></paper-icon-button>
+            <paper-icon-button icon="delete" disabled$="[[!_isCrudModeUpdate(status.mode)]]"
+                               on-tap="_handleDelete"></paper-icon-button>
+
+        </div>
 
 
     </template>
@@ -41,6 +49,32 @@
                 status: {
                     type: Object
                 },
+                autoSave: {
+                    type: Boolean,
+                    notify:true
+                },
+                debug: {
+                    type: Boolean,
+                    notify:true,
+                    value: true
+                },
+            },
+
+            _isCrudModeUpdate: function (crudMode) {
+                return  (crudMode === 'update');
+            },
+
+            _handleNewEntity: function () {
+
+            },
+            _handleSave: function () {
+
+            },
+            _handleReset: function () {
+
+            },
+            _handleDelete: function () {
+
             },
 
         });
