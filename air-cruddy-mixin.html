@@ -135,7 +135,6 @@
         },
 
         observers: [
-            '_autosaveObserver(autoSave,data.*)',
             '_dataChangeObserver(data.*)',
             '_entityIdChangeObserver(entityId)',
             '_isDirtyModeObserver(isValid, isDirty, _cruddyMode)'
@@ -160,11 +159,6 @@
 
         // --- Changed Observer
         // --- ---------------------------
-        _autosaveObserver: function (autoSave, dataChange) {
-            if (autoSave) {
-//                    this.save();
-            }
-        },
 
         _entityIdChangeObserver: function (entityId) {
             if (entityId) {
