@@ -465,6 +465,13 @@
             return isValid;
         },
 
+        validatePromise: function () {
+            return new Promise(function (resolve, reject) {
+                var valid = this.validate();
+                resolve(valid);
+            }.bind(this));
+        },
+        
         _getValidateNodes: function () {
 //            var nodes = Polymer.dom(this).children;
             var nodes = Polymer.dom(this).getEffectiveChildNodes();
@@ -734,14 +741,14 @@
 
         // --- Component linker
         // --- ---------------------------
-        _extractResponseHeaders: function (response) {
-            var myHeaders = response.headers;
-            var headers = {};
-            for (var pair of myHeaders.entries()) {
-                headers[pair[0]] = pair[1];
-            }
-            return headers;
-        },
+//        _extractResponseHeaders: function (response) {
+//            var myHeaders = response.headers;
+//            var headers = {};
+//            for (var pair of myHeaders.entries()) {
+//                headers[pair[0]] = pair[1];
+//            }
+//            return headers;
+//        },
 
         _isResponseJson: function (response) {
             var contentType = response.headers.get('content-type');
