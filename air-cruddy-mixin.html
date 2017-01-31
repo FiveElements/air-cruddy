@@ -186,8 +186,7 @@
             if (this.autoSave && this.isDirty) {
                 this.save();
             } else if (this.autoSave && !this.isDirty && !this.isValid) {
-                var isValid = this.validate();
-                this.isValid = isValid;
+               this.validate();
             }
         },
 
@@ -200,9 +199,14 @@
             if (typeof cmdFunc === 'function') {
                 var action = cmdFunc.bind(this);
                 var self = this;
-                action().then(function (result) {
+                // call any command
+               return  action().then(function (result) {
                     self.command = undefined;
-                });
+                    return result;
+                }).catch(function (error) {
+                   self.command = undefined;
+                   return error;
+               });
             }
         },
 
@@ -326,18 +330,17 @@
         },
 
         save: function () {
-            var isValid = this.validate();
-            this.isValid = isValid;
-            if (isValid) {
+            return this.validatePromise(function (isValid) {
+                if (!isValid) {
+                    console.log('Data Not valid');
+                    return false;
+                }
                 if (this._cruddyMode === 'create') {
-//                if (this.isStatusCreate(this.data, this._dataOrigin)) {
                     return this.create();
                 } else {
                     return this.update();
                 }
-            } else {
-                console.log('Data Not valid');
-            }
+            }.bind(this));
         },
         /**
          * Send Create request to Server.
@@ -365,8 +368,11 @@
          * TO have the save init State
          */
         clean: function () {
-            this.entityId = undefined;
-            this._setCrudDataModeUnset(undefined);
+            return new Promise(function (resolve, reject) {
+                this.entityId = undefined;
+                this._setCrudDataModeUnset(undefined);
+                resolve(true);
+            }.bind(this));
         },
 
         /**
@@ -406,7 +412,7 @@
 //                this.entityId = data.id;
 //            }
         },
-        _setCrudDataModeUnset: function (data) {
+        _setCrudDataModeUnset: function () {
             if (this.debug) console.log('~~~~~~~~ Unset Mode ~~~~~~~~ ');
             this._cruddyMode = 'unset';
             this._dataDirty = undefined;
@@ -426,18 +432,6 @@
 
         // --- Status
         // --- ---------------------------
-        isStatusRetrieving: function (entityId, data, dataOrigin) {
-
-        },
-        isStatusUnset: function (data, dataOrigin) {
-            return (data === null);
-        },
-        isStatusCreate: function (data, dataOrigin) {
-            return (data !== null) && (dataOrigin === null);
-        },
-        isStatusUpdate: function (data, dataOrigin) {
-            return (data !== null ) && (dataOrigin !== null );
-        },
 
         computeStatus: function (data, dataOrigin) {
             if ((data === null) || (data === undefined)) {
@@ -454,6 +448,7 @@
         // --- Validation
         // --- ---------------------------
 
+
         validate: function () {
 //            var distributed = this.getContentChildren('#crudContent');
             var validateNodes = this._getValidateNodes();
@@ -462,6 +457,8 @@
                 var isValidNode = validateFunc();
                 return isValidNode || acc;
             }, false);
+            // Change State
+            this.isValid = isValid;
             return isValid;
         },
 
@@ -835,59 +832,59 @@
         // --- ---------------------------
         _fetchPromiseRetrieveRequest: function (entityId) {
             return this._fetchInitRetrieve(entityId)
-                .then(this._fetchRequest.bind(this)) // Do Request
-                .then(this._checkResponseStatus.bind(this))
-                .then(this._transformResponseJson.bind(this))
-                .then(this._adapterResponseRetrieve.bind(this))
+                    .then(this._fetchRequest.bind(this)) // Do Request
+                    .then(this._checkResponseStatus.bind(this))
+                    .then(this._transformResponseJson.bind(this))
+                    .then(this._adapterResponseRetrieve.bind(this))
         },
 
         _fetchPromiseRetrieve: function (entityId) {
             return this._fetchPromiseRetrieveRequest(entityId)
-                .then(this._handleResponseRetrieve.bind(this))
-                .then(this._fireResponseRetrieve.bind(this))
-                .catch(this._handleErrorRetrieve.bind(this));
+                    .then(this._handleResponseRetrieve.bind(this))
+                    .then(this._fireResponseRetrieve.bind(this))
+                    .catch(this._handleErrorRetrieve.bind(this));
         },
 
         _fetchPromiseUpdate: function (entityId, data) {
             return this._fetchInitUpdate(entityId, data)
-                .then(this._adapterFetchInitDataUpdate.bind(this))
-                .then(this._fetchInitDataContentSerializer.bind(this))
-                //                    .then(this._fetchInitDataIntegrity.bind(this))
-                .then(this._fetchInitDataContentRegister.bind(this))
-                .then(this._fetchRequest.bind(this)) // Do Request
-                .then(this._checkResponseStatus.bind(this))
-                .then(this._transformResponseJson.bind(this))
-                .then(this._adapterResponseUpdate.bind(this))
-                .then(this._handleResponseUpdate.bind(this))
-                .then(this._fireResponseUpdate.bind(this))
-                .catch(this._handleErrorUpdate.bind(this));
+                    .then(this._adapterFetchInitDataUpdate.bind(this))
+                    .then(this._fetchInitDataContentSerializer.bind(this))
+                    //                    .then(this._fetchInitDataIntegrity.bind(this))
+                    .then(this._fetchInitDataContentRegister.bind(this))
+                    .then(this._fetchRequest.bind(this)) // Do Request
+                    .then(this._checkResponseStatus.bind(this))
+                    .then(this._transformResponseJson.bind(this))
+                    .then(this._adapterResponseUpdate.bind(this))
+                    .then(this._handleResponseUpdate.bind(this))
+                    .then(this._fireResponseUpdate.bind(this))
+                    .catch(this._handleErrorUpdate.bind(this));
         },
 
         _fetchPromiseDelete: function (entityId, data) {
             return this._fetchInitDelete(entityId, data)
-                .then(this._fetchRequest.bind(this)) // Do Request
-                .then(this._checkResponseStatus.bind(this))
-                .then(this._transformResponseJson.bind(this))
-                .then(this._adapterResponseDelete.bind(this))
-                .then(this._handleResponseDelete.bind(this))
-                .then(this._fireResponseDelete.bind(this))
-                .catch(this._handleErrorDelete.bind(this));
+                    .then(this._fetchRequest.bind(this)) // Do Request
+                    .then(this._checkResponseStatus.bind(this))
+                    .then(this._transformResponseJson.bind(this))
+                    .then(this._adapterResponseDelete.bind(this))
+                    .then(this._handleResponseDelete.bind(this))
+                    .then(this._fireResponseDelete.bind(this))
+                    .catch(this._handleErrorDelete.bind(this));
         },
 
 
         _fetchPromiseCreate: function (entityId, data) {
             return this._fetchInitCreate(entityId, data)
-                .then(this._adapterFetchInitDataCreate.bind(this))
-                .then(this._fetchInitDataContentSerializer.bind(this))
-                //                    .then(this._fetchInitDataIntegrity.bind(this))
-                .then(this._fetchInitDataContentRegister.bind(this))
-                .then(this._fetchRequest.bind(this)) // Do Request
-                .then(this._checkResponseStatus.bind(this))
-                .then(this._transformResponseJson.bind(this))
-                .then(this._adapterResponseCreate.bind(this))
-                .then(this._handleResponseCreate.bind(this))
-                .then(this._fireResponseCreate.bind(this))
-                .catch(this._handleErrorCreate.bind(this));
+                    .then(this._adapterFetchInitDataCreate.bind(this))
+                    .then(this._fetchInitDataContentSerializer.bind(this))
+                    //                    .then(this._fetchInitDataIntegrity.bind(this))
+                    .then(this._fetchInitDataContentRegister.bind(this))
+                    .then(this._fetchRequest.bind(this)) // Do Request
+                    .then(this._checkResponseStatus.bind(this))
+                    .then(this._transformResponseJson.bind(this))
+                    .then(this._adapterResponseCreate.bind(this))
+                    .then(this._handleResponseCreate.bind(this))
+                    .then(this._fireResponseCreate.bind(this))
+                    .catch(this._handleErrorCreate.bind(this));
         },
 
 
@@ -908,10 +905,10 @@
             // Hydrate
             if (this.reloadOnCreate) {
                 return this._fetchPromiseRetrieveRequest(entityId)
-                    .then(this._handleResponseRetrieve.bind(this))
-                    .then(function (resGet) {
-                        return res;
-                    });
+                        .then(this._handleResponseRetrieve.bind(this))
+                        .then(function (resGet) {
+                            return res;
+                        });
             } else {
                 return new Promise(function (resolve, reject) {
                     data.id = entityId;
@@ -924,7 +921,6 @@
                     resolve(res);
                 }.bind(this));
             }
-            return res;
         },
 
 
@@ -1104,7 +1100,7 @@
             this.fire('air-cruddy-error', error);
             return error;
         },
-    }
+    };
 
 
     //    FiveElements.AirCruddyBehavior = [

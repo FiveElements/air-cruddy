@@ -1,0 +1,94 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../air-cruddy-errror-409-mixin.html">
+
+<!--
+`elt-cruddy-error-409.html`
+Polymer Element elt-cruddy-error-409.html
+
+@demo demo/index.html 
+-->
+
+<dom-module id="demo-cruddy-error-409">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
+        <div>
+            <h2>Server</h2>
+            <pre>[[_stringify(dataServer)]]</pre>
+        </div>
+        <div>
+            <h2>User</h2>
+            <pre>[[_stringify(dataUser)]]</pre>
+        </div>
+        <div>
+            <h2>Compare</h2>
+            <pre>[[_doCompareDiff(dataServer, dataUser)]]</pre>
+        </div>
+    </template>
+
+    <script>
+        // http://stackoverflow.com/questions/31683075/how-to-do-a-deep-comparison-between-2-objects-with-lodash
+        Polymer({
+
+            is: 'demo-cruddy-error-409',
+
+            behaviors: [
+                FiveElements.AirCruddyError409Behavior,
+            ],
+
+            properties: {
+                dataServer: {
+                    type: Object,
+                    value: function () {
+                        return {
+                            same: 1,
+                            different: 2,
+                            missing_from_b: 3,
+                            missing_nested_from_b: {
+                                x: 1,
+                                y: 2
+                            },
+                            nested: {
+                                same: 1,
+                                different: 2,
+                                missing_from_b: 3
+                            }
+                        };
+                    }
+                },
+                dataUser: {
+                    type: Object,
+                    value: function () {
+                        return {
+                            same: 1,
+                            different: 99,
+                            missing_from_a: 3,
+                            missing_nested_from_a: {
+                                x: 1,
+                                y: 2
+                            },
+                            nested: {
+                                same: 1,
+                                different: 99,
+                                missing_from_a: 3
+                            }
+                        };
+                    }
+                }
+            },
+
+            _stringify: function (data) {
+                return JSON.stringify(data, null, '  ');
+            },
+
+            _doCompareDiff: function (dataServer, dataUser) {
+                var result = this._computeDifferential( dataServer, dataUser);
+                return this._stringify(result);
+            },
+
+        });
+    </script>
+</dom-module>
