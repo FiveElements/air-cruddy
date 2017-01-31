@@ -57,7 +57,7 @@
             var requestUrl = url;
             if (this.elasticRefresh) {
                 var separator = '?';
-                if (requestUrl.indexOf('?')>-1) {
+                if (requestUrl.indexOf('?') > -1) {
                     separator = '&';
                 }
                 requestUrl += separator + 'refresh=' + this.elasticRefresh;
@@ -66,17 +66,17 @@
         },
 
         _fetchUrlUpdate: function (entityId, version) {
-            var url =  this._fetchUrlEntityId(entityId, version);
+            var url = this._fetchUrlEntityId(entityId, version);
             return this._fetchUrlOptionElasticsearch(url);
         },
 
         _fetchUrlDelete: function (entityId, version) {
-            var url =  this._fetchUrlEntityId(entityId, version);
+            var url = this._fetchUrlEntityId(entityId, version);
             return this._fetchUrlOptionElasticsearch(url);
         },
 
         _fetchUrlCreate: function (entityId, version) {
-            var url =  this._fetchUrlRoot();
+            var url = this._fetchUrlRoot();
             return this._fetchUrlOptionElasticsearch(url);
         },
 
@@ -189,7 +189,6 @@
         },
 
 
-
         /**
          * Adapt data model For Update or Create request
          *
@@ -206,7 +205,6 @@
             }
             return opt;
         },
-
 
 
     }

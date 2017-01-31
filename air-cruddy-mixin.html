@@ -91,7 +91,7 @@
                 value: true
             },
             status: {
-               type: Object,
+                type: Object,
                 notify: true,
                 readonly: true,
                 value: function () {
@@ -162,7 +162,7 @@
              * Remote Command
              */
             command: {
-                type:String,
+                type: String,
                 notify: true,
                 observer: '_commandChanged'
             }
@@ -246,7 +246,7 @@
             }
             // Manage Change Field List
             // -------------------------
-            var isDirty  = undefined;
+            var isDirty = undefined;
             var dataDirty = this._dataDirty;
             if (isValueEqual) {
                 delete dataDirty[pathChanged];
@@ -471,7 +471,7 @@
                 resolve(valid);
             }.bind(this));
         },
-        
+
         _getValidateNodes: function () {
 //            var nodes = Polymer.dom(this).children;
             var nodes = Polymer.dom(this).getEffectiveChildNodes();
@@ -759,7 +759,7 @@
         // --- Fetch Helper
         // --- ---------------------------
         _fetchRequest: function (opt) {
-            if (this.debug)  console.log('____________ Fetch opt', opt.init.method, ' ____________');
+            if (this.debug) console.log('____________ Fetch opt', opt.init.method, ' ____________');
             return window.fetch(opt.url, opt.init);
         },
 
@@ -767,11 +767,10 @@
             if (!response.ok) {
                 return response.text().then(function (text) {
                     var error = new Error(response.status + ' (' + response.statusText + ')');
-                    return Promise.reject(Object.assign(error, {
-                        status: response.status,
-                        statusText: response.statusText,
-                        responseText: text
-                    }));
+                    error.status = response.status;
+                    error.statusText = response.statusText;
+                    error.responseText = text;
+                    return Promise.reject(error);
                 });
             }
             return response;
@@ -784,7 +783,9 @@
                 url: response.url
             };
             return response.json().then(function (responseJson) {
-                return Object.assign(res, {response: responseJson});
+//                return Object.assign(res, {response: responseJson});  // NOT IE
+                res.response = responseJson;
+                return res;
             });
         },
 
@@ -834,59 +835,59 @@
         // --- ---------------------------
         _fetchPromiseRetrieveRequest: function (entityId) {
             return this._fetchInitRetrieve(entityId)
-                    .then(this._fetchRequest.bind(this)) // Do Request
-                    .then(this._checkResponseStatus.bind(this))
-                    .then(this._transformResponseJson.bind(this))
-                    .then(this._adapterResponseRetrieve.bind(this))
+                .then(this._fetchRequest.bind(this)) // Do Request
+                .then(this._checkResponseStatus.bind(this))
+                .then(this._transformResponseJson.bind(this))
+                .then(this._adapterResponseRetrieve.bind(this))
         },
 
         _fetchPromiseRetrieve: function (entityId) {
             return this._fetchPromiseRetrieveRequest(entityId)
-                    .then(this._handleResponseRetrieve.bind(this))
-                    .then(this._fireResponseRetrieve.bind(this))
-                    .catch(this._handleErrorRetrieve.bind(this));
+                .then(this._handleResponseRetrieve.bind(this))
+                .then(this._fireResponseRetrieve.bind(this))
+                .catch(this._handleErrorRetrieve.bind(this));
         },
 
         _fetchPromiseUpdate: function (entityId, data) {
             return this._fetchInitUpdate(entityId, data)
-                    .then(this._adapterFetchInitDataUpdate.bind(this))
-                    .then(this._fetchInitDataContentSerializer.bind(this))
-                    //                    .then(this._fetchInitDataIntegrity.bind(this))
-                    .then(this._fetchInitDataContentRegister.bind(this))
-                    .then(this._fetchRequest.bind(this)) // Do Request
-                    .then(this._checkResponseStatus.bind(this))
-                    .then(this._transformResponseJson.bind(this))
-                    .then(this._adapterResponseUpdate.bind(this))
-                    .then(this._handleResponseUpdate.bind(this))
-                    .then(this._fireResponseUpdate.bind(this))
-                    .catch(this._handleErrorUpdate.bind(this));
+                .then(this._adapterFetchInitDataUpdate.bind(this))
+                .then(this._fetchInitDataContentSerializer.bind(this))
+                //                    .then(this._fetchInitDataIntegrity.bind(this))
+                .then(this._fetchInitDataContentRegister.bind(this))
+                .then(this._fetchRequest.bind(this)) // Do Request
+                .then(this._checkResponseStatus.bind(this))
+                .then(this._transformResponseJson.bind(this))
+                .then(this._adapterResponseUpdate.bind(this))
+                .then(this._handleResponseUpdate.bind(this))
+                .then(this._fireResponseUpdate.bind(this))
+                .catch(this._handleErrorUpdate.bind(this));
         },
 
         _fetchPromiseDelete: function (entityId, data) {
             return this._fetchInitDelete(entityId, data)
-                    .then(this._fetchRequest.bind(this)) // Do Request
-                    .then(this._checkResponseStatus.bind(this))
-                    .then(this._transformResponseJson.bind(this))
-                    .then(this._adapterResponseDelete.bind(this))
-                    .then(this._handleResponseDelete.bind(this))
-                    .then(this._fireResponseDelete.bind(this))
-                    .catch(this._handleErrorDelete.bind(this));
+                .then(this._fetchRequest.bind(this)) // Do Request
+                .then(this._checkResponseStatus.bind(this))
+                .then(this._transformResponseJson.bind(this))
+                .then(this._adapterResponseDelete.bind(this))
+                .then(this._handleResponseDelete.bind(this))
+                .then(this._fireResponseDelete.bind(this))
+                .catch(this._handleErrorDelete.bind(this));
         },
 
 
         _fetchPromiseCreate: function (entityId, data) {
             return this._fetchInitCreate(entityId, data)
-                    .then(this._adapterFetchInitDataCreate.bind(this))
-                    .then(this._fetchInitDataContentSerializer.bind(this))
-                    //                    .then(this._fetchInitDataIntegrity.bind(this))
-                    .then(this._fetchInitDataContentRegister.bind(this))
-                    .then(this._fetchRequest.bind(this)) // Do Request
-                    .then(this._checkResponseStatus.bind(this))
-                    .then(this._transformResponseJson.bind(this))
-                    .then(this._adapterResponseCreate.bind(this))
-                    .then(this._handleResponseCreate.bind(this))
-                    .then(this._fireResponseCreate.bind(this))
-                    .catch(this._handleErrorCreate.bind(this));
+                .then(this._adapterFetchInitDataCreate.bind(this))
+                .then(this._fetchInitDataContentSerializer.bind(this))
+                //                    .then(this._fetchInitDataIntegrity.bind(this))
+                .then(this._fetchInitDataContentRegister.bind(this))
+                .then(this._fetchRequest.bind(this)) // Do Request
+                .then(this._checkResponseStatus.bind(this))
+                .then(this._transformResponseJson.bind(this))
+                .then(this._adapterResponseCreate.bind(this))
+                .then(this._handleResponseCreate.bind(this))
+                .then(this._fireResponseCreate.bind(this))
+                .catch(this._handleErrorCreate.bind(this));
         },
 
 
@@ -907,10 +908,10 @@
             // Hydrate
             if (this.reloadOnCreate) {
                 return this._fetchPromiseRetrieveRequest(entityId)
-                        .then(this._handleResponseRetrieve.bind(this))
-                        .then(function (resGet) {
-                            return res;
-                        });
+                    .then(this._handleResponseRetrieve.bind(this))
+                    .then(function (resGet) {
+                        return res;
+                    });
             } else {
                 return new Promise(function (resolve, reject) {
                     data.id = entityId;
