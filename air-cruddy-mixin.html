@@ -186,7 +186,7 @@
             if (this.autoSave && this.isDirty) {
                 this.save();
             } else if (this.autoSave && !this.isDirty && !this.isValid) {
-               this.validate();
+                this.validate();
             }
         },
 
@@ -200,13 +200,13 @@
                 var action = cmdFunc.bind(this);
                 var self = this;
                 // call any command
-               return  action().then(function (result) {
+                return action().then(function (result) {
                     self.command = undefined;
                     return result;
                 }).catch(function (error) {
-                   self.command = undefined;
-                   return error;
-               });
+                    self.command = undefined;
+                    return error;
+                });
             }
         },
 
@@ -491,18 +491,15 @@
         },
 
         /**
-         *
+         * Compute default Fetch option
          * @param method
          * @param data
          * @returns {{method: *, mode: *, headers: *}}
          * @private
          */
         _defaultOptions: function (method, data) {
-            var content = undefined;
             var myHeaders = this._defaultHearders();
             // https://developer.mozilla.org/en-US/docs/Web/API/Request/Request
-            // method: The request method, e.g., GET, POST.
-            // credentials: The request credentials you want to use for the request: omit, same-origin, or include. The default is omit.
             var init = {
                 method: method,
                 mode: this.mode,
