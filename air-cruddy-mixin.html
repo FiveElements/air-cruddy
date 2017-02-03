@@ -217,11 +217,14 @@
                     this.retrieve(entityId);
                 }
             } else if (entityId === null) {
+                if ((this._cruddyMode === 'create') && (  Object.keys(this._dataDirty).length === 0) ) {
+                    return false;
+                }
                 if (this.debug) console.log('---- set entityId Observer : null ==> newEntity');
-                this.newEntity();
+                return this.newEntity();
             } else {
                 if (this.debug) console.log('---- set entityId Observer : undefined ==> clean');
-                this.clean();
+                return this.clean();
             }
         },
 
@@ -330,17 +333,24 @@
         },
 
         save: function () {
-            return this.validatePromise(function (isValid) {
+            if (!this.isDirty ) {
+                if (this.debug) console.log('Not Save, Data is NOT Dirty');
+                return new Promise(function (resolve, reject) {
+                    resolve(false);
+                });
+            }
+            return this.validatePromise().then(function (isValid) {
                 if (!isValid) {
-                    console.log('Data Not valid');
+                    if (this.debug) console.log('Not Save, Data Not valid');
                     return false;
                 }
+                console.log('call save', this._cruddyMode);
                 if (this._cruddyMode === 'create') {
                     return this.create();
                 } else {
                     return this.update();
                 }
-            }.bind(this));
+            }.bind(this)) ;
         },
         /**
          * Send Create request to Server.
@@ -380,9 +390,9 @@
          */
         newEntity: function () {
             return new Promise(function (resolve, reject) {
-                this.entityId = null;
                 var data = this._createEmptyEntityModel();
                 this._setCrudDataModeCreate(data);
+                this.entityId = null;
                 resolve(data);
             }.bind(this));
 
@@ -452,16 +462,23 @@
         validate: function () {
 //            var distributed = this.getContentChildren('#crudContent');
             var validateNodes = this._getValidateNodes();
-            var isValid = validateNodes.reduce(function (acc, node) {
-                var validateFunc = node['validate'].bind(node);
-                var isValidNode = validateFunc();
-                return isValidNode || acc;
-            }, false);
+            var isValid = this.validateNodes(validateNodes);
             // Change State
             this.isValid = isValid;
             return isValid;
         },
-
+        validateNodes: function (validateNodes) {
+            console.log('validateNodes : ' + typeof validateNodes);
+            if (!validateNodes || (Object.keys(validateNodes).length <1)) {
+                console.log('validateNodes : ==> true '   );
+                return true;
+            }
+           return validateNodes.reduce(function (acc, node) {
+                var validateFunc = node['validate'].bind(node);
+                var isValidNode = validateFunc();
+                return isValidNode || acc;
+            }, false);
+        },
         validatePromise: function () {
             return new Promise(function (resolve, reject) {
                 var valid = this.validate();

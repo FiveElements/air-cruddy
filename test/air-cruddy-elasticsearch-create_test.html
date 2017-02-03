@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>air-cruddy test</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+
+    <link rel="import" href="../air-cruddy-elasticsearch.html">
+
+</head>
+<body>
+<test-fixture id="basic">
+    <template is="dom-template">
+        <air-cruddy-elasticsearch debug url="[[url]]" entity-id="[[entityId]]">
+        </air-cruddy-elasticsearch>
+    </template>
+</test-fixture>
+
+<script>
+
+
+    var mockResponseJson = function (status, body) {
+        var mockResponse = new window.Response(JSON.stringify(body), {
+            status: status,
+            headers: {
+                'Content-type': 'application/json'
+            }
+        });
+        return Promise.resolve(mockResponse);
+    };
+
+
+    suite('air-cruddy-elasticsearch create', function () {
+
+        setup(function () {
+            // 1. Initialize the fake server
+            // https://rjzaworski.com/2015/06/testing-api-requests-from-window-fetch
+            sinon.stub(window, 'fetch');
+            // 2. Set up auto response rules
+            window.fetch.withArgs('/FiveElements/air').returns(mockResponseJson(201, {
+                "_index": "fiveelements",
+                "_type": "air",
+                "_id": "AVoGAVbVMjpzN-u2C7AB",
+                "_version": 1,
+                "result": "created",
+                "_shards": {"total": 2, "successful": 1, "failed": 0},
+                "created": true
+            }));
+
+        });
+
+        teardown(function () {
+            window.fetch.restore();
+        });
+
+        test('Fetch Create - Request 201', function (done) {
+            var element = fixture('basic', {url: '/FiveElements/air'});
+            element.addEventListener('air-cruddy-create', function (e) {
+                var response = e.detail.response;
+                assert(response.id === 'AVoGAVbVMjpzN-u2C7AB');
+                assert(response.version === 1);
+                assert.equal(element.entityId, response.id);
+                assert.equal(element.data.id, response.id);
+                assert.equal(element.data.version, response.version);
+                assert.equal(element._dataOrigin.id, response.id);
+                done();
+            });
+            return element.newEntity().then(function (data) {
+                data.name = 'air-cruddy';
+                data.group = 'air';
+                element.isDirty = true; //TODO a better way
+                return element.save();
+            }).then(function (result) {
+                console.log('save ok', result);
+                return result;
+            });
+
+        });
+
+
+    });
+
+
+</script>
+</body>
+</html>
