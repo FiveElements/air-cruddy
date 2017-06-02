@@ -2,7 +2,8 @@
   "name": "air-cruddy",
   "main": "air-cruddy.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^2.0.0"
+    "polymer": "Polymer/polymer#^2.0.0",
+    "ether-lodash": "FiveElements/ether-lodash#2.0-preview"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
