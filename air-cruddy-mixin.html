@@ -1,4 +1,4 @@
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer/polymer-element.html">
 
 <link rel="import" href="../ether-lodash/ether-lodash-core.html">
 
@@ -482,7 +482,7 @@
                 let validateFunc = node['validate'].bind(node);
                 let isValidNode = validateFunc();
                 return isValidNode || acc;
-            }; false);
+            }, false);
         };
         validatePromise() {
             return new Promise(function (resolve, reject) {
