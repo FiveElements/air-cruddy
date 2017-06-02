@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
@@ -9,45 +9,44 @@
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../../web-component-tester/browser.js"></script>
 
-    <!--<script>-->
-      //  window.fetch = null;
-<!--//    </script>-->
-    <!--<link rel="import" href="../../ether-polyfill-fetch/ether-polyfill-fetch.html">-->
-
-
     <link rel="import" href="../air-cruddy.html">
-</head>
-<body>
-<test-fixture id="basic">
-    <template is="dom-template">
-        <air-cruddy debug url="[[url]]" entity-id="[[entityId]]">
+  </head>
+  <body>
 
-        </air-cruddy>
-    </template>
-</test-fixture>
+    <test-fixture id="BasicTestFixture">
+      <template>
+        <air-cruddy></air-cruddy>
+      </template>
+    </test-fixture>
 
-<script>
-    suite('air-cruddy', function () {
-        test('instantiating the element works', function () {
-            var element = fixture('basic');
-            assert.equal(element.is, 'air-cruddy');
+    <test-fixture id="ChangedPropertyTestFixture">
+      <template>
+        <air-cruddy prop1="new-prop1"></air-cruddy>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('air-cruddy', function() {
+
+        test('instantiating the element with default properties works', function() {
+          var element = fixture('BasicTestFixture');
+          assert.equal(element.prop1, 'air-cruddy');
+          var elementShadowRoot = element.shadowRoot;
+          var elementHeader = elementShadowRoot.querySelector('h2');
+          assert.equal(elementHeader.innerHTML, 'Hello air-cruddy!');
         });
-    });
 
-
-    var mockResponseJson = function(status,body) {
-        var mockResponse = new window.Response(JSON.stringify(body), {
-            status: status,
-            headers: {
-                'Content-type': 'application/json'
-            }
+        test('setting a property on the element works', function() {
+          // Create a test fixture
+          var element = fixture('ChangedPropertyTestFixture');
+          assert.equal(element.prop1, 'new-prop1');
+          var elementShadowRoot = element.shadowRoot;
+          var elementHeader = elementShadowRoot.querySelector('h2');
+          assert.equal(elementHeader.innerHTML, 'Hello new-prop1!');
         });
-        return Promise.resolve(mockResponse);
-    };
 
+      });
+    </script>
 
-
-
-</script>
-</body>
+  </body>
 </html>

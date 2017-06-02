@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
@@ -10,33 +10,21 @@
 
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-
-    <link rel="import" href="../../paper-toggle-button/paper-toggle-button.html">
-
-
     <link rel="import" href="../air-cruddy.html">
 
-    <link rel="import" href="demo-editor-tweet.html">
-    <link rel="import" href="demo-control.html">
-    <link rel="import" href="demo-event-catcher.html">
-
-    <style is="custom-style" include="demo-pages-shared-styles">
-    </style>
-</head>
-<body>
-<div class="vertical-section-container centered">
-    <h3>Basic air-cruddy demo</h3>
-    <demo-snippet>
-        <template is="dom-bind" id="demo">
-
-            <demo-event-catcher>
-                <demo-control status="{{status}}" debug="{{debug}}" auto-save="[[autoSave]]" command="{{command}}"></demo-control>
-                <air-cruddy debug="[[debug]]" auto-save="[[autoSave]]" status="{{status}}"  command="{{command}}" data="{{data}}" url="http://localhost:9200/twitter/tweet" entity-id="1">
-                    <demo-editor-tweet data="{{data}}"></demo-editor-tweet>
-                </air-cruddy>
-            </demo-event-catcher>
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+      </style>
+    </custom-style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Basic air-cruddy demo</h3>
+      <demo-snippet>
+        <template>
+          <air-cruddy></air-cruddy>
         </template>
-    </demo-snippet>
-</div>
-</body>
+      </demo-snippet>
+    </div>
+  </body>
 </html>

@@ -1,30 +1,12 @@
-<link rel="import" href="../polymer/polymer.html">
-
-<link rel="import" href="air-cruddy-mixin.html">
-
-<link rel="import" href="air-cruddy-adapter-elasticsearch-mixin.html">
-
-
-<!--
-`air-cruddy`
-An Polymer element that manage CRUD Operations
-
-The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retrieve, Update, Delete) Operations on an REST Api with all the expected services :
- - Validation
- - Conflict Resolution on 409
- - Auto Save Feature
-
-@group air-elements
-@demo demo/index.html
--->
+<link rel="import" href="../polymer/polymer-element.html">
 
 <dom-module id="air-cruddy">
-    <template>
-        <style>
-            :host {
-                display: block;
-            }
-        </style>
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
         <button on-tap="retrieve">Retrieve</button>
         <button on-tap="retrieveById">Retrieve 404</button>
         <button on-tap="newEntity">New</button>
@@ -36,23 +18,29 @@ The `air-cruddy` provides lightweight way to implement all CRUD (Create, Retriev
         <h2 on-tap="retrieve">Hello [[url]]</h2>
 
         <slot id="crudContent"></slot>
+  </template>
 
-    </template>
+  <script>
+    /**
+     * `air-cruddy`
+     * 
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class AirCruddy extends Polymer.Element {
+      static get is() { return 'air-cruddy'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'air-cruddy'
+          }
+        };
+      }
+    }
 
-    <script>
-        'use strict';
-        Polymer({
-
-            is: 'air-cruddy',
-
-            behaviors: [
-                FiveElements.AirCruddyBehavior,
-                FiveElements.AirCruddyAdapterElasticsearchBehavior
-
-            ],
-
-
-
-        });
-    </script>
+    window.customElements.define(AirCruddy.is, AirCruddy);
+  </script>
 </dom-module>
