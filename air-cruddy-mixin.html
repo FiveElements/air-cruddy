@@ -199,11 +199,11 @@
         // --- ---------------------------
         _commandChanged(newCommand) {
             if (!newCommand) return;
-            var cmdFunc = this[newCommand];
+            let cmdFunc = this[newCommand];
             if (this.debug) console.log('command : ', newCommand);
             if (typeof cmdFunc === 'function') {
-                var action = cmdFunc.bind(this);
-                var self = this;
+                let action = cmdFunc.bind(this);
+                let self = this;
                 // call any command
                 return action().then(function (result) {
                     self.command = undefined;
@@ -244,8 +244,8 @@
             // Compare the Change to Origin loaded data
             // -----------------------------------------
             // Extract the object prefix : 'data.'.length = 5
-            var pathChanged = changeRecord.path.slice(5);
-            var isValueEqual = true;
+            let pathChanged = changeRecord.path.slice(5);
+            let isValueEqual = true;
             switch (pathChanged) {
                 case '':
                 case 'id':
@@ -253,13 +253,13 @@
                     isValueEqual = true;
                     break;
                 default:
-                    var valueOri = this.get(pathChanged, this._dataOrigin);
+                    let valueOri = this.get(pathChanged, this._dataOrigin);
                     isValueEqual = this._isValueEqual(valueOri, changeRecord.value);
             }
             // Manage Change Field List
             // -------------------------
-            var isDirty = undefined;
-            var dataDirty = this._dataDirty;
+            let isDirty = undefined;
+            let dataDirty = this._dataDirty;
             if (isValueEqual) {
                 delete dataDirty[pathChanged];
                 isDirty = Object.keys(dataDirty).length > 0;
@@ -272,8 +272,8 @@
         };
 
         _isDirtyModeObserver(isValid, isDirty, cruddyMode) {
-//            var crudStatus = this.status;
-//            var notifyChange = false;
+//            let crudStatus = this.status;
+//            let notifyChange = false;
 //            if (crudStatus.isDirty !== isDirty) {
 //                crudStatus.isDirty = isDirty;
 //                notifyChange = true;
@@ -283,7 +283,7 @@
 //                notifyChange = true;
 //            }
             // Status
-            var crudStatus = {
+            let crudStatus = {
                 isValid: isValid,
                 isDirty: isDirty,
                 mode: cruddyMode
@@ -315,8 +315,8 @@
          * @param entityId The entityId to load or if not defined the entityId deine in the 'air-cruddy' Web-Componnent
          */
         retrieve(entityId) {
-//                var loadId = entityId || this.entityId;
-            var loadId = this.entityId;
+//                let loadId = entityId || this.entityId;
+            let loadId = this.entityId;
             return this._fetchPromiseRetrieve(loadId);
         };
 
@@ -325,7 +325,7 @@
          */
 
         update() {
-            var entityId = this.data.id || this.entityId;
+            let entityId = this.data.id || this.entityId;
             return this._fetchPromiseUpdate(entityId, this.data);
         };
 
@@ -333,7 +333,7 @@
          * Send Delete request to Server.
          */
         delete() {
-            var entityId = this.data.id || this.entityId;
+            let entityId = this.data.id || this.entityId;
             return this._fetchPromiseDelete(entityId, this.data);
         };
 
@@ -370,7 +370,7 @@
          */
         reset() {
             return new Promise(function (resolve, reject) {
-                var cloned = this._dataOrigin ? JSON.parse(JSON.stringify(this._dataOrigin)) : this._dataOrigin;
+                let cloned = this._dataOrigin ? JSON.parse(JSON.stringify(this._dataOrigin)) : this._dataOrigin;
                 this._setCrudDataModeUpdate(cloned);
                 resolve(cloned);
             }.bind(this));
@@ -395,7 +395,7 @@
          */
         newEntity() {
             return new Promise(function (resolve, reject) {
-                var data = this._createEmptyEntityModel();
+                let data = this._createEmptyEntityModel();
                 this._setCrudDataModeCreate(data);
                 this.entityId = null;
                 resolve(data);
@@ -465,9 +465,9 @@
 
 
         validate() {
-//            var distributed = this.getContentChildren('#crudContent');
-            var validateNodes = this._getValidateNodes();
-            var isValid = this.validateNodes(validateNodes);
+//            let distributed = this.getContentChildren('#crudContent');
+            let validateNodes = this._getValidateNodes();
+            let isValid = this.validateNodes(validateNodes);
             // Change State
             this.isValid = isValid;
             return isValid;
@@ -479,24 +479,24 @@
                 return true;
             }
             return validateNodes.reduce(function (acc, node) {
-                var validateFunc = node['validate'].bind(node);
-                var isValidNode = validateFunc();
+                let validateFunc = node['validate'].bind(node);
+                let isValidNode = validateFunc();
                 return isValidNode || acc;
             }; false);
         };
         validatePromise() {
             return new Promise(function (resolve, reject) {
-                var valid = this.validate();
+                let valid = this.validate();
                 resolve(valid);
             }.bind(this));
         };
 
         _getValidateNodes() {
-//            var nodes = Polymer.dom(this).children;
-            var nodes = Polymer.dom(this).getEffectiveChildNodes();
+//            let nodes = Polymer.dom(this).children;
+            let nodes = Polymer.dom(this).getEffectiveChildNodes();
             return Array.prototype.filter.call(nodes, function (n) {
-                var validateFunc = n['validate'];
-                var isValidateNode = (typeof  validateFunc === 'function');
+                let validateFunc = n['validate'];
+                let isValidateNode = (typeof  validateFunc === 'function');
                 return isValidateNode;
             });
         };
@@ -506,7 +506,7 @@
         // --- ---------------------------
 
         _defaultHearders() {
-            var myHeaders = new Headers({
+            let myHeaders = new Headers({
                 'Content-Type': 'application/json' // "text/plain"
             });
             return myHeaders;
@@ -520,9 +520,9 @@
          * @private
          */
         _defaultOptions(method, data) {
-            var myHeaders = this._defaultHearders();
+            let myHeaders = this._defaultHearders();
             // https://developer.mozilla.org/en-US/docs/Web/API/Request/Request
-            var init = {
+            let init = {
                 method: method,
                 mode: this.mode,
                 cache: this.cache,
@@ -539,7 +539,7 @@
 
 
         _fetchUrlEntityId(entityId, version) {
-            var url = this.url + '/' + entityId;
+            let url = this.url + '/' + entityId;
             if (version) {
                 url += '?version=' + version;
             }
@@ -685,11 +685,11 @@
          * ```
          */
         _fetchInitRetrieve(entityId, data) {
-            var self = this;
+            let self = this;
             return new Promise(function (resolve, reject) {
-                var version = data ? data.version : null;
-                var urlGet = self._fetchUrlRetrieve(entityId, version);
-                var opt = self._defaultOptions('GET');
+                let version = data ? data.version : null;
+                let urlGet = self._fetchUrlRetrieve(entityId, version);
+                let opt = self._defaultOptions('GET');
                 resolve({init: opt, url: urlGet});
             });
         };
@@ -706,11 +706,11 @@
          * ```
          */
         _fetchInitUpdate(entityId, data) {
-            var self = this;
+            let self = this;
             return new Promise(function (resolve, reject) {
-                var version = data ? data.version : null;
-                var urlUpdate = self._fetchUrlUpdate(entityId, version);
-                var opt = self._defaultOptions('PUT', data);
+                let version = data ? data.version : null;
+                let urlUpdate = self._fetchUrlUpdate(entityId, version);
+                let opt = self._defaultOptions('PUT', data);
                 resolve({init: opt, url: urlUpdate, data: data});
             });
         };
@@ -726,11 +726,11 @@
          * ```
          */
         _fetchInitDelete(entityId, data) {
-            var self = this;
+            let self = this;
             return new Promise(function (resolve, reject) {
-                var version = data ? data.version : null;
-                var urlDelete = self._fetchUrlDelete(entityId, version);
-                var opt = self._defaultOptions('DELETE', data);
+                let version = data ? data.version : null;
+                let urlDelete = self._fetchUrlDelete(entityId, version);
+                let opt = self._defaultOptions('DELETE', data);
                 resolve({init: opt, url: urlDelete, data: data});
             });
         };
@@ -746,10 +746,10 @@
          * ```
          */
         _fetchInitCreate(entityId, data) {
-            var self = this;
+            let self = this;
             return new Promise(function (resolve, reject) {
-                var urlCreate = self._fetchUrlCreate(entityId, data);
-                var opt = self._defaultOptions('POST', data);
+                let urlCreate = self._fetchUrlCreate(entityId, data);
+                let opt = self._defaultOptions('POST', data);
                 resolve({init: opt, url: urlCreate, data: data});
             });
         };
@@ -758,16 +758,16 @@
         // --- Component linker
         // --- ---------------------------
 //        _extractResponseHeaders(response) {
-//            var myHeaders = response.headers;
-//            var headers = {};
-//            for (var pair of myHeaders.entries()) {
+//            let myHeaders = response.headers;
+//            let headers = {};
+//            for (let pair of myHeaders.entries()) {
 //                headers[pair[0]] = pair[1];
 //            }
 //            return headers;
 //        };
 
         _isResponseJson(response) {
-            var contentType = response.headers.get('content-type');
+            let contentType = response.headers.get('content-type');
             return (contentType && contentType.indexOf('application/json') !== -1)
         };
 
@@ -782,7 +782,7 @@
         _checkResponseStatus(response) {
             if (!response.ok) {
                 return response.text().then(function (text) {
-                    var error = new Error(response.status + ' (' + response.statusText + ')');
+                    let error = new Error(response.status + ' (' + response.statusText + ')');
                     error.status = response.status;
                     error.statusText = response.statusText;
                     error.responseText = text;
@@ -793,7 +793,7 @@
         };
 
         _transformResponseJson(response) {
-            var res = {
+            let res = {
                 status: response.status,
                 statusText: response.statusText,
                 url: response.url
@@ -816,13 +816,13 @@
         };
 
         _fetchInitDataContentRegister(opt) {
-            var init = opt.init;
-            var content = opt.content;
+            let init = opt.init;
+            let content = opt.content;
             if (content) {
-                var contentLength = content.length;
+                let contentLength = content.length;
                 init.body = content;
                 // Complete Headers
-                var myHeaders = init.headers || new Headers();
+                let myHeaders = init.headers || new Headers();
                 myHeaders.append("Content-Length", contentLength.toString());
                 init.headers = myHeaders;
             }
@@ -833,9 +833,9 @@
         // --- ---------------------------
 
 //        _fetchInitDataIntegrity(opt) {
-//            var content = opt.content;
+//            let content = opt.content;
 //            if (content) {
-//                var integrityAlgo = 'SHA-384'; // allowed prefixes are sha256, sha384, and sha512
+//                let integrityAlgo = 'SHA-384'; // allowed prefixes are sha256, sha384, and sha512
 //                return this._digestPromise(integrityAlgo, content, 'base64')
 //                        .then(function (integrityHash) {
 //                            opt.integrity = integrityHash;
@@ -911,16 +911,16 @@
         // --- ---------------------------
 
         _handleResponseRetrieve(res) {
-            var responseJson = res.response;
+            let responseJson = res.response;
             this._setCrudDataModeUpdate(responseJson);
             this.entityId = responseJson.id;
             return res;
         };
 
         _handleResponseCreate(res) {
-            var data = this.data;
-            var responseJson = res.response;
-            var entityId = responseJson.id;
+            let data = this.data;
+            let responseJson = res.response;
+            let entityId = responseJson.id;
             // Hydrate
             if (this.reloadOnCreate) {
                 return this._fetchPromiseRetrieveRequest(entityId)
@@ -944,8 +944,8 @@
 
 
         _handleResponseUpdate(res) {
-            var data = this.data;
-            var responseJson = res.response;
+            let data = this.data;
+            let responseJson = res.response;
             if (responseJson.version) {
                 data.version = responseJson.version;
             }
@@ -969,7 +969,7 @@
 
         _handleErrorRetrieve(error) {
             this._logError(error);
-            var handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorRetrieve', error);
+            let handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorRetrieve', error);
             if (handlerStatus) {
                 return handlerStatus(error);
             }
@@ -980,7 +980,7 @@
 
         _handleErrorUpdate(error) {
             this._logError(error);
-            var handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorUpdate', error);
+            let handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorUpdate', error);
             if (handlerStatus) {
                 return handlerStatus(error);
             }
@@ -990,7 +990,7 @@
 
         _handleErrorCreate(error) {
             this._logError(error);
-            var handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorCreate', error);
+            let handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorCreate', error);
             if (handlerStatus) {
                 return handlerStatus(error);
             }
@@ -999,7 +999,7 @@
         };
         _handleErrorDelete(error) {
             this._logError(error);
-            var handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorDelete', error);
+            let handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorDelete', error);
             if (handlerStatus) {
                 return handlerStatus(error);
             }
@@ -1011,10 +1011,10 @@
         // --- Specific Error handling
         // --- ---------------------------
         _getHandlerResponseWithSpecificStatus(baseErrorFuncName, response) {
-            var status = response.status;
+            let status = response.status;
             if (status) {
-                var errorStatusFunc = baseErrorFuncName + status;
-                var handlerForStatus = this[errorStatusFunc];
+                let errorStatusFunc = baseErrorFuncName + status;
+                let handlerForStatus = this[errorStatusFunc];
                 if (typeof  handlerForStatus === 'function') {
                     // Manage Method Like : _handleErrorUpdate409
                     return handlerForStatus;
@@ -1078,7 +1078,8 @@
          * @event air-cruddy-error-retrieve
          */
         _fireErrorRetrieve(error) {
-            this.fire('air-cruddy-error-retrieve', error);
+            this.dispatchEvent(new CustomEvent('air-cruddy-error-retrieve', { detail: {error: error } } ));
+//            this.fire('air-cruddy-error-retrieve', error);
             return this._fireError(error, 'retrieve');
         };
         /**
@@ -1087,7 +1088,8 @@
          * @event air-cruddy-error-update
          */
         _fireErrorUpdate(error) {
-            this.fire('air-cruddy-error-update', error);
+            this.dispatchEvent(new CustomEvent('air-cruddy-error-update', { detail: {error: error } } ));
+//            this.fire('air-cruddy-error-update', error);
             return this._fireError(error, 'update');
 
         };
@@ -1097,7 +1099,8 @@
          * @event air-cruddy-error-delete
          */
         _fireErrorDelete(error) {
-            this.fire('air-cruddy-error-delete', error);
+            this.dispatchEvent(new CustomEvent('air-cruddy-error-delete', { detail: {error: error } } ));
+//            this.fire('air-cruddy-error-delete', error);
             return this._fireError(error, 'delete');
         };
         /**
@@ -1106,7 +1109,8 @@
          * @event air-cruddy-error-create
          */
         _fireErrorCreate(error) {
-            this.fire('air-cruddy-error-create', error);
+            this.dispatchEvent(new CustomEvent('air-cruddy-error-create', { detail: {error: error } } ));
+//            this.fire('air-cruddy-error-create', error);
             return this._fireError(error, 'create');
         };
 
@@ -1116,7 +1120,8 @@
          * @event air-cruddy-error
          */
         _fireError(error) {
-            this.fire('air-cruddy-error', error);
+            this.dispatchEvent(new CustomEvent('air-cruddy-error', { detail: {error: error } } ));
+//            this.fire('air-cruddy-error', error);
             return error;
         };
     };

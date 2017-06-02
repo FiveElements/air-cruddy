@@ -35,7 +35,7 @@
             _transformToServerSavePartial(opt) {
                 // Manage Differential
                 if (opt.data) {
-                    var data = JSON.parse(JSON.stringify(opt.data));
+                    let data = JSON.parse(JSON.stringify(opt.data));
                     delete data.id;
                     delete data.version;
                     opt.data = {
@@ -50,9 +50,9 @@
             // --- ---------------------------
 
             _fetchUrlOptionElasticsearch(url) {
-                var requestUrl = url;
+                let requestUrl = url;
                 if (this.elasticRefresh) {
-                    var separator = '?';
+                    let separator = '?';
                     if (requestUrl.indexOf('?') > -1) {
                         separator = '&';
                     }
@@ -62,17 +62,17 @@
             };
 
             _fetchUrlUpdate(entityId, version) {
-                var url = this._fetchUrlEntityId(entityId, version);
+                let url = this._fetchUrlEntityId(entityId, version);
                 return this._fetchUrlOptionElasticsearch(url);
             };
 
             _fetchUrlDelete(entityId, version) {
-                var url = this._fetchUrlEntityId(entityId, version);
+                let url = this._fetchUrlEntityId(entityId, version);
                 return this._fetchUrlOptionElasticsearch(url);
             };
 
             _fetchUrlCreate(entityId, version) {
-                var url = this._fetchUrlRoot();
+                let url = this._fetchUrlRoot();
                 return this._fetchUrlOptionElasticsearch(url);
             };
 
@@ -91,9 +91,9 @@
              */
             _adapterResponseRetrieve(res) {
                 if (this.debug) console.log('-----> _adapterResponseRetrieve : ', JSON.stringify(res));
-                var responseJson = res.response;
+                let responseJson = res.response;
                 if (responseJson) {
-                    var data = JSON.parse(JSON.stringify(responseJson._source));
+                    let data = JSON.parse(JSON.stringify(responseJson._source));
                     data.id = responseJson._id;
                     data.version = responseJson._version;
                     // define
@@ -116,9 +116,9 @@
              * ```
              */
             _adapterResponseElasticsearch(res) {
-                var body = res.response;
+                let body = res.response;
                 if (body) {
-                    var adaptJson = {
+                    let adaptJson = {
                         id: body._id,
                         version: body._version
                     };
@@ -193,7 +193,7 @@
             _adapterFetchInitData(opt) {
                 // Create New Structure
                 if (opt.data) {
-                    var data = JSON.parse(JSON.stringify(opt.data));
+                    let data = JSON.parse(JSON.stringify(opt.data));
                     delete data.id;
                     delete data.version;
                     // Register Data

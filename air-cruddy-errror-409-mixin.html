@@ -13,14 +13,14 @@
     /**
      * @polymerMixin
      */
-    const AirCruddyError409Mixin = superclass => class extends superclass {
+    FiveElements.AirCruddyError409Mixin = superclass => class extends superclass {
         _handleErrorUpdate409  (error) {
 
             // TODO
-            var request = this._fetchPromiseRetrieveRequest(entityId).then(function (res) {
+            let request = this._fetchPromiseRetrieveRequest(entityId).then(function (res) {
                 console.log('response to merge : ', res);
 
-                var conflictData = {
+                let conflictData = {
                     dataUser: this.data,
                     dataOrigin: this._dataOrigin,
                     dataServer: res.response
@@ -40,16 +40,16 @@
 
         _conflictResolution  (conflictData) {
             // Need to compute
-            var userChange; // diff dataUser <>  dataOrigin
-            var serverChange; // diff dataServer <>  dataOrigin
+            let userChange; // diff dataUser <>  dataOrigin
+            let serverChange; // diff dataServer <>  dataOrigin
             //
 
         };
 
 
         _computeDifferential (a, b) {
-            var self = this;
-            var result = {
+            let self = this;
+            let result = {
                 different: [],
                 missing_from_first: [],
                 missing_from_second: []
@@ -65,7 +65,7 @@
                             result.different.push(key);
                             return result;
                         } else {
-                            var deeper = self._computeDifferential(a[key], b[key]);
+                            let deeper = self._computeDifferential(a[key], b[key]);
                             result.different = result.different.concat(_.map(deeper.different, (sub_path) => {
                                 return key + "." + sub_path;
                             }));
