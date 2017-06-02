@@ -1,4 +1,4 @@
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer/polymer-element.html">
 
 <link rel="import" href="air-cruddy-mixin.html">
 
@@ -22,18 +22,29 @@ Polymer Element air-cruddy-elasticsearch
         <slot></slot>
     </template>
 
+
     <script>
-        'use strict';
-        Polymer({
+        /**
+         * `air-cruddy`
+         *
+         *
+         * @customElement
+         * @polymer
+         * @demo demo/index.html
+         */
+        class AirCruddyElasticsearch extends  FiveElements.AirCruddyAdapterElasticsearchMixin(FiveElements.AirCruddyMixin(Polymer.Element)) {
+            static get is() { return 'air-cruddy-elasticsearch'; }
+            static get properties() {
+                return {
+                    prop1: {
+                        type: String,
+                        value: 'air-cruddy-elasticsearch'
+                    }
+                };
+            }
+        }
 
-            is: 'air-cruddy-elasticsearch',
-
-            behaviors: [
-                FiveElements.AirCruddyBehavior,
-                FiveElements.AirCruddyAdapterElasticsearchBehavior
-            ],
-
-
-        });
+        window.customElements.define(AirCruddyElasticsearch.is, AirCruddyElasticsearch);
     </script>
+
 </dom-module>

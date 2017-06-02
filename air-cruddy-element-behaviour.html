@@ -8,20 +8,19 @@
      */
     var FiveElements = FiveElements || {};
 
-    /**
-     * @polymerBehavior
-     */
-    FiveElements.AirCruddyElementBehavior = {
 
-        properties: {
-            /**
-             * The form that the element is registered to.
-             */
-            _parentForm: {
-                type: Object
-            }
-        },
+    FiveElements.AirCruddyElementMixin  = superclass => class extends superclass {
 
+        static get properties() {
+            return {
+                /**
+                 * The form that the element is registered to.
+                 */
+                _parentForm: {
+                    type: Object
+                }
+            };
+        }
         // --- Life Cycle
         // --- ---------------------------
         /**
@@ -29,16 +28,20 @@
          *
          * @event air-cruddy-element-register
          */
-        attached: function() {
-            this.fire('air-cruddy-element-register');
-        },
+        attached() {
+            // 1st argument to beforeNextRender is used as the "this"
+            // value when the callback is invoked.
+            Polymer.RenderStatus.beforeNextRender(this, function() {
+                this.fire('air-cruddy-element-register');
+            });
+        }
 
         /**
          * Fired when the element is removed from an `iron-form`.
          *
          * @event air-cruddy-element-unregister
          */
-        detached: function() {
+        detached() {
             if (this._parentForm) {
                 this._parentForm.fire('air-cruddy-element-unregister', {target: this});
                 this._parentForm = undefined;
@@ -46,5 +49,7 @@
         }
 
     };
+
+
 
 </script>

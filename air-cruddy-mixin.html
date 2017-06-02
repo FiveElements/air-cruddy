@@ -8,191 +8,196 @@
     /**
      * FiveElements Namespace definition
      */
-    var FiveElements = FiveElements || {};
+    const FiveElements = FiveElements || {};
 
-    /**
-     * @polymerBehavior
-     */
-    FiveElements.AirCruddyBehavior = {
+    FiveElements.AirCruddyMixin  = superclass => class extends superclass {
 
-        properties: {
-            /**
-             * Auto Save
-             */
-            debug: {
-                type: Boolean,
-                value: false
-            },
-            /**
-             * Auto Save
-             */
-            autoSave: {
-                type: Boolean,
-                value: false
-            },
-            reloadOnCreate: {
-                type: Boolean,
-                value: false
-            },
-            /**
-             * Url endpoint of the Rest Web-Service
-             *
-             */
-            url: {
-                type: String
-            },
-            /**
-             * Entity Id of the resource to CRUD
-             */
-            entityId: {
-                type: String,
-                notify: true
-            },
-            /**
-             * The data load from the URL endpoint of the Rest Web-Service
-             */
-            data: {
-                type: Object,
-                notify: true
-            },
-            /**
-             * A backup of the Data Load
-             */
-            _dataOrigin: {
-                type: Object,
-                readonly: true
-            },
-            /**
-             * A backup of the Data Load
-             */
-            _dataDirty: {
-                type: Object,
-                readonly: true
-            },
-            /**
-             * The current edition mode.
-             * 'created', 'updating', 'unset'
-             */
-            _cruddyMode: {
-                type: String,
-                notify: true,
-                readonly: true
-            },
-            isDirty: {
-                type: Boolean,
-                notify: true,
-                readonly: true,
-                value: false
-            },
-            isValid: {
-                type: Boolean,
-                notify: true,
-                readonly: true,
-                value: true
-            },
-            status: {
-                type: Object,
-                notify: true,
-                readonly: true,
-                value: function () {
-                    return {
-                        isDirty: false,
-                        mode: 'unset'
+        static get properties() {
+            return {
+                /**
+                 * Auto Save
+                 */
+                debug: {
+                    type: Boolean,
+                    value: false
+                },
+                /**
+                 * Auto Save
+                 */
+                autoSave: {
+                    type: Boolean,
+                    value: false
+                },
+                reloadOnCreate: {
+                    type: Boolean,
+                    value: false
+                },
+                /**
+                 * Url endpoint of the Rest Web-Service
+                 *
+                 */
+                url: {
+                    type: String
+                },
+                /**
+                 * Entity Id of the resource to CRUD
+                 */
+                entityId: {
+                    type: String,
+                    notify: true
+                },
+                /**
+                 * The data load from the URL endpoint of the Rest Web-Service
+                 */
+                data: {
+                    type: Object,
+                    notify: true
+                },
+                /**
+                 * A backup of the Data Load
+                 */
+                _dataOrigin: {
+                    type: Object,
+                    readonly: true
+                },
+                /**
+                 * A backup of the Data Load
+                 */
+                _dataDirty: {
+                    type: Object,
+                    readonly: true
+                },
+                /**
+                 * The current edition mode.
+                 * 'created', 'updating', 'unset'
+                 */
+                _cruddyMode: {
+                    type: String,
+                    notify: true,
+                    readonly: true
+                },
+                isDirty: {
+                    type: Boolean,
+                    notify: true,
+                    readonly: true,
+                    value: false
+                },
+                isValid: {
+                    type: Boolean,
+                    notify: true,
+                    readonly: true,
+                    value: true
+                },
+                status: {
+                    type: Object,
+                    notify: true,
+                    readonly: true,
+                    value: function () {
+                        return {
+                            isDirty: false,
+                            mode: 'unset'
+                        }
                     }
+                },
+                /**
+                 * Fetch Configuration :
+                 *
+                 * The mode you want to use for the request, e.g., cors, no-cors, same-origin, or navigate.
+                 */
+                mode: {
+                    type: String,
+                    value: 'cors'
+                },
+
+                /**
+                 * Fetch Configuration :
+                 *
+                 * The cache mode you want to use for the request.
+                 */
+                cache: {
+                    type: String,
+                    value: 'default'
+                },
+
+                /**
+                 * Fetch Configuration :
+                 *
+                 * The redirect mode to use: follow, error, or manual. In Chrome the default is follow
+                 */
+                redirect: {
+                    type: String,
+                    value: 'follow'
+                },
+                /**
+                 * Fetch Configuration :
+                 *
+                 * A USVString specifying no-referrer, client, or a URL. The default is client.
+                 */
+                referrer: {
+                    type: String,
+                    value: 'client'
+                },
+                /**
+                 *  Fetch Configuration :
+                 *
+                 *  integrity: Contains the subresource integrity value of the request (e.g., sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=). (https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity)
+                 */
+                integrity: {
+                    type: String
+                },
+                /**
+                 *  Fetch Configuration :
+                 *
+                 * credentials: The request credentials you want to use for the request: omit, same-origin, or include. The default is omit.
+                 * In Chrome the default is same-origin before Chrome 47
+                 * and include starting with Chrome 47.
+                 */
+                credentials: {
+                    type: String,
+                    value: 'omit'
+                },
+                /**
+                 * Remote Command
+                 */
+                command: {
+                    type: String,
+                    notify: true,
+                    observer: '_commandChanged'
                 }
-            },
-            /**
-             * Fetch Configuration :
-             *
-             * The mode you want to use for the request, e.g., cors, no-cors, same-origin, or navigate.
-             */
-            mode: {
-                type: String,
-                value: 'cors'
-            },
+            };
+        }
 
-            /**
-             * Fetch Configuration :
-             *
-             * The cache mode you want to use for the request.
-             */
-            cache: {
-                type: String,
-                value: 'default'
-            },
+        static get observers() {
+            return [
+                '_dataChangeObserver(data.*)',
+                '_entityIdChangeObserver(entityId)',
+                '_isDirtyModeObserver(isValid, isDirty, _cruddyMode)'
 
-            /**
-             * Fetch Configuration :
-             *
-             * The redirect mode to use: follow, error, or manual. In Chrome the default is follow
-             */
-            redirect: {
-                type: String,
-                value: 'follow'
-            },
-            /**
-             * Fetch Configuration :
-             *
-             * A USVString specifying no-referrer, client, or a URL. The default is client.
-             */
-            referrer: {
-                type: String,
-                value: 'client'
-            },
-            /**
-             *  Fetch Configuration :
-             *
-             *  integrity: Contains the subresource integrity value of the request (e.g., sha256-BpfBw7ivV8q2jLiT13fxDYAe2tJllusRSZ273h2nFSE=). (https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity)
-             */
-            integrity: {
-                type: String
-            },
-            /**
-             *  Fetch Configuration :
-             *
-             * credentials: The request credentials you want to use for the request: omit, same-origin, or include. The default is omit.
-             * In Chrome the default is same-origin before Chrome 47
-             * and include starting with Chrome 47.
-             */
-            credentials: {
-                type: String,
-                value: 'omit'
-            },
-            /**
-             * Remote Command
-             */
-            command: {
-                type: String,
-                notify: true,
-                observer: '_commandChanged'
-            }
-        },
+            ];
+        }
 
-        observers: [
-            '_dataChangeObserver(data.*)',
-            '_entityIdChangeObserver(entityId)',
-            '_isDirtyModeObserver(isValid, isDirty, _cruddyMode)'
 
-        ],
 
-        listeners: {
+        static get listeners() {
+            return {
             'focusout': '_handleFocusOut'
-        },
+            }
+        }
 
         // --- Listener
         // --- ---------------------------
-        _handleFocusOut: function (e) {
+        _handleFocusOut(e) {
             if (this.debug) console.log('- - - - - -> focusout :  isDirty(', this.isDirty, ') ');
             if (this.autoSave && this.isDirty) {
                 this.save();
             } else if (this.autoSave && !this.isDirty && !this.isValid) {
                 this.validate();
             }
-        },
+        };
 
         // --- Changed Observer
         // --- ---------------------------
-        _commandChanged: function (newCommand) {
+        _commandChanged(newCommand) {
             if (!newCommand) return;
             var cmdFunc = this[newCommand];
             if (this.debug) console.log('command : ', newCommand);
@@ -208,9 +213,9 @@
                     return error;
                 });
             }
-        },
+        };
 
-        _entityIdChangeObserver: function (entityId) {
+        _entityIdChangeObserver(entityId) {
             if (entityId) {
                 if ((!this.data) || (this.data.id !== entityId )) {
                     if (this.debug) console.log('---- set entityId Observer :', entityId);
@@ -226,11 +231,11 @@
                 if (this.debug) console.log('---- set entityId Observer : undefined ==> clean');
                 return this.clean();
             }
-        },
+        };
 
         // --- Dirty Changed
         // --- ---------------------
-        _dataChangeObserver: function (changeRecord) {
+        _dataChangeObserver(changeRecord) {
             // https://github.com/FiveElements/air-cruddy/blob/iron-ajax/air-cruddy-dirty-behaviour.html
             if (this.debug) console.log('### ', changeRecord.path + ' changed to ' + changeRecord.value, ' // ', changeRecord);
             if (!this._dataDirty) {
@@ -264,9 +269,9 @@
             }
             this._dataDirty = dataDirty;
             this.isDirty = isDirty;
-        },
+        };
 
-        _isDirtyModeObserver: function (isValid, isDirty, cruddyMode) {
+        _isDirtyModeObserver(isValid, isDirty, cruddyMode) {
 //            var crudStatus = this.status;
 //            var notifyChange = false;
 //            if (crudStatus.isDirty !== isDirty) {
@@ -286,21 +291,21 @@
 //            if (notifyChange)
             this.status = crudStatus;
             if (this.debug) console.log('status : ', crudStatus);
-        },
+        };
 
-        _isValueEqual: function (dataRef, data) {
+        _isValueEqual(dataRef, data) {
             return _.isEqual(dataRef, data);
-        },
+        };
 
         // --- mock
         // --- ---------------------------
 
-        retrieveById: function (entityId) {
+        retrieveById(entityId) {
             console.log("Request Retrieve: ", entityId);
             this._fetchPromiseRetrieve(entityId).catch(function (error) {
                 console.log('post error', error);
             });
-        },
+        };
 
 
         // --- API
@@ -309,30 +314,30 @@
          * Send Retrieve request to the Rest Web Service Server
          * @param entityId The entityId to load or if not defined the entityId deine in the 'air-cruddy' Web-Componnent
          */
-        retrieve: function (entityId) {
+        retrieve(entityId) {
 //                var loadId = entityId || this.entityId;
             var loadId = this.entityId;
             return this._fetchPromiseRetrieve(loadId);
-        },
+        };
 
         /**
          * Send Update request to Server.
          */
 
-        update: function () {
+        update() {
             var entityId = this.data.id || this.entityId;
             return this._fetchPromiseUpdate(entityId, this.data);
-        },
+        };
 
         /**
          * Send Delete request to Server.
          */
-        delete: function () {
+        delete() {
             var entityId = this.data.id || this.entityId;
             return this._fetchPromiseDelete(entityId, this.data);
-        },
+        };
 
-        save: function () {
+        save() {
             if (!this.isDirty ) {
                 if (this.debug) console.log('Not Save, Data is NOT Dirty');
                 return new Promise(function (resolve, reject) {
@@ -351,25 +356,25 @@
                     return this.update();
                 }
             }.bind(this)) ;
-        },
+        };
         /**
          * Send Create request to Server.
          */
-        create: function () {
+        create() {
             return this._fetchPromiseCreate(null, this.data);
-        },
+        };
 
 
         /**
          * Restore the data from with the last request retrieve.
          */
-        reset: function () {
+        reset() {
             return new Promise(function (resolve, reject) {
                 var cloned = this._dataOrigin ? JSON.parse(JSON.stringify(this._dataOrigin)) : this._dataOrigin;
                 this._setCrudDataModeUpdate(cloned);
                 resolve(cloned);
             }.bind(this));
-        },
+        };
 
         // --- Init Status
         // --- ---------------------------
@@ -377,18 +382,18 @@
          * Clean all component State, like data loaded or entityId definition.
          * TO have the save init State
          */
-        clean: function () {
+        clean() {
             return new Promise(function (resolve, reject) {
                 this.entityId = undefined;
                 this._setCrudDataModeUnset(undefined);
                 resolve(true);
             }.bind(this));
-        },
+        };
 
         /**
          * Create new empty entity in order to be saved
          */
-        newEntity: function () {
+        newEntity() {
             return new Promise(function (resolve, reject) {
                 var data = this._createEmptyEntityModel();
                 this._setCrudDataModeCreate(data);
@@ -396,13 +401,13 @@
                 resolve(data);
             }.bind(this));
 
-        },
+        };
 
 
         /**
          *  Set Data with Clone When data is retrieve
          */
-        _setCrudDataModeCreate: function (data) {
+        _setCrudDataModeCreate(data) {
             if (this.debug) console.log('~~~~~~~~ Create Mode ~~~~~~~~ ');
             this._cruddyMode = 'create';
             this._dataDirty = {};
@@ -410,8 +415,8 @@
             this.data = data;
             this.isDirty = false;
 //            this.entityId = null;
-        },
-        _setCrudDataModeUpdate: function (data) {
+        };
+        _setCrudDataModeUpdate(data) {
             if (this.debug) console.log('~~~~~~~~ Update Mode ~~~~~~~~ ');
             this._cruddyMode = 'update';
             this._dataDirty = {};
@@ -421,8 +426,8 @@
 //            if (this.entityId !== data.id) {
 //                this.entityId = data.id;
 //            }
-        },
-        _setCrudDataModeUnset: function () {
+        };
+        _setCrudDataModeUnset() {
             if (this.debug) console.log('~~~~~~~~ Unset Mode ~~~~~~~~ ');
             this._cruddyMode = 'unset';
             this._dataDirty = undefined;
@@ -430,20 +435,20 @@
             this.data = undefined;
             this.isDirty = false;
 //            this.entityId = undefined;
-        },
+        };
 
         // ---Create API
         // --- ---------------------------
 
-        _createEmptyEntityModel: function () {
+        _createEmptyEntityModel() {
             return {};
-        },
+        };
 
 
         // --- Status
         // --- ---------------------------
 
-        computeStatus: function (data, dataOrigin) {
+        computeStatus(data, dataOrigin) {
             if ((data === null) || (data === undefined)) {
                 return 'unsetMode';
             } else {
@@ -453,40 +458,40 @@
                     return 'updateMode';
                 }
             }
-        },
+        };
 
         // --- Validation
         // --- ---------------------------
 
 
-        validate: function () {
+        validate() {
 //            var distributed = this.getContentChildren('#crudContent');
             var validateNodes = this._getValidateNodes();
             var isValid = this.validateNodes(validateNodes);
             // Change State
             this.isValid = isValid;
             return isValid;
-        },
-        validateNodes: function (validateNodes) {
+        };
+        validateNodes(validateNodes) {
             console.log('validateNodes : ' + typeof validateNodes);
             if (!validateNodes || (Object.keys(validateNodes).length <1)) {
                 console.log('validateNodes : ==> true '   );
                 return true;
             }
-           return validateNodes.reduce(function (acc, node) {
+            return validateNodes.reduce(function (acc, node) {
                 var validateFunc = node['validate'].bind(node);
                 var isValidNode = validateFunc();
                 return isValidNode || acc;
-            }, false);
-        },
-        validatePromise: function () {
+            }; false);
+        };
+        validatePromise() {
             return new Promise(function (resolve, reject) {
                 var valid = this.validate();
                 resolve(valid);
             }.bind(this));
-        },
+        };
 
-        _getValidateNodes: function () {
+        _getValidateNodes() {
 //            var nodes = Polymer.dom(this).children;
             var nodes = Polymer.dom(this).getEffectiveChildNodes();
             return Array.prototype.filter.call(nodes, function (n) {
@@ -494,18 +499,18 @@
                 var isValidateNode = (typeof  validateFunc === 'function');
                 return isValidateNode;
             });
-        },
+        };
 
 
         // --- Fetch Configuration
         // --- ---------------------------
 
-        _defaultHearders: function () {
+        _defaultHearders() {
             var myHeaders = new Headers({
                 'Content-Type': 'application/json' // "text/plain"
             });
             return myHeaders;
-        },
+        };
 
         /**
          * Compute default Fetch option
@@ -514,7 +519,7 @@
          * @returns {{method: *, mode: *, headers: *}}
          * @private
          */
-        _defaultOptions: function (method, data) {
+        _defaultOptions(method, data) {
             var myHeaders = this._defaultHearders();
             // https://developer.mozilla.org/en-US/docs/Web/API/Request/Request
             var init = {
@@ -530,27 +535,27 @@
                 init.integrity = this.integrity;
             }
             return init;
-        },
+        };
 
 
-        _fetchUrlEntityId: function (entityId, version) {
+        _fetchUrlEntityId(entityId, version) {
             var url = this.url + '/' + entityId;
             if (version) {
                 url += '?version=' + version;
             }
             return url;
-        },
+        };
 
-        _fetchUrlRoot: function () {
+        _fetchUrlRoot() {
             return this.url;
-        },
+        };
 
 
         // --- Elasticsearch API Transformer
         // --- ---------------------------
-        _dataSerializerEntity: function (data) {
+        _dataSerializerEntity(data) {
             return JSON.stringify(data);
-        },
+        };
 
         /**
          * Adapt response from Retrieve Web-Service o the expected format
@@ -562,9 +567,9 @@
              * }
          * ```
          */
-        _adapterResponseRetrieve: function (res) {
+        _adapterResponseRetrieve(res) {
             return res;
-        },
+        };
 
 
         /**
@@ -580,9 +585,9 @@
          * }
          * ```
          */
-        _adapterResponseUpdate: function (res) {
+        _adapterResponseUpdate(res) {
             return res;
-        },
+        };
 
 
         /**
@@ -598,9 +603,9 @@
          * }
          * ```
          */
-        _adapterResponseCreate: function (res) {
+        _adapterResponseCreate(res) {
             return res;
-        },
+        };
 
 
         /**
@@ -616,55 +621,55 @@
          * }
          * ```
          */
-        _adapterResponseDelete: function (res) {
+        _adapterResponseDelete(res) {
             return res;
-        },
+        };
 
         /**
          * Adapt data model For Update or Create request
          *
          * @param opt Fetch configuration in format ``` { url:'', init:{}, data:{}}```
          */
-        _adapterFetchInitData: function (opt) {
+        _adapterFetchInitData(opt) {
             return opt;
-        },
+        };
 
         /**
          * Adapt data model For Update request
          *
          * @param opt Fetch configuration in format ``` { url:'', init:{}, data:{}}```
          */
-        _adapterFetchInitDataUpdate: function (opt) {
+        _adapterFetchInitDataUpdate(opt) {
             return this._adapterFetchInitData(opt);
-        },
+        };
 
         /**
          * Adapt data model For Create request
          *
          * @param opt Fetch configuration in format ``` { url:'', init:{}, data:{}}```
          */
-        _adapterFetchInitDataCreate: function (opt) {
+        _adapterFetchInitDataCreate(opt) {
             return this._adapterFetchInitData(opt);
-        },
+        };
 
 
         // --- Elasticsearch API
         // --- -------------------------------
-        _fetchUrlRetrieve: function (entityId, version) {
+        _fetchUrlRetrieve(entityId, version) {
             return this._fetchUrlEntityId(entityId, version);
-        },
+        };
 
-        _fetchUrlUpdate: function (entityId, version) {
+        _fetchUrlUpdate(entityId, version) {
             return this._fetchUrlEntityId(entityId, version);
-        },
+        };
 
-        _fetchUrlDelete: function (entityId, version) {
+        _fetchUrlDelete(entityId, version) {
             return this._fetchUrlEntityId(entityId, version);
-        },
+        };
 
-        _fetchUrlCreate: function (entityId, version) {
+        _fetchUrlCreate(entityId, version) {
             return this._fetchUrlRoot();
-        },
+        };
 
         // --- Fetch Request
         // --- -------------------------------
@@ -679,7 +684,7 @@
          * }
          * ```
          */
-        _fetchInitRetrieve: function (entityId, data) {
+        _fetchInitRetrieve(entityId, data) {
             var self = this;
             return new Promise(function (resolve, reject) {
                 var version = data ? data.version : null;
@@ -687,7 +692,7 @@
                 var opt = self._defaultOptions('GET');
                 resolve({init: opt, url: urlGet});
             });
-        },
+        };
 
 
         /**
@@ -700,7 +705,7 @@
          * }
          * ```
          */
-        _fetchInitUpdate: function (entityId, data) {
+        _fetchInitUpdate(entityId, data) {
             var self = this;
             return new Promise(function (resolve, reject) {
                 var version = data ? data.version : null;
@@ -708,7 +713,7 @@
                 var opt = self._defaultOptions('PUT', data);
                 resolve({init: opt, url: urlUpdate, data: data});
             });
-        },
+        };
 
         /**
          * Fetch configuration for Delete request in format
@@ -720,7 +725,7 @@
          * }
          * ```
          */
-        _fetchInitDelete: function (entityId, data) {
+        _fetchInitDelete(entityId, data) {
             var self = this;
             return new Promise(function (resolve, reject) {
                 var version = data ? data.version : null;
@@ -728,7 +733,7 @@
                 var opt = self._defaultOptions('DELETE', data);
                 resolve({init: opt, url: urlDelete, data: data});
             });
-        },
+        };
 
         /**
          * Fetch configuration for Create request in format
@@ -740,41 +745,41 @@
          * }
          * ```
          */
-        _fetchInitCreate: function (entityId, data) {
+        _fetchInitCreate(entityId, data) {
             var self = this;
             return new Promise(function (resolve, reject) {
                 var urlCreate = self._fetchUrlCreate(entityId, data);
                 var opt = self._defaultOptions('POST', data);
                 resolve({init: opt, url: urlCreate, data: data});
             });
-        },
+        };
 
 
         // --- Component linker
         // --- ---------------------------
-//        _extractResponseHeaders: function (response) {
+//        _extractResponseHeaders(response) {
 //            var myHeaders = response.headers;
 //            var headers = {};
 //            for (var pair of myHeaders.entries()) {
 //                headers[pair[0]] = pair[1];
 //            }
 //            return headers;
-//        },
+//        };
 
-        _isResponseJson: function (response) {
+        _isResponseJson(response) {
             var contentType = response.headers.get('content-type');
             return (contentType && contentType.indexOf('application/json') !== -1)
-        },
+        };
 
 
         // --- Fetch Helper
         // --- ---------------------------
-        _fetchRequest: function (opt) {
+        _fetchRequest(opt) {
             if (this.debug) console.log('____________ Fetch opt', opt.init.method, ' ____________');
             return window.fetch(opt.url, opt.init);
-        },
+        };
 
-        _checkResponseStatus: function (response) {
+        _checkResponseStatus(response) {
             if (!response.ok) {
                 return response.text().then(function (text) {
                     var error = new Error(response.status + ' (' + response.statusText + ')');
@@ -785,9 +790,9 @@
                 });
             }
             return response;
-        },
+        };
 
-        _transformResponseJson: function (response) {
+        _transformResponseJson(response) {
             var res = {
                 status: response.status,
                 statusText: response.statusText,
@@ -798,19 +803,19 @@
                 res.response = responseJson;
                 return res;
             });
-        },
+        };
 
         // --- Fetch Data Helper
         // --- ---------------------------
 
-        _fetchInitDataContentSerializer: function (opt) {
+        _fetchInitDataContentSerializer(opt) {
             if (opt.data) {
                 opt.content = this._dataSerializerEntity(opt.data);
             }
             return opt;
-        },
+        };
 
-        _fetchInitDataContentRegister: function (opt) {
+        _fetchInitDataContentRegister(opt) {
             var init = opt.init;
             var content = opt.content;
             if (content) {
@@ -822,12 +827,12 @@
                 init.headers = myHeaders;
             }
             return opt;
-        },
+        };
 
         // --- Fetch Digest Content for Integrity
         // --- ---------------------------
 
-//        _fetchInitDataIntegrity: function (opt) {
+//        _fetchInitDataIntegrity(opt) {
 //            var content = opt.content;
 //            if (content) {
 //                var integrityAlgo = 'SHA-384'; // allowed prefixes are sha256, sha384, and sha512
@@ -839,90 +844,90 @@
 //                        });
 //            }
 //            return opt;
-//        },
+//        };
 
 
         // --- Fetch Promise Logic
         // --- ---------------------------
-        _fetchPromiseRetrieveRequest: function (entityId) {
+        _fetchPromiseRetrieveRequest(entityId) {
             return this._fetchInitRetrieve(entityId)
-                    .then(this._fetchRequest.bind(this)) // Do Request
-                    .then(this._checkResponseStatus.bind(this))
-                    .then(this._transformResponseJson.bind(this))
-                    .then(this._adapterResponseRetrieve.bind(this))
-        },
+                .then(this._fetchRequest.bind(this)) // Do Request
+                .then(this._checkResponseStatus.bind(this))
+                .then(this._transformResponseJson.bind(this))
+                .then(this._adapterResponseRetrieve.bind(this))
+        };
 
-        _fetchPromiseRetrieve: function (entityId) {
+        _fetchPromiseRetrieve(entityId) {
             return this._fetchPromiseRetrieveRequest(entityId)
-                    .then(this._handleResponseRetrieve.bind(this))
-                    .then(this._fireResponseRetrieve.bind(this))
-                    .catch(this._handleErrorRetrieve.bind(this));
-        },
+                .then(this._handleResponseRetrieve.bind(this))
+                .then(this._fireResponseRetrieve.bind(this))
+                .catch(this._handleErrorRetrieve.bind(this));
+        };
 
-        _fetchPromiseUpdate: function (entityId, data) {
+        _fetchPromiseUpdate(entityId, data) {
             return this._fetchInitUpdate(entityId, data)
-                    .then(this._adapterFetchInitDataUpdate.bind(this))
-                    .then(this._fetchInitDataContentSerializer.bind(this))
-                    //                    .then(this._fetchInitDataIntegrity.bind(this))
-                    .then(this._fetchInitDataContentRegister.bind(this))
-                    .then(this._fetchRequest.bind(this)) // Do Request
-                    .then(this._checkResponseStatus.bind(this))
-                    .then(this._transformResponseJson.bind(this))
-                    .then(this._adapterResponseUpdate.bind(this))
-                    .then(this._handleResponseUpdate.bind(this))
-                    .then(this._fireResponseUpdate.bind(this))
-                    .catch(this._handleErrorUpdate.bind(this));
-        },
+                .then(this._adapterFetchInitDataUpdate.bind(this))
+                .then(this._fetchInitDataContentSerializer.bind(this))
+                //                    .then(this._fetchInitDataIntegrity.bind(this))
+                .then(this._fetchInitDataContentRegister.bind(this))
+                .then(this._fetchRequest.bind(this)) // Do Request
+                .then(this._checkResponseStatus.bind(this))
+                .then(this._transformResponseJson.bind(this))
+                .then(this._adapterResponseUpdate.bind(this))
+                .then(this._handleResponseUpdate.bind(this))
+                .then(this._fireResponseUpdate.bind(this))
+                .catch(this._handleErrorUpdate.bind(this));
+        };
 
-        _fetchPromiseDelete: function (entityId, data) {
+        _fetchPromiseDelete(entityId, data) {
             return this._fetchInitDelete(entityId, data)
-                    .then(this._fetchRequest.bind(this)) // Do Request
-                    .then(this._checkResponseStatus.bind(this))
-                    .then(this._transformResponseJson.bind(this))
-                    .then(this._adapterResponseDelete.bind(this))
-                    .then(this._handleResponseDelete.bind(this))
-                    .then(this._fireResponseDelete.bind(this))
-                    .catch(this._handleErrorDelete.bind(this));
-        },
+                .then(this._fetchRequest.bind(this)) // Do Request
+                .then(this._checkResponseStatus.bind(this))
+                .then(this._transformResponseJson.bind(this))
+                .then(this._adapterResponseDelete.bind(this))
+                .then(this._handleResponseDelete.bind(this))
+                .then(this._fireResponseDelete.bind(this))
+                .catch(this._handleErrorDelete.bind(this));
+        };
 
 
-        _fetchPromiseCreate: function (entityId, data) {
+        _fetchPromiseCreate(entityId, data) {
             return this._fetchInitCreate(entityId, data)
-                    .then(this._adapterFetchInitDataCreate.bind(this))
-                    .then(this._fetchInitDataContentSerializer.bind(this))
-                    //                    .then(this._fetchInitDataIntegrity.bind(this))
-                    .then(this._fetchInitDataContentRegister.bind(this))
-                    .then(this._fetchRequest.bind(this)) // Do Request
-                    .then(this._checkResponseStatus.bind(this))
-                    .then(this._transformResponseJson.bind(this))
-                    .then(this._adapterResponseCreate.bind(this))
-                    .then(this._handleResponseCreate.bind(this))
-                    .then(this._fireResponseCreate.bind(this))
-                    .catch(this._handleErrorCreate.bind(this));
-        },
+                .then(this._adapterFetchInitDataCreate.bind(this))
+                .then(this._fetchInitDataContentSerializer.bind(this))
+                //                    .then(this._fetchInitDataIntegrity.bind(this))
+                .then(this._fetchInitDataContentRegister.bind(this))
+                .then(this._fetchRequest.bind(this)) // Do Request
+                .then(this._checkResponseStatus.bind(this))
+                .then(this._transformResponseJson.bind(this))
+                .then(this._adapterResponseCreate.bind(this))
+                .then(this._handleResponseCreate.bind(this))
+                .then(this._fireResponseCreate.bind(this))
+                .catch(this._handleErrorCreate.bind(this));
+        };
 
 
         // --- Response Handler
         // --- ---------------------------
 
-        _handleResponseRetrieve: function (res) {
+        _handleResponseRetrieve(res) {
             var responseJson = res.response;
             this._setCrudDataModeUpdate(responseJson);
             this.entityId = responseJson.id;
             return res;
-        },
+        };
 
-        _handleResponseCreate: function (res) {
+        _handleResponseCreate(res) {
             var data = this.data;
             var responseJson = res.response;
             var entityId = responseJson.id;
             // Hydrate
             if (this.reloadOnCreate) {
                 return this._fetchPromiseRetrieveRequest(entityId)
-                        .then(this._handleResponseRetrieve.bind(this))
-                        .then(function (resGet) {
-                            return res;
-                        });
+                    .then(this._handleResponseRetrieve.bind(this))
+                    .then(function (resGet) {
+                        return res;
+                    });
             } else {
                 return new Promise(function (resolve, reject) {
                     data.id = entityId;
@@ -935,10 +940,10 @@
                     resolve(res);
                 }.bind(this));
             }
-        },
+        };
 
 
-        _handleResponseUpdate: function (res) {
+        _handleResponseUpdate(res) {
             var data = this.data;
             var responseJson = res.response;
             if (responseJson.version) {
@@ -947,22 +952,22 @@
             // Propage Modification
             this._setCrudDataModeUpdate(data);
             return res;
-        },
+        };
 
-        _handleResponseDelete: function (res) {
+        _handleResponseDelete(res) {
             this.clean();
             return res;
-        },
+        };
 
 
         // --- Error handling
         // --- ---------------------------
 
-        _logError: function (error) {
+        _logError(error) {
             console.log('--- error :' + error);
-        },
+        };
 
-        _handleErrorRetrieve: function (error) {
+        _handleErrorRetrieve(error) {
             this._logError(error);
             var handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorRetrieve', error);
             if (handlerStatus) {
@@ -971,9 +976,9 @@
             this._setCrudDataModeUnset(null);
             this._fireErrorRetrieve(error);
             return error;
-        },
+        };
 
-        _handleErrorUpdate: function (error) {
+        _handleErrorUpdate(error) {
             this._logError(error);
             var handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorUpdate', error);
             if (handlerStatus) {
@@ -981,9 +986,9 @@
             }
             this._fireErrorUpdate(error);
             return error;
-        },
+        };
 
-        _handleErrorCreate: function (error) {
+        _handleErrorCreate(error) {
             this._logError(error);
             var handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorCreate', error);
             if (handlerStatus) {
@@ -991,8 +996,8 @@
             }
             this._fireErrorCreate(error);
             return error;
-        },
-        _handleErrorDelete: function (error) {
+        };
+        _handleErrorDelete(error) {
             this._logError(error);
             var handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorDelete', error);
             if (handlerStatus) {
@@ -1000,12 +1005,12 @@
             }
             this._fireErrorDelete(error);
             return error;
-        },
+        };
 
 
         // --- Specific Error handling
         // --- ---------------------------
-        _getHandlerResponseWithSpecificStatus: function (baseErrorFuncName, response) {
+        _getHandlerResponseWithSpecificStatus(baseErrorFuncName, response) {
             var status = response.status;
             if (status) {
                 var errorStatusFunc = baseErrorFuncName + status;
@@ -1016,7 +1021,7 @@
                 }
             }
             return null;
-        },
+        };
 
 
         // --- Event Response
@@ -1027,42 +1032,42 @@
          *
          * @event air-cruddy-retrieve
          */
-        _fireResponseRetrieve: function (response) {
+        _fireResponseRetrieve(response) {
             this.fire('air-cruddy-retrieve', response);
 //            this.dispatchEvent(new CustomEvent('air-cruddy-retrieve', { detail: response, bubbles: false }));
             if (this.debug) console.log('Fire  air-cruddy-retrieve : ', JSON.stringify(response));
             return response;
-        },
+        };
 
         /**
          * Fired when a resource are updated.
          *
          * @event air-cruddy-update
          */
-        _fireResponseUpdate: function (response) {
+        _fireResponseUpdate(response) {
             this.fire('air-cruddy-update', response);
             return response;
-        },
+        };
 
         /**
          * Fired when a resource are created.
          *
          * @event air-cruddy-create
          */
-        _fireResponseCreate: function (response) {
+        _fireResponseCreate(response) {
             this.fire('air-cruddy-create', response);
             return response;
-        },
+        };
 
         /**
          * Fired when a resource are deleted.
          *
          * @event air-cruddy-delete
          */
-        _fireResponseDelete: function (response) {
+        _fireResponseDelete(response) {
             this.fire('air-cruddy-delete', response);
             return response;
-        },
+        };
 
         // --- Event Error
         // --- ---------------------------
@@ -1072,53 +1077,52 @@
          *
          * @event air-cruddy-error-retrieve
          */
-        _fireErrorRetrieve: function (error) {
+        _fireErrorRetrieve(error) {
             this.fire('air-cruddy-error-retrieve', error);
             return this._fireError(error, 'retrieve');
-        },
+        };
         /**
          * Fired error when a resource are loaded.
          *
          * @event air-cruddy-error-update
          */
-        _fireErrorUpdate: function (error) {
+        _fireErrorUpdate(error) {
             this.fire('air-cruddy-error-update', error);
             return this._fireError(error, 'update');
 
-        },
+        };
         /**
          * Fired error when a resource are loaded.
          *
          * @event air-cruddy-error-delete
          */
-        _fireErrorDelete: function (error) {
+        _fireErrorDelete(error) {
             this.fire('air-cruddy-error-delete', error);
             return this._fireError(error, 'delete');
-        },
+        };
         /**
          * Fired error when a resource are loaded.
          *
          * @event air-cruddy-error-create
          */
-        _fireErrorCreate: function (error) {
+        _fireErrorCreate(error) {
             this.fire('air-cruddy-error-create', error);
             return this._fireError(error, 'create');
-        },
+        };
 
         /**
          * Fired when error is raised
          *
          * @event air-cruddy-error
          */
-        _fireError: function (error) {
+        _fireError(error) {
             this.fire('air-cruddy-error', error);
             return error;
-        },
+        };
     };
 
 
-    //    FiveElements.AirCruddyBehavior = [
-    //        FiveElements.FireCryptoDigestBehavior, FiveElements.AirCruddyBehaviorImpl
-    //    ];
+
+
 
 </script>

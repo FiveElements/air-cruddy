@@ -8,14 +8,13 @@
     /**
      * FiveElements Namespace definition
      */
-    var FiveElements = FiveElements || {};
+    const FiveElements = FiveElements || {};
 
     /**
-     * @polymerBehavior
+     * @polymerMixin
      */
-    FiveElements.AirCruddyError409Behavior = {
-
-        _handleErrorUpdate409: function (error) {
+    const AirCruddyError409Mixin = superclass => class extends superclass {
+        _handleErrorUpdate409  (error) {
 
             // TODO
             var request = this._fetchPromiseRetrieveRequest(entityId).then(function (res) {
@@ -32,23 +31,23 @@
 
                 // Compute diff
             }).then(this._conflictResolution.bind(this))
-                    .catch(function (err) {
-                        console.error(err);
-                    });
+                .catch(function (err) {
+                    console.error(err);
+                });
 
-        },
+        };
 
 
-        _conflictResolution: function (conflictData) {
+        _conflictResolution  (conflictData) {
             // Need to compute
             var userChange; // diff dataUser <>  dataOrigin
             var serverChange; // diff dataServer <>  dataOrigin
             //
 
-        },
+        };
 
 
-        _computeDifferential: function (a, b) {
+        _computeDifferential (a, b) {
             var self = this;
             var result = {
                 different: [],
@@ -97,7 +96,7 @@
             }, result);
 
             return result;
-        },
+        };
 
     };
 

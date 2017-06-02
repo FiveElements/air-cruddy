@@ -1,5 +1,8 @@
 <link rel="import" href="../polymer/polymer-element.html">
 
+<link rel="import" href="air-cruddy-mixin.html">
+<link rel="import" href="air-cruddy-adapter-elasticsearch-mixin.html">
+
 <dom-module id="air-cruddy">
   <template>
     <style>
@@ -29,7 +32,7 @@
      * @polymer
      * @demo demo/index.html
      */
-    class AirCruddy extends Polymer.Element {
+    class AirCruddy extends  FiveElements.AirCruddyAdapterElasticsearchMixin(FiveElements.AirCruddyMixin(Polymer.Element)) {
       static get is() { return 'air-cruddy'; }
       static get properties() {
         return {
