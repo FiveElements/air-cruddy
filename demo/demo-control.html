@@ -1,0 +1,97 @@
+<link rel="import" href="../../polymer/polymer-element.html">
+
+<link rel="import" href="../../iron-icons/iron-icons.html">
+
+<link rel="import" href="../../paper-icon-button/paper-icon-button.html">
+
+
+<dom-module id="demo-control">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
+        <div>
+            <div>Options</div>
+            <paper-toggle-button checked="{{autoSave}}">Auto Save</paper-toggle-button>
+            <paper-toggle-button checked="{{debug}}">Debug</paper-toggle-button>
+        </div>
+        <div class="control">
+            <paper-icon-button icon=":create-new-folder" disabled$="[[status.isDirty]]"
+                               on-tap="_handleNewEntity"></paper-icon-button>
+
+
+            <paper-icon-button icon="check" disabled$="[[!status.isDirty]]"
+                               on-tap="_handleSave"></paper-icon-button>
+
+            <paper-icon-button icon="restore" disabled$="[[!status.isDirty]]"
+                               on-tap="_handleReset"></paper-icon-button>
+
+            <paper-icon-button icon="delete" disabled$="[[!_isCrudModeUpdate(status.mode)]]"
+                               on-tap="_handleDelete"></paper-icon-button>
+
+        </div>
+
+    </template>
+
+    <script>
+        /**
+         * `demo-control`
+         *
+         *
+         * @customElement
+         * @polymer
+         * @demo demo/index.html
+         */
+        class DemoControl extends Polymer.Element {
+            static get is() {
+                return 'demo-control';
+            }
+
+            static get properties() {
+                return {
+                    status: {
+                        type: Object
+                    },
+                    autoSave: {
+                        type: Boolean,
+                        notify: true
+                    },
+                    debug: {
+                        type: Boolean,
+                        notify: true,
+                        value: true
+                    },
+                    command: {
+                        type: String,
+                        notify: true
+                    }
+                };
+            }
+
+            _isCrudModeUpdate(crudMode) {
+                return (crudMode === 'update');
+            };
+
+            _handleNewEntity() {
+                this.command = 'newEntity';
+            };
+
+            _handleSave() {
+                this.command = 'save';
+            };
+
+            _handleReset() {
+                this.command = 'reset';
+            };
+
+            _handleDelete() {
+                this.command = 'delete';
+            };
+
+        }
+
+        window.customElements.define(DemoControl.is, DemoControl);
+    </script>
+</dom-module>
