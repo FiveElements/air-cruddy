@@ -24,6 +24,11 @@
         <air-cruddy-elasticsearch debug url="/v1/element" entity-id="3"></air-cruddy-elasticsearch>
     </template>
 </test-fixture>
+<test-fixture id="retrieveId404">
+    <template is="dom-bind">
+        <air-cruddy-elasticsearch debug url="/v1/element" entity-id="404"></air-cruddy-elasticsearch>
+    </template>
+</test-fixture>
 
 <script>
     suite('air-cruddy', function () {
@@ -84,6 +89,18 @@
                 assert.equal(element.entityId, response.id);
                 assert.deepEqual(element.data, response);
                 assert.deepEqual(element._dataOrigin, response);
+                done();
+            });
+        });
+
+        test('Fetch Retrieve - 404 Error', function (done) {
+            var element = fixture('retrieveId404', {url: '/v1/element', entityId: '404'});
+            element.addEventListener('air-cruddy-error-retrieve', function (e) {
+                var detail = e.detail;
+                console.log(JSON.stringify(e.detail) );
+                assert(detail.status === 404);
+                assert.isUndefined(element.data);
+                assert.isUndefined(element._dataOrigin);
                 done();
             });
         });

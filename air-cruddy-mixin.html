@@ -1078,7 +1078,7 @@
          * @event air-cruddy-error-retrieve
          */
         _fireErrorRetrieve(error) {
-            this.dispatchEvent(new CustomEvent('air-cruddy-error-retrieve', { detail: {error: error }, bubbles: true, composed: true  } ));
+            this.dispatchEvent(new CustomEvent('air-cruddy-error-retrieve', { detail: error  , bubbles: true, composed: true  } ));
             return this._fireError(error, 'retrieve');
         };
         /**
@@ -1087,7 +1087,7 @@
          * @event air-cruddy-error-update
          */
         _fireErrorUpdate(error) {
-            this.dispatchEvent(new CustomEvent('air-cruddy-error-update', { detail: {error: error }, bubbles: true, composed: true  } ));
+            this.dispatchEvent(new CustomEvent('air-cruddy-error-update', { detail: error , bubbles: true, composed: true  } ));
             return this._fireError(error, 'update');
         };
         /**
@@ -1096,7 +1096,7 @@
          * @event air-cruddy-error-delete
          */
         _fireErrorDelete(error) {
-            this.dispatchEvent(new CustomEvent('air-cruddy-error-delete', { detail: {error: error }, bubbles: true, composed: true  } ));
+            this.dispatchEvent(new CustomEvent('air-cruddy-error-delete', { detail: error , bubbles: true, composed: true  } ));
             return this._fireError(error, 'delete');
         };
         /**
@@ -1105,7 +1105,7 @@
          * @event air-cruddy-error-create
          */
         _fireErrorCreate(error) {
-            this.dispatchEvent(new CustomEvent('air-cruddy-error-create', { detail: {error: error }, bubbles: true, composed: true  } ));
+            this.dispatchEvent(new CustomEvent('air-cruddy-error-create', { detail: error , bubbles: true, composed: true  } ));
             return this._fireError(error, 'create');
         };
 
@@ -1115,7 +1115,7 @@
          * @event air-cruddy-error
          */
         _fireError(error) {
-            this.dispatchEvent(new CustomEvent('air-cruddy-error', { detail: {error: error }, bubbles: true, composed: true  } ));
+            this.dispatchEvent(new CustomEvent('air-cruddy-error', { detail: error , bubbles: true, composed: true  } ));
             return error;
         };
     };
