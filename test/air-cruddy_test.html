@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
@@ -10,43 +10,76 @@
     <script src="../../web-component-tester/browser.js"></script>
 
     <link rel="import" href="../air-cruddy.html">
-  </head>
-  <body>
+</head>
+<body>
 
-    <test-fixture id="BasicTestFixture">
-      <template>
+<test-fixture id="BasicTestFixture">
+    <template>
         <air-cruddy></air-cruddy>
-      </template>
-    </test-fixture>
+    </template>
+</test-fixture>
 
-    <test-fixture id="ChangedPropertyTestFixture">
-      <template>
-        <air-cruddy prop1="new-prop1"></air-cruddy>
-      </template>
-    </test-fixture>
+<test-fixture id="ChangedPropertyTestFixture">
+    <template is="dom-template">
+        <air-cruddy debug url="{{url}}"></air-cruddy>
+    </template>
+</test-fixture>
 
-    <script>
-      suite('air-cruddy', function() {
+<script>
+    suite('air-cruddy', function () {
 
-        test('instantiating the element with default properties works', function() {
-          var element = fixture('BasicTestFixture');
-          assert.equal(element.prop1, 'air-cruddy');
-          var elementShadowRoot = element.shadowRoot;
-          var elementHeader = elementShadowRoot.querySelector('h2');
-          assert.equal(elementHeader.innerHTML, 'Hello air-cruddy!');
+        test('instantiating the element with default properties works', function () {
+            var element = fixture('BasicTestFixture');
+            assert.equal(element.debug, false);
+
+//          var elementShadowRoot = element.shadowRoot;
+//          var elementHeader = elementShadowRoot.querySelector('h2');
+//          assert.equal(elementHeader.innerHTML, 'Hello air-cruddy!');
         });
 
-        test('setting a property on the element works', function() {
-          // Create a test fixture
-          var element = fixture('ChangedPropertyTestFixture');
-          assert.equal(element.prop1, 'new-prop1');
-          var elementShadowRoot = element.shadowRoot;
-          var elementHeader = elementShadowRoot.querySelector('h2');
-          assert.equal(elementHeader.innerHTML, 'Hello new-prop1!');
+        test('setting a property on the element works', function () {
+            // Create a test fixture
+            var element = fixture('ChangedPropertyTestFixture', {url: '/FiveElements/air'});
+            assert.equal(element.debug, true);
+//            assert.equal(element.url, '/FiveElements/air');
         });
 
-      });
-    </script>
+    });
 
-  </body>
+    suite('air-cruddy-mixin Utility', function () {
+
+        test('_setCrudDataModeUpdate', function () {
+            let element = fixture('BasicTestFixture');
+            let data = {
+                id: 'dataToClone',
+                version: 1,
+                lastname: 'Leeloominaï Lekatariba Lamina-Tchaï Ekbat De Sebat',
+                firstname: 'Leeloo'
+            };
+            element._setCrudDataModeUpdate(data);
+            assert.equal(element.data, data );
+            assert.notEqual(element.data, element._dataOrigin, 'the data need to be cloned');
+            assert.deepEqual(element.data, element._dataOrigin, 'the data need to be cloned but the same');
+            assert.frozen(element._dataOrigin);
+            assert.isFalse(element.isDirty );
+            assert.equal('update', element._cruddyMode);
+        });
+
+        test('_setCrudDataModeUnset with undefined', function () {
+            let element = fixture('BasicTestFixture');
+            let data = undefined;
+            element._setCrudDataModeUnset(data);
+            assert.equal(element.data, data );
+            assert.equal(element.data, element._dataOrigin, 'the data need to be cloned');
+            assert.frozen(element._dataOrigin);
+            assert.isFalse(element.isDirty );
+            assert.equal('unset', element._cruddyMode);
+        });
+
+    });
+
+
+</script>
+
+</body>
 </html>

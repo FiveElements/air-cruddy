@@ -34,14 +34,7 @@
      */
     class AirCruddy extends  FiveElements.AirCruddyAdapterElasticsearchMixin(FiveElements.AirCruddyMixin(Polymer.Element)) {
       static get is() { return 'air-cruddy'; }
-      static get properties() {
-        return {
-          prop1: {
-            type: String,
-            value: 'air-cruddy'
-          }
-        };
-      }
+
     }
 
     window.customElements.define(AirCruddy.is, AirCruddy);

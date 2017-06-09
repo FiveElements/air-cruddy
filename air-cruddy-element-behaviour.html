@@ -32,7 +32,8 @@
             // 1st argument to beforeNextRender is used as the "this"
             // value when the callback is invoked.
             Polymer.RenderStatus.beforeNextRender(this, function() {
-                this.fire('air-cruddy-element-register');
+                this.dispatchEvent(new CustomEvent('air-cruddy-element-register', { bubbles: true, composed: true }));
+//                this.fire('air-cruddy-element-register');
             });
         }
 
@@ -43,7 +44,8 @@
          */
         detached() {
             if (this._parentForm) {
-                this._parentForm.fire('air-cruddy-element-unregister', {target: this});
+                this.dispatchEvent(new CustomEvent('air-cruddy-element-unregister', { detail: {target: this}, bubbles: true, composed: true }));
+//                this._parentForm.fire('air-cruddy-element-unregister', {target: this});
                 this._parentForm = undefined;
             }
         }
