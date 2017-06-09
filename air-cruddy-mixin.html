@@ -1,7 +1,7 @@
 <link rel="import" href="../polymer/polymer-element.html">
 
 <link rel="import" href="../ether-lodash/ether-lodash-core.html">
-
+<link rel="import" href="../polymer/lib/utils/flattened-nodes-observer.html">
 <script>
     'use strict';
 
@@ -474,7 +474,7 @@
             return isValid;
         };
         validateNodes(validateNodes) {
-            console.log('validateNodes : ' + typeof validateNodes);
+
             if (!validateNodes || (Object.keys(validateNodes).length <1)) {
                 console.log('validateNodes : ==> true '   );
                 return true;
@@ -482,6 +482,7 @@
             return validateNodes.reduce(function (acc, node) {
                 let validateFunc = node['validate'].bind(node);
                 let isValidNode = validateFunc();
+               console.log('call validate on elt : ==>  '  + isValidNode );
                 return isValidNode || acc;
             }, false);
         };
@@ -494,7 +495,9 @@
 
         _getValidateNodes() {
 //            let nodes = Polymer.dom(this).children;
-            let nodes = Polymer.dom(this).getEffectiveChildNodes();
+//            let nodes = Polymer.dom(this).getEffectiveChildNodes();
+            let nodes = Polymer.FlattenedNodesObserver.getFlattenedNodes(this);
+//            let nodes = Polymer.FlattenedNodesObserver.getFlattenedNodes(this.shadowRoot);
             return Array.prototype.filter.call(nodes, function (n) {
                 let validateFunc = n['validate'];
                 let isValidateNode = (typeof  validateFunc === 'function');
