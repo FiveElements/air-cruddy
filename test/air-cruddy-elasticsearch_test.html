@@ -21,23 +21,43 @@
 
 <test-fixture id="retrieveId3">
     <template is="dom-bind">
-        <air-cruddy-elasticsearch debug url="/v1/element" entity-id="3"></air-cruddy-elasticsearch>
+        <air-cruddy-elasticsearch debug url="/FiveElements/air" entity-id="3"></air-cruddy-elasticsearch>
     </template>
 </test-fixture>
 <test-fixture id="retrieveId404">
     <template is="dom-bind">
-        <air-cruddy-elasticsearch debug url="/v1/element" entity-id="404"></air-cruddy-elasticsearch>
+        <air-cruddy-elasticsearch debug url="/FiveElements/air" entity-id="404"></air-cruddy-elasticsearch>
     </template>
 </test-fixture>
 
 <script>
-    suite('air-cruddy', function () {
+    suite('air-cruddy-elasticsearch', function () {
 
         test('instantiating the element with default properties works', function () {
             var element = fixture('BasicTestFixture');
             assert.equal(element.debug, false);
-
         });
+
+        test('_adapterResponseUpdate', function () {
+            var element = fixture('BasicTestFixture');
+            var updateResponseEs = {
+                status: 200,
+                statusText: 'OK',
+                response : {
+                    "_index": "twitter",
+                    "_type": "tweet",
+                    "_id": "1",
+                    "_version": 13,
+                    "result": "updated",
+                    "_shards": {"total": 2, "successful": 1, "failed": 0},
+                    "created": false
+                }
+            };
+            var adaptResponse = element._adapterResponseUpdate(updateResponseEs);
+            assert.equal('1', adaptResponse.response.id);
+            assert.equal('13', adaptResponse.response.version);
+        });
+
     });
 
 
@@ -59,17 +79,17 @@
             // https://rjzaworski.com/2015/06/testing-api-requests-from-window-fetch
             sinon.stub(window, 'fetch');
             // 2. Set up auto response rules
-            window.fetch.withArgs('/v1/element/3').returns(mockResponseJson(200, {
+            window.fetch.withArgs('/FiveElements/air/3').returns(mockResponseJson(200, {
                 "_id": "3",
                 "_version": 4,
                 "_source": {"group": "air"}
             }));
-            window.fetch.withArgs('/v1/element/4').returns(mockResponseJson(200, {
+            window.fetch.withArgs('/FiveElements/air/4').returns(mockResponseJson(200, {
                 "_id": "4",
                 "_version": 8,
                 "_source": {"group": "fire"}
             }));
-            window.fetch.withArgs('/v1/element/404').returns(mockResponseJson(404, {
+            window.fetch.withArgs('/FiveElements/air/404').returns(mockResponseJson(404, {
                 "_index": "twitter",
                 "_type": "tweet",
                 "_id": "404",
@@ -80,7 +100,7 @@
             window.fetch.restore();
         });
         test('Fetch Retrieve - Request 3', function (done) {
-            var element = fixture('retrieveId3', {url: '/v1/element', entityId: '3'});
+            var element = fixture('retrieveId3', {url: '/FiveElements/air', entityId: '3'});
             element.addEventListener('air-cruddy-retrieve', function (e) {
                 var response = e.detail.response;
                 assert(response.id === '3');
@@ -94,7 +114,7 @@
         });
 
         test('Fetch Retrieve - 404 Error', function (done) {
-            var element = fixture('retrieveId404', {url: '/v1/element', entityId: '404'});
+            var element = fixture('retrieveId404', {url: '/FiveElements/air', entityId: '404'});
             element.addEventListener('air-cruddy-error-retrieve', function (e) {
                 var detail = e.detail;
                 console.log(JSON.stringify(e.detail) );
@@ -104,8 +124,11 @@
                 done();
             });
         });
-
     });
+
+
+
+
 
 </script>
 
