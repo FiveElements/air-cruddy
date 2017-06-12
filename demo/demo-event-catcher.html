@@ -53,15 +53,16 @@
                 };
             }
 
-            static get listeners() {
-                return {
-                    'air-cruddy-retrieve': '_handleResponseRetrieve',
-                    'air-cruddy-update': '_handleResponseUpdate',
-                    'air-cruddy-create': '_handleResponseCreate',
-                    'air-cruddy-delete': '_handleResponseDelete',
-                    'air-cruddy-error': '_handleError',
-                }
-            };
+
+            ready() {
+                super.ready();
+                this.addEventListener('air-cruddy-retrieve', e => this._handleResponseRetrieve(e));
+                this.addEventListener('air-cruddy-update', e => this._handleResponseUpdate(e));
+                this.addEventListener('air-cruddy-create', e => this._handleResponseCreate(e));
+                this.addEventListener('air-cruddy-delete', e => this._handleResponseDelete(e));
+                this.addEventListener('air-cruddy-error', e => this._handleError(e));
+            }
+
 
 
             _handleResponseRetrieve(e) {
