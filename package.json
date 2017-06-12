@@ -11,7 +11,7 @@
     "test": "test"
   },
   "scripts": {
-    "lint": "polymer lint  --no-follow-dependencies  --include-dependencies bower_components/*  --input *.html",
+    "lint": "polymer lint --rules polymer-2   --extra-dependencies bower_components/**/*",
     "dev": "polymer serve -p 8080 | npm run watch",
     "test": "polymer test",
     "dev-install": "npm install -g bower polymer-cli browser-sync",
