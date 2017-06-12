@@ -163,7 +163,7 @@
                 assert.equal(element._dataOrigin.id, response.id);
                 done();
             });
-            return element.newEntity().then(function (data) {
+            let promise = element.newEntity().then(function (data) {
                 data.name = 'air-cruddy';
                 data.group = 'air';
                 element.isDirty = true; //TODO a better way
