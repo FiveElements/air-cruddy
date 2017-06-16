@@ -252,7 +252,7 @@
         // --- ---------------------
         _dataChangeObserver(changeRecord) {
             // https://github.com/FiveElements/air-cruddy/blob/iron-ajax/air-cruddy-dirty-behaviour.html
-            if (this.debug) console.log('### ', changeRecord.path + ' changed to ' + changeRecord.value, ' // ', changeRecord);
+            if (this.debug) console.log('### ', changeRecord.path + ' changed to ' , changeRecord.value, ' // ', changeRecord);
             if (!this._dataDirty) {
                 return;
             }
@@ -490,21 +490,23 @@
         validateNodes(validateNodes) {
 
             if (!validateNodes || (Object.keys(validateNodes).length <1)) {
-                console.log('validateNodes : ==> true '   );
+                console.log('No validateNodes : ==> true '   );
                 return true;
             }
-            return validateNodes.reduce(function (acc, node) {
+            if (this.debug) console.log('Test validateNodes :   ', validateNodes   );
+            return validateNodes.reduce(  (acc, node) => {
+//                console.log('Test to validate a Node :   ', node );
                 let validateFunc = node['validate'].bind(node);
                 let isValidNode = validateFunc();
-               console.log('call validate on elt : ==>  '  + isValidNode );
+                console.log('Test to validate a Node :   ', node, '==>',  isValidNode);
                 return isValidNode || acc;
             }, false);
         };
         validatePromise() {
-            return new Promise(function (resolve, reject) {
+            return new Promise(  (resolve, reject) => {
                 let valid = this.validate();
                 resolve(valid);
-            }.bind(this));
+            }).catch(err=> console.error(err));
         };
 
         _getValidateNodes() {
@@ -512,9 +514,10 @@
 //            let nodes = Polymer.dom(this).getEffectiveChildNodes();
             let nodes = Polymer.FlattenedNodesObserver.getFlattenedNodes(this);
 //            let nodes = Polymer.FlattenedNodesObserver.getFlattenedNodes(this.shadowRoot);
-            return Array.prototype.filter.call(nodes, function (n) {
+            return Array.prototype.filter.call(nodes, (n)=> {
                 let validateFunc = n['validate'];
                 let isValidateNode = (typeof  validateFunc === 'function');
+//                console.log('isValidateNode',isValidateNode,' for ', n );
                 return isValidateNode;
             });
         };
