@@ -105,7 +105,7 @@
             window.fetch.restore();
         });
         test('Fetch Retrieve - Request 3', function (done) {
-            var element = fixture('retrieveId3', {url: '/FiveElements/air', entityId: '3'});
+            let element = fixture('retrieveId3', {url: '/FiveElements/air', entityId: '3'});
             element.addEventListener('air-cruddy-retrieve', function (e) {
                 var response = e.detail.response;
                 assert(response.id === '3');
@@ -116,10 +116,11 @@
                 assert.deepEqual(element._dataOrigin, response);
                 done();
             });
+            element.retrieve();
         });
 
         test('Fetch Retrieve - 404 Error', function (done) {
-            var element = fixture('retrieveId404', {url: '/FiveElements/air', entityId: '404'});
+            let element = fixture('retrieveId404', {url: '/FiveElements/air', entityId: '404'});
             element.addEventListener('air-cruddy-error-retrieve', function (e) {
                 var detail = e.detail;
                 console.log(JSON.stringify(e.detail) );
@@ -128,6 +129,7 @@
                 assert.isUndefined(element._dataOrigin);
                 done();
             });
+            element.retrieve();
         });
     });
 

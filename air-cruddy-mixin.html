@@ -168,7 +168,7 @@
             };
         }
 
-        static get observers() {
+         static get observers() {
             return [
                 '_dataChangeObserver(data.*)',
                 '_entityIdChangeObserver(entityId)',
@@ -177,19 +177,33 @@
             ];
         }
 
+        // --- Life Cycle
+        // --- ---------------------------
 
-
-        static get listeners() {
-            return {
-            'focusout': '_handleFocusOut'
-            }
+        constructor() {
+            super();
+            this._boundListenerFocusOut = this._handleFocusOut.bind(this);
         }
+
+        connectedCallback() {
+            console.log('focusout connectedCallback', this._boundListenerFocusOut);
+            this.addEventListener('focusout', this._boundListenerFocusOut);
+        }
+
+        disconnectedCallback() {
+            super.disconnectedCallback();
+            this.removeEventListener('focusout', this._boundListenerFocusOut);
+        }
+
+
 
         // --- Listener
         // --- ---------------------------
         _handleFocusOut(e) {
+            console.log('_handleFocusOut', this.autoSave );
             if (this.debug) console.log('- - - - - -> focusout :  isDirty(', this.isDirty, ') ');
             if (this.autoSave && this.isDirty) {
+                console.log('request save' );
                 this.save();
             } else if (this.autoSave && !this.isDirty && !this.isValid) {
                 this.validate();
