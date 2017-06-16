@@ -1,7 +1,7 @@
 'use strict';
-var gulp = require('gulp');
+const gulp = require('gulp');
 
-var browserSync = require('browser-sync');
+const browserSync = require('browser-sync');
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -11,13 +11,13 @@ var browserSync = require('browser-sync');
 gulp.task('serve',   function () {
     // Proxy Server
     // -------------
-    var url = require('url');
-    var proxy = require('proxy-middleware');
-    var proxyEsOpt = url.parse('http://localhost:9200/5elements/');
+    const url = require('url');
+    const proxy = require('proxy-middleware');
+    const proxyEsOpt = url.parse('http://localhost:9200/5elements/');
     proxyEsOpt.route = '/5elements/';
-    var proxyOptions = url.parse('http://localhost:8080/');
+    const proxyOptions = url.parse('http://localhost:8080/');
     proxyOptions.route = '/';
-    var proxies = [proxy(proxyEsOpt), proxy(proxyOptions)];
+    const proxies = [proxy(proxyEsOpt), proxy(proxyOptions)];
 
     // browserSync Server
     // ------------------
