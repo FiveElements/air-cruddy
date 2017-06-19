@@ -11,9 +11,9 @@
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
 
-    <link rel="import" href="../../iron-form/iron-form.html">
+    <link rel="import" href="../../air-cascade-validator/air-cascade-validator.html">
 
-    <link rel="import" href="../air-cruddy.html">
+    <link rel="import" href="../air-cruddy-elasticsearch.html">
 
     <link rel="import" href="demo-editor-tweet.html">
     <link rel="import" href="demo-control.html">
@@ -35,14 +35,12 @@
                     <demo-control status="{{status}}" debug="{{debug}}" auto-save="{{autoSave}}"
                                   command="{{command}}"></demo-control>
 
-                    <air-cruddy debug="[[debug]]" auto-save="[[autoSave]]" status="{{status}}" command="{{command}}"
+                    <air-cruddy-elasticsearch debug="[[debug]]" auto-save="[[autoSave]]" status="{{status}}" command="{{command}}"
                                 data="{{data}}" url="http://localhost:9200/twitter/tweet" entity-id="1">
-                        <iron-form>
-                            <form>
+                        <air-cascade-validator>
                                 <demo-editor-tweet data="{{data}}"></demo-editor-tweet>
-                            </form>
-                        </iron-form>
-                    </air-cruddy>
+                        </air-cascade-validator>
+                    </air-cruddy-elasticsearch>
                 </demo-event-catcher>
             </template>
         </dom-bind>

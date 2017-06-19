@@ -158,7 +158,7 @@
                     value: 'omit'
                 },
                 /**
-                 * Remote Command
+                 * Remote Command like : 'save', 'delete", 'newEntity'
                  */
                 command: {
                     type: String,
@@ -517,7 +517,7 @@
             return Array.prototype.filter.call(nodes, (n)=> {
                 let validateFunc = n['validate'];
                 let isValidateNode = (typeof  validateFunc === 'function');
-//                console.log('isValidateNode',isValidateNode,' for ', n );
+                 console.log('isValidateNode',isValidateNode,' for ', n );
                 return isValidateNode;
             });
         };
