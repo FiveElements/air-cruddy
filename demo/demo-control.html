@@ -20,17 +20,21 @@
         </div>
         <div class="control">
             <paper-icon-button icon=":create-new-folder" disabled$="[[status.isDirty]]"
-                               on-tap="_handleNewEntity"></paper-icon-button>
+                               action="newEntity"
+                               on-tap="_handleActionControl"></paper-icon-button>
 
 
             <paper-icon-button icon="check" disabled$="[[!status.isDirty]]"
-                               on-tap="_handleSave"></paper-icon-button>
+                               action="save"
+                               on-tap="_handleActionControl"></paper-icon-button>
 
             <paper-icon-button icon="restore" disabled$="[[!status.isDirty]]"
-                               on-tap="_handleReset"></paper-icon-button>
+                               action="reset"
+                               on-tap="_handleActionControl"></paper-icon-button>
 
             <paper-icon-button icon="delete" disabled$="[[!_isCrudModeUpdate(status.mode)]]"
-                               on-tap="_handleDelete"></paper-icon-button>
+                               action="delete"
+                               on-tap="_handleActionControl"></paper-icon-button>
 
         </div>
 
@@ -71,25 +75,21 @@
                 };
             }
 
+            _handleActionControl(e){
+                const target = e.target;
+                const action = target.getAttribute('action');
+                if (action) {
+                    this.command = action;
+                }
+            }
+
+
             _isCrudModeUpdate(crudMode) {
                 return (crudMode === 'update');
-            };
+            }
 
-            _handleNewEntity() {
-                this.command = 'newEntity';
-            };
 
-            _handleSave() {
-                this.command = 'save';
-            };
 
-            _handleReset() {
-                this.command = 'reset';
-            };
-
-            _handleDelete() {
-                this.command = 'delete';
-            };
 
         }
 
