@@ -1,6 +1,6 @@
 # \<air-cruddy\> [![Build Status](https://travis-ci.org/FiveElements/air-cruddy.svg?branch=master)](https://travis-ci.org/FiveElements/air-cruddy)
 
-An Polymer element that manage CRUD Operations
+An Polymer 1 element that manage CRUD Operations
  
 
 ## External Documentation
