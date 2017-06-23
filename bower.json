@@ -1,10 +1,20 @@
 {
   "name": "air-cruddy",
+  "version": "2.0.0",
+  "description": "A Polymer 2 element that manage Crud (Create Retrieve Update Delete) Restfull Style request",
   "main": "air-cruddy.html",
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
     "ether-lodash": "FiveElements/ether-lodash#2.0-preview"
   },
+  "keywords": [
+    "web-components",
+    "polymer",
+    "polymer 2",
+    "five-elements",
+    "air-elements",
+    "crud request"
+  ],
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
     "web-component-tester": "Polymer/web-component-tester#^6.0.0",
@@ -14,7 +24,7 @@
     "paper-input": "PolymerElements/paper-input#^2.0.0",
     "paper-toast": "PolymerElements/paper-toast#^2.0.0",
     "iron-icons": "PolymerElements/iron-icons#^2.0.0",
-    "air-cascade-validator": "FiveElements/air-cascade-validator#2.0-preview"
+    "air-cascade-validator": "FiveElements/air-cascade-validator#master"
   },
   "resolutions": {
     "polymer": "^2.0.0",
