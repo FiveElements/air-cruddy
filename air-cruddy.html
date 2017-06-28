@@ -1,7 +1,8 @@
 <link rel="import" href="../polymer/polymer-element.html">
 
 <link rel="import" href="air-cruddy-mixin.html">
-<link rel="import" href="air-cruddy-adapter-elasticsearch-mixin.html">
+
+<link rel="import" href="../air-cascade-validator/air-cascade-validator.html">
 
 <dom-module id="air-cruddy">
   <template>
@@ -18,8 +19,9 @@
         <!--<button on-tap="save">Save</button>-->
         <!--<button on-tap="delete">Delete</button>-->
 
-        <!--<h2 on-tap="retrieve">Hello [[url]]</h2>-->
+    <air-cascade-validator id="validator">
         <slot id="crudContent"></slot>
+    </air-cascade-validator>
   </template>
 
   <script>
@@ -31,7 +33,7 @@
      * @polymer
      * @demo demo/index.html
      */
-    class AirCruddy extends  FiveElements.AirCruddyAdapterElasticsearchMixin(FiveElements.AirCruddyMixin(Polymer.Element)) {
+    class AirCruddy extends   FiveElements.AirCruddyMixin(Polymer.Element)  {
       static get is() { return 'air-cruddy'; }
 
     }

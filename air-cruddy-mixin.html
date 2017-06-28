@@ -487,6 +487,7 @@
             this.isValid = isValid;
             return isValid;
         };
+
         validateNodes(validateNodes) {
 
             if (!validateNodes || (Object.keys(validateNodes).length <1)) {
@@ -510,10 +511,11 @@
         };
 
         _getValidateNodes() {
-//            let nodes = Polymer.dom(this).children;
-//            let nodes = Polymer.dom(this).getEffectiveChildNodes();
+            if (this.$.validator) {
+                return [this.$.validator];
+            }
+            // Look in shadow Dom
             let nodes = Polymer.FlattenedNodesObserver.getFlattenedNodes(this);
-//            let nodes = Polymer.FlattenedNodesObserver.getFlattenedNodes(this.shadowRoot);
             return Array.prototype.filter.call(nodes, (n)=> {
                 let validateFunc = n['validate'];
                 let isValidateNode = (typeof  validateFunc === 'function');
