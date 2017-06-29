@@ -456,8 +456,29 @@
         // --- ---------------------------
 
         _createEmptyEntityModel() {
-            return {};
+            const formModel = this._callFormElements('createEmptyEntityModel');
+            const model = formModel || {};
+            if (this.debug) console.log('_createEmptyEntityModel', model);
+            return model;
         };
+
+
+        _callFormElements(funcName) {
+            const formNodes = this._computeFilterNodes(this.$.crudContent, (node) => {
+                if (node[funcName]) {
+                    return true;
+                }
+            }, false);
+
+            if (formNodes && formNodes.length>1) {
+                console.warn('Many _callFormElements with function ', funcName );
+            }
+            if (formNodes && formNodes.length>0) {
+                let formFunc = formNodes[0][funcName].bind(formNodes[0]);
+                return formFunc();
+            }
+            return null;
+        }
 
 
         // --- Status
@@ -488,17 +509,15 @@
             return isValid;
         };
         validateNodes(validateNodes) {
-
             if (!validateNodes || (Object.keys(validateNodes).length <1)) {
                 console.log('No validateNodes : ==> true '   );
                 return true;
             }
             if (this.debug) console.log('Test validateNodes :   ', validateNodes   );
             return validateNodes.reduce(  (acc, node) => {
-//                console.log('Test to validate a Node :   ', node );
                 let validateFunc = node['validate'].bind(node);
                 let isValidNode = validateFunc();
-                console.log('Test to validate a Node :   ', node, '==>',  isValidNode);
+//                if (this.debug)  console.log('Test to validate a Node :   ', node, '==>',  isValidNode);
                 return isValidNode || acc;
             }, false);
         };
@@ -510,16 +529,16 @@
         };
 
         _getValidateNodes() {
-//            let nodes = Polymer.dom(this).children;
-//            let nodes = Polymer.dom(this).getEffectiveChildNodes();
-            let nodes = Polymer.FlattenedNodesObserver.getFlattenedNodes(this);
-//            let nodes = Polymer.FlattenedNodesObserver.getFlattenedNodes(this.shadowRoot);
-            return Array.prototype.filter.call(nodes, (n)=> {
-                let validateFunc = n['validate'];
-                let isValidateNode = (typeof  validateFunc === 'function');
-                 console.log('isValidateNode',isValidateNode,' for ', n );
-                return isValidateNode;
-            });
+             if (this.$.validator) {
+                return [this.$.validator];
+            }
+            // Look in shadow Dom
+            return this._computeFilterNodes(this, (node) => {
+                if (node.validate) {
+                    return true;
+                }
+                return false;
+            }, false)
         };
 
 
@@ -1138,6 +1157,59 @@
             this.dispatchEvent(new CustomEvent('air-cruddy-error', { detail: error , bubbles: true, composed: true  } ));
             return error;
         };
+
+        // --- Tools
+        // --- ---------------------------
+
+        /**
+         * Visist all child nodes of parent in order to find filter nodes
+         * @param parent to visit
+         * @param filter for the nodes
+         * @param visitChildNodes Visit all child nodes
+         * @returns A Array Od filters nodes
+         * @private
+         */
+        _computeFilterNodes(parent, filter, visitChildNodes=true) {
+            const nodes = Array.prototype.slice.call(Polymer.FlattenedNodesObserver.getFlattenedNodes(parent));
+            const elements = nodes.reduce((acc, el) => {
+                // Exclude not wanted search
+                // ----------------------------
+                const elTagName = el.tagName;
+                if (!elTagName || elTagName === 'STYLE') {
+                    return acc;
+                }
+
+                // node with validation method
+                // ----------------------------
+                if (filter(el)) {
+                    acc.push(el);
+                    return acc;
+                }
+                // Determine Parent Type  Open Shadow root or direct Child
+                // ----------------------------
+                let elChild;
+                if (visitChildNodes) {
+                    const shadowNode = el.shadowRoot;
+                    if (shadowNode && (shadowNode.mode === 'open')) {
+                        elChild = shadowNode;
+                    } else {
+                        elChild = el.children;
+                    }
+                }
+                // Search in Parents
+                // ----------------------------
+                if (elChild) {
+                    const childElt = this._computeFilterNodes(elChild, filter, visitChildNodes);
+                    if (childElt && childElt.length > 0) {
+                        acc.push(...childElt);
+                    }
+                    return acc;
+                }
+                return acc;
+            }, []);
+            return elements;
+        };
+
     };
 
 
