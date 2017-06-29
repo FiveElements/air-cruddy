@@ -503,7 +503,6 @@
                     return true;
                 }
             }, false);
-
             if (formNodes && formNodes.length > 1) {
                 console.warn('Many _callFormElements with function ', funcName);
             }
@@ -544,12 +543,12 @@
         };
 
         validateNodes(validateNodes) {
-            if (!validateNodes || (Object.keys(validateNodes).length < 1)) {
-                console.log('No validateNodes : ==> true ');
+            if (!validateNodes || (Object.keys(validateNodes).length <1)) {
+                console.log('No validateNodes : ==> true '   );
                 return true;
             }
-            if (this.debug) console.log('Test validateNodes :   ', validateNodes);
-            return validateNodes.reduce((acc, node) => {
+            if (this.debug) console.log('Test validateNodes :   ', validateNodes   );
+            return validateNodes.reduce(  (acc, node) => {
                 let validateFunc = node['validate'].bind(node);
                 let isValidNode = validateFunc();
 //                if (this.debug)  console.log('Test to validate a Node :   ', node, '==>',  isValidNode);
@@ -576,6 +575,8 @@
                 return false;
             }, false)
         };
+
+
 
 
         // --- Fetch Configuration
@@ -1299,6 +1300,7 @@
             this.dispatchEvent(new CustomEvent('air-cruddy-error', {detail: error, bubbles: true, composed: true}));
             return error;
         };
+
 
         // --- Tools
         // --- ---------------------------

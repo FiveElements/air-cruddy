@@ -4,7 +4,6 @@
 <link rel="import" href="air-cruddy-mixin.html">
 
 
-
 <!--
 `air-cruddy-elasticsearch`
 Polymer Element air-cruddy-elasticsearch
@@ -19,7 +18,9 @@ Polymer Element air-cruddy-elasticsearch
                 display: block;
             }
         </style>
-         <slot id="crudContent"></slot>
+        <air-cascade-validator id="validator">
+            <slot id="crudContent"></slot>
+        </air-cascade-validator>
     </template>
 
 
@@ -32,8 +33,10 @@ Polymer Element air-cruddy-elasticsearch
          * @polymer
          * @demo demo/index.html
          */
-        class AirCruddyElasticsearch extends  FiveElements.AirCruddyAdapterElasticsearchMixin(FiveElements.AirCruddyMixin(Polymer.Element)) {
-            static get is() { return 'air-cruddy-elasticsearch'; }
+        class AirCruddyElasticsearch extends FiveElements.AirCruddyAdapterElasticsearchMixin(FiveElements.AirCruddyMixin(Polymer.Element)) {
+            static get is() {
+                return 'air-cruddy-elasticsearch';
+            }
 
         }
 

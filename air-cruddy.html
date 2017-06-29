@@ -4,12 +4,12 @@
 <link rel="import" href="air-cruddy-adapter-elasticsearch-mixin.html">
 
 <dom-module id="air-cruddy">
-  <template>
-    <style>
-      :host {
-        display: block;
-      }
-    </style>
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
         <!--<button on-tap="retrieve">Retrieve</button>-->
         <!--<button on-tap="retrieveById">Retrieve 404</button>-->
         <!--<button on-tap="newEntity">New</button>-->
@@ -19,23 +19,27 @@
         <!--<button on-tap="delete">Delete</button>-->
 
         <!--<h2 on-tap="retrieve">Hello [[url]]</h2>-->
-        <slot id="crudContent"></slot>
-  </template>
+        <air-cascade-validator id="validator">
+            <slot id="crudContent"></slot>
+        </air-cascade-validator>
+    </template>
 
-  <script>
-    /**
-     * `air-cruddy`
-     * 
-     *
-     * @customElement
-     * @polymer
-     * @demo demo/index.html
-     */
-    class AirCruddy extends  FiveElements.AirCruddyAdapterElasticsearchMixin(FiveElements.AirCruddyMixin(Polymer.Element)) {
-      static get is() { return 'air-cruddy'; }
+    <script>
+        /**
+         * `air-cruddy`
+         *
+         *
+         * @customElement
+         * @polymer
+         * @demo demo/index.html
+         */
+        class AirCruddy extends FiveElements.AirCruddyAdapterElasticsearchMixin(FiveElements.AirCruddyMixin(Polymer.Element)) {
+            static get is() {
+                return 'air-cruddy';
+            }
 
-    }
+        }
 
-    window.customElements.define(AirCruddy.is, AirCruddy);
-  </script>
+        window.customElements.define(AirCruddy.is, AirCruddy);
+    </script>
 </dom-module>
