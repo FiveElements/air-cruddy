@@ -1072,7 +1072,7 @@
          */
         _fireStatusChanged(status) {
             this.dispatchEvent(new CustomEvent('air-cruddy-status-changed', { detail: status, bubbles: true, composed: true }));
-            if (this.debug) console.log('air-cruddy-status-changed : ', JSON.stringify(response));
+            if (this.debug) console.log('air-cruddy-status-changed : ', JSON.stringify(status));
             return status;
         };
 
