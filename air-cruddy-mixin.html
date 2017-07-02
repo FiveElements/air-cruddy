@@ -186,8 +186,8 @@
         }
 
         connectedCallback() {
-            console.log('focusout connectedCallback', this._boundListenerFocusOut);
             this.addEventListener('focusout', this._boundListenerFocusOut);
+            super.connectedCallback();
         }
 
         disconnectedCallback() {
@@ -200,10 +200,9 @@
         // --- Listener
         // --- ---------------------------
         _handleFocusOut(e) {
-            console.log('_handleFocusOut', this.autoSave );
             if (this.debug) console.log('- - - - - -> focusout :  isDirty(', this.isDirty, ') ');
             if (this.autoSave && this.isDirty) {
-                console.log('request save' );
+                console.log('request auto-save' );
                 this.save();
             } else if (this.autoSave && !this.isDirty && !this.isValid) {
                 this.validate();
