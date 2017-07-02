@@ -304,6 +304,7 @@
             };
 //            if (notifyChange)
             this.status = crudStatus;
+            this._fireStatusChanged(crudStatus);
             if (this.debug) console.log('status : ', crudStatus);
         };
 
@@ -1062,6 +1063,18 @@
             return null;
         };
 
+        // --- Event Staus
+        // --- ---------------------------
+        /**
+         * Fired when a status as changed.
+         *
+         * @event air-cruddy-status-changed
+         */
+        _fireStatusChanged(status) {
+            this.dispatchEvent(new CustomEvent('air-cruddy-status-changed', { detail: status, bubbles: true, composed: true }));
+            if (this.debug) console.log('air-cruddy-status-changed : ', JSON.stringify(response));
+            return status;
+        };
 
         // --- Event Response
         // --- ---------------------------
