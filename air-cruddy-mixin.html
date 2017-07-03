@@ -11,7 +11,7 @@
     window.FiveElements = window.FiveElements || {};
 
 
-    FiveElements.AirCruddyMixin  = superclass => class extends superclass {
+    FiveElements.AirCruddyMixin = superclass => class extends superclass {
 
         static get properties() {
             return {
@@ -50,8 +50,8 @@
                 /**
                  * Entity Id for change the component in 'create' mode
                  */
-                entityIdForNew:{
-                    type:String,
+                entityIdForNew: {
+                    type: String,
                     value: 'new'
                 },
                 /**
@@ -175,7 +175,7 @@
             };
         }
 
-         static get observers() {
+        static get observers() {
             return [
                 '_dataChangeObserver(data.*)',
                 '_entityIdChangeObserver(entityId)',
@@ -203,13 +203,12 @@
         }
 
 
-
         // --- Listener
         // --- ---------------------------
         _handleFocusOut(e) {
             if (this.debug) console.log('- - - - - -> focusout :  isDirty(', this.isDirty, ') ');
             if (this.autoSave && this.isDirty) {
-                console.log('request auto-save' );
+                console.log('request auto-save');
                 this.save();
             } else if (this.autoSave && !this.isDirty && !this.isValid) {
                 this.validate();
@@ -242,8 +241,8 @@
                     if (this.debug) console.log('---- set entityId Observer :', entityId);
                     this.retrieve(entityId);
                 }
-            } else if ( (entityId === null) ||entityId === this.entityIdForNew){
-                if ((this._cruddyMode === 'create') && (  Object.keys(this._dataDirty).length === 0) ) {
+            } else if ((entityId === null) || entityId === this.entityIdForNew) {
+                if ((this._cruddyMode === 'create') && (  Object.keys(this._dataDirty).length === 0)) {
                     return false;
                 }
                 if (this.debug) console.log('---- set entityId Observer : null ==> newEntity');
@@ -258,7 +257,7 @@
         // --- ---------------------
         _dataChangeObserver(changeRecord) {
             // https://github.com/FiveElements/air-cruddy/blob/iron-ajax/air-cruddy-dirty-behaviour.html
-            if (this.debug) console.log('### ', changeRecord.path + ' changed to ' , changeRecord.value, ' // ', changeRecord);
+            if (this.debug) console.log('### ', changeRecord.path + ' changed to ', changeRecord.value, ' // ', changeRecord);
             if (!this._dataDirty) {
                 return;
             }
@@ -360,7 +359,7 @@
         };
 
         save() {
-            if (!this.isDirty ) {
+            if (!this.isDirty) {
                 if (this.debug) console.log('Not Save, Data is NOT Dirty');
                 return new Promise(function (resolve, reject) {
                     resolve(false);
@@ -377,8 +376,9 @@
                 } else {
                     return this.update();
                 }
-            }.bind(this)) ;
+            }.bind(this));
         };
+
         /**
          * Send Create request to Server.
          */
@@ -438,6 +438,7 @@
             this.isDirty = false;
 //            this.entityId = null;
         };
+
         _setCrudDataModeUpdate(data) {
             if (this.debug) console.log('~~~~~~~~ Update Mode ~~~~~~~~ ');
             this._cruddyMode = 'update';
@@ -449,6 +450,7 @@
 //                this.entityId = data.id;
 //            }
         };
+
         _setCrudDataModeUnset() {
             if (this.debug) console.log('~~~~~~~~ Unset Mode ~~~~~~~~ ');
             this._cruddyMode = 'unset';
@@ -477,10 +479,10 @@
                 }
             }, false);
 
-            if (formNodes && formNodes.length>1) {
-                console.warn('Many _callFormElements with function ', funcName );
+            if (formNodes && formNodes.length > 1) {
+                console.warn('Many _callFormElements with function ', funcName);
             }
-            if (formNodes && formNodes.length>0) {
+            if (formNodes && formNodes.length > 0) {
                 let formFunc = formNodes[0][funcName].bind(formNodes[0]);
                 return formFunc();
             }
@@ -515,28 +517,30 @@
             this.isValid = isValid;
             return isValid;
         };
+
         validateNodes(validateNodes) {
-            if (!validateNodes || (Object.keys(validateNodes).length <1)) {
-                console.log('No validateNodes : ==> true '   );
+            if (!validateNodes || (Object.keys(validateNodes).length < 1)) {
+                console.log('No validateNodes : ==> true ');
                 return true;
             }
-            if (this.debug) console.log('Test validateNodes :   ', validateNodes   );
-            return validateNodes.reduce(  (acc, node) => {
+            if (this.debug) console.log('Test validateNodes :   ', validateNodes);
+            return validateNodes.reduce((acc, node) => {
                 let validateFunc = node['validate'].bind(node);
                 let isValidNode = validateFunc();
 //                if (this.debug)  console.log('Test to validate a Node :   ', node, '==>',  isValidNode);
                 return isValidNode || acc;
             }, false);
         };
+
         validatePromise() {
-            return new Promise(  (resolve, reject) => {
+            return new Promise((resolve, reject) => {
                 let valid = this.validate();
                 resolve(valid);
-            }).catch(err=> console.error(err));
+            }).catch(err => console.error(err));
         };
 
         _getValidateNodes() {
-             if (this.$.validator) {
+            if (this.$.validator) {
                 return [this.$.validator];
             }
             // Look in shadow Dom
@@ -732,12 +736,12 @@
          * ```
          */
         _fetchInitRetrieve(entityId, data) {
-            return new Promise(  (resolve, reject) => {
+            return new Promise((resolve, reject) => {
                 let version = data ? data.version : null;
-                const url  = this._fetchUrlRetrieve(entityId, version);
+                const url = this._fetchUrlRetrieve(entityId, version);
                 const init = this._defaultOptions('GET');
                 const tracing = this._defaultTracing('retrieve');
-                resolve({init, url , tracing});
+                resolve({init, url, tracing});
             });
         };
 
@@ -753,12 +757,12 @@
          * ```
          */
         _fetchInitUpdate(entityId, data) {
-            return new Promise(  (resolve, reject) => {
+            return new Promise((resolve, reject) => {
                 const version = data ? data.version : null;
                 const url = this._fetchUrlUpdate(entityId, version);
                 const init = this._defaultOptions('PUT', data);
                 const tracing = this._defaultTracing('update');
-                resolve({init, url , data, tracing });
+                resolve({init, url, data, tracing});
             });
         };
 
@@ -773,12 +777,12 @@
          * ```
          */
         _fetchInitDelete(entityId, data) {
-            return new Promise(  (resolve, reject) => {
+            return new Promise((resolve, reject) => {
                 const version = data ? data.version : null;
-                const url  = this._fetchUrlDelete(entityId, version);
+                const url = this._fetchUrlDelete(entityId, version);
                 const init = this._defaultOptions('DELETE', data);
                 const tracing = this._defaultTracing('delete');
-                resolve({init, url , data, tracing});
+                resolve({init, url, data, tracing});
             });
         };
 
@@ -793,7 +797,7 @@
          * ```
          */
         _fetchInitCreate(entityId, data) {
-            return new Promise(  (resolve, reject) =>  {
+            return new Promise((resolve, reject) => {
                 const url = this._fetchUrlCreate(entityId, data);
                 const init = this._defaultOptions('POST', data);
                 const tracing = this._defaultTracing('create');
@@ -803,10 +807,12 @@
 
         _defaultTracing(mode) {
             return {
+                mode: mode,
                 processing: true,
-                beginDate : new Date()
+                beginDate: new Date()
             }
         }
+
         _handleTracingEnd(response) {
             const tracing = response.tracing;
             if (tracing) {
@@ -820,6 +826,7 @@
             }
             return response;
         }
+
         // --- Component linker
         // --- ---------------------------
 //        _extractResponseHeaders(response) {
@@ -848,7 +855,6 @@
         };
 
         _checkResponseStatus(response) {
-//            const response = opt.
             if (!response.ok) {
                 return response.text().then(function (text) {
                     let error = new Error(response.status + ' (' + response.statusText + ')');
@@ -869,7 +875,6 @@
                 type: response.type,
                 headers: response.headers,
                 tracing: response.tracing
-
             };
             console.log(res);
 //            for (var p of response.headers) {
@@ -1077,6 +1082,7 @@
             this._fireErrorCreate(error);
             return error;
         };
+
         _handleErrorDelete(error) {
             this._logError(error);
             let handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorDelete', error);
@@ -1111,7 +1117,7 @@
          * @event air-cruddy-status
          */
         _fireStatusChanged(status) {
-            this.dispatchEvent(new CustomEvent('air-cruddy-status', { detail: {status}, bubbles: true, composed: true }));
+            this.dispatchEvent(new CustomEvent('air-cruddy-status', {detail: {status}, bubbles: true, composed: true}));
             if (this.debug) console.log('air-cruddy-status : ', JSON.stringify(status));
             return status;
         };
@@ -1125,7 +1131,11 @@
          * @event air-cruddy-retrieve
          */
         _fireResponseRetrieve(response) {
-            this.dispatchEvent(new CustomEvent('air-cruddy-retrieve', { detail: response, bubbles: true, composed: true }));
+            this.dispatchEvent(new CustomEvent('air-cruddy-retrieve', {
+                detail: response,
+                bubbles: true,
+                composed: true
+            }));
             if (this.debug) console.log('Fire  air-cruddy-retrieve : ', JSON.stringify(response));
             return response;
         };
@@ -1136,7 +1146,7 @@
          * @event air-cruddy-update
          */
         _fireResponseUpdate(response) {
-            this.dispatchEvent(new CustomEvent('air-cruddy-update', { detail: response, bubbles: true, composed: true }));
+            this.dispatchEvent(new CustomEvent('air-cruddy-update', {detail: response, bubbles: true, composed: true}));
             return response;
         };
 
@@ -1146,7 +1156,7 @@
          * @event air-cruddy-create
          */
         _fireResponseCreate(response) {
-            this.dispatchEvent(new CustomEvent('air-cruddy-create', { detail: response, bubbles: true, composed: true }));
+            this.dispatchEvent(new CustomEvent('air-cruddy-create', {detail: response, bubbles: true, composed: true}));
             return response;
         };
 
@@ -1156,7 +1166,7 @@
          * @event air-cruddy-delete
          */
         _fireResponseDelete(response) {
-            this.dispatchEvent(new CustomEvent('air-cruddy-delete', { detail: response, bubbles: true, composed: true }));
+            this.dispatchEvent(new CustomEvent('air-cruddy-delete', {detail: response, bubbles: true, composed: true}));
             return response;
         };
 
@@ -1169,34 +1179,53 @@
          * @event air-cruddy-error-retrieve
          */
         _fireErrorRetrieve(error) {
-            this.dispatchEvent(new CustomEvent('air-cruddy-error-retrieve', { detail: error  , bubbles: true, composed: true  } ));
+            this.dispatchEvent(new CustomEvent('air-cruddy-error-retrieve', {
+                detail: error,
+                bubbles: true,
+                composed: true
+            }));
             return this._fireError(error, 'retrieve');
         };
+
         /**
          * Fired error when a resource are loaded.
          *
          * @event air-cruddy-error-update
          */
         _fireErrorUpdate(error) {
-            this.dispatchEvent(new CustomEvent('air-cruddy-error-update', { detail: error , bubbles: true, composed: true  } ));
+            this.dispatchEvent(new CustomEvent('air-cruddy-error-update', {
+                detail: error,
+                bubbles: true,
+                composed: true
+            }));
             return this._fireError(error, 'update');
         };
+
         /**
          * Fired error when a resource are loaded.
          *
          * @event air-cruddy-error-delete
          */
         _fireErrorDelete(error) {
-            this.dispatchEvent(new CustomEvent('air-cruddy-error-delete', { detail: error , bubbles: true, composed: true  } ));
+            this.dispatchEvent(new CustomEvent('air-cruddy-error-delete', {
+                detail: error,
+                bubbles: true,
+                composed: true
+            }));
             return this._fireError(error, 'delete');
         };
+
         /**
          * Fired error when a resource are loaded.
          *
          * @event air-cruddy-error-create
          */
         _fireErrorCreate(error) {
-            this.dispatchEvent(new CustomEvent('air-cruddy-error-create', { detail: error , bubbles: true, composed: true  } ));
+            this.dispatchEvent(new CustomEvent('air-cruddy-error-create', {
+                detail: error,
+                bubbles: true,
+                composed: true
+            }));
             return this._fireError(error, 'create');
         };
 
@@ -1206,7 +1235,7 @@
          * @event air-cruddy-error
          */
         _fireError(error) {
-            this.dispatchEvent(new CustomEvent('air-cruddy-error', { detail: error , bubbles: true, composed: true  } ));
+            this.dispatchEvent(new CustomEvent('air-cruddy-error', {detail: error, bubbles: true, composed: true}));
             return error;
         };
 
@@ -1221,7 +1250,7 @@
          * @returns A Array Od filters nodes
          * @private
          */
-        _computeFilterNodes(parent, filter, visitChildNodes=true) {
+        _computeFilterNodes(parent, filter, visitChildNodes = true) {
             const nodes = Array.prototype.slice.call(Polymer.FlattenedNodesObserver.getFlattenedNodes(parent));
             const elements = nodes.reduce((acc, el) => {
                 // Exclude not wanted search
@@ -1263,9 +1292,6 @@
         };
 
     };
-
-
-
 
 
 </script>
