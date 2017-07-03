@@ -843,10 +843,14 @@
             let res = {
                 status: response.status,
                 statusText: response.statusText,
-                url: response.url
+                url: response.url,
+                type: response.type,
+                headers: response.headers
             };
-            return response.json().then(function (responseJson) {
-//                return Object.assign(res, {response: responseJson});  // NOT IE
+//            for (var p of response.headers) {
+//                console.log(p); // returns a Headers{} object
+//            }
+            return response.json().then(responseJson => {
                 res.response = responseJson;
                 return res;
             });
