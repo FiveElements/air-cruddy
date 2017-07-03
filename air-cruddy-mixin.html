@@ -242,7 +242,7 @@
                     if (this.debug) console.log('---- set entityId Observer :', entityId);
                     this.retrieve(entityId);
                 }
-            } else if (entityId === null) {
+            } else if ( (entityId === null) ||entityId === this.entityIdForNew){
                 if ((this._cruddyMode === 'create') && (  Object.keys(this._dataDirty).length === 0) ) {
                     return false;
                 }
