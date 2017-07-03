@@ -1,0 +1,49 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="demo-status-display">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
+        <div>
+            <h3>Stauts</h3>
+            <p>[[statusStr]]</p>
+        </div>
+    </template>
+
+    <script>
+        /**
+         * `demo-status-display`
+         *
+         *
+         * @customElement
+         * @polymer
+         * @demo demo/index.html
+         */
+        class DemoStatusDisplay extends Polymer.Element {
+            static get is() {
+                return 'demo-status-display';
+            }
+
+            static get properties() {
+                return {
+                    status: {
+                        type: Object
+                    },
+                    statusStr: {
+                        type: String,
+                        computed: '_computeStatusStr(status)'
+                    }
+                };
+            }
+
+            _computeStatusStr(status) {
+                return JSON.stringify(status, null, '  ');
+            }
+        }
+
+        window.customElements.define(DemoStatusDisplay.is, DemoStatusDisplay);
+    </script>
+</dom-module>

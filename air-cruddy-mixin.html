@@ -48,6 +48,13 @@
                     notify: true
                 },
                 /**
+                 * Entity Id for change the component in 'create' mode
+                 */
+                entityIdForNew:{
+                    type:String,
+                    value: 'new'
+                },
+                /**
                  * The data load from the URL endpoint of the Rest Web-Service
                  */
                 data: {
@@ -70,7 +77,7 @@
                 },
                 /**
                  * The current edition mode.
-                 * 'created', 'updating', 'unset'
+                 * 'create', 'update', 'unset'
                  */
                 _cruddyMode: {
                     type: String,
@@ -1068,11 +1075,11 @@
         /**
          * Fired when a status as changed.
          *
-         * @event air-cruddy-status-changed
+         * @event air-cruddy-status
          */
         _fireStatusChanged(status) {
-            this.dispatchEvent(new CustomEvent('air-cruddy-status-changed', { detail: {status}, bubbles: true, composed: true }));
-            if (this.debug) console.log('air-cruddy-status-changed : ', JSON.stringify(status));
+            this.dispatchEvent(new CustomEvent('air-cruddy-status', { detail: {status}, bubbles: true, composed: true }));
+            if (this.debug) console.log('air-cruddy-status : ', JSON.stringify(status));
             return status;
         };
 
