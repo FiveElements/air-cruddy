@@ -96,6 +96,11 @@
                     readonly: true,
                     value: true
                 },
+                tracing: {
+                    type: Object,
+                    notify: true,
+                    readonly: true
+                },
                 status: {
                     type: Object,
                     notify: true,
@@ -179,7 +184,7 @@
             return [
                 '_dataChangeObserver(data.*)',
                 '_entityIdChangeObserver(entityId)',
-                '_isDirtyModeObserver(isValid, isDirty, _cruddyMode)'
+                '_isDirtyModeObserver(isValid, isDirty, _cruddyMode, tracing)'
 
             ];
         }
@@ -291,7 +296,7 @@
             this.isDirty = isDirty;
         };
 
-        _isDirtyModeObserver(isValid, isDirty, cruddyMode) {
+        _isDirtyModeObserver(isValid, isDirty, cruddyMode, tracing) {
 //            let crudStatus = this.status;
 //            let notifyChange = false;
 //            if (crudStatus.isDirty !== isDirty) {
@@ -306,7 +311,8 @@
             let crudStatus = {
                 isValid: isValid,
                 isDirty: isDirty,
-                mode: cruddyMode
+                mode: cruddyMode,
+                tracing
             };
 //            if (notifyChange)
             this.status = crudStatus;
@@ -806,23 +812,36 @@
         };
 
         _defaultTracing(mode) {
-            return {
+            let now = new Date().getTime();
+            let processingBegin = performance ? performance.now() : now;
+            let tracing = {
                 mode: mode,
                 processing: true,
-                beginDate: new Date()
+                beginDate: now,
+                processingBegin
             }
+            // define
+            this.tracing = tracing;
+            return tracing;
         }
 
         _handleTracingEnd(response) {
-            const tracing = response.tracing;
+            let tracing = response.tracing;
             if (tracing) {
+                // Now
+                const now = new Date().getTime();
+                let processingEnd = performance ? performance.now() : now;
+                //clone
+                tracing = JSON.parse(JSON.stringify(tracing));
                 tracing.processing = false;
-                const now = new Date();
                 tracing.endDate = now;
                 if (tracing.beginDate) {
-                    const processingMs = now - tracing.beginDate;
+                    const processingMs = processingEnd - tracing.processingBegin;
+                    console.log('------------------', processingMs, "ms");
                     tracing.processingMs = processingMs;
                 }
+                // define
+                this.tracing = tracing;
             }
             return response;
         }
