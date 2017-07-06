@@ -847,6 +847,15 @@
             return response;
         }
 
+        _handleTracingError(error) {
+            let tracing = response.tracing;
+            this.tracing = {
+                processing: false,
+                error
+            }
+            return response;
+        }
+
         // --- Component linker
         // --- ---------------------------
 //        _extractResponseHeaders(response) {
@@ -1069,11 +1078,12 @@
         // --- ---------------------------
 
         _logError(error) {
-            console.log('--- error :' + error);
+            console.error('--- error : ', error);
         };
 
         _handleErrorRetrieve(error) {
             this._logError(error);
+            this. _handleTracingError(error);
             let handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorRetrieve', error);
             if (handlerStatus) {
                 return handlerStatus(error);
@@ -1085,6 +1095,7 @@
 
         _handleErrorUpdate(error) {
             this._logError(error);
+            this. _handleTracingError(error);
             let handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorUpdate', error);
             if (handlerStatus) {
                 return handlerStatus(error);
@@ -1095,6 +1106,7 @@
 
         _handleErrorCreate(error) {
             this._logError(error);
+            this. _handleTracingError(error);
             let handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorCreate', error);
             if (handlerStatus) {
                 return handlerStatus(error);
@@ -1105,6 +1117,7 @@
 
         _handleErrorDelete(error) {
             this._logError(error);
+            this. _handleTracingError(error);
             let handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorDelete', error);
             if (handlerStatus) {
                 return handlerStatus(error);
