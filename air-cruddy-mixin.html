@@ -848,12 +848,13 @@
         }
 
         _handleTracingError(error) {
-            let tracing = response.tracing;
-            this.tracing = {
+
+            let tracing = {
                 processing: false,
                 error
             }
-            return response;
+            this.tracing = tracing;
+            return error;
         }
 
         // --- Component linker
