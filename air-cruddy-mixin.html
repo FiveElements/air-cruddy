@@ -848,13 +848,14 @@
         }
 
         _handleTracingError(error) {
-
+            console.dir(error);
             let tracing = {
                 processing: false,
                 error: {
                     message: error.message,
-                    status: error.status
-
+                    status: error.status,
+                    statusText: error.statusText,
+                    responseText: error.responseText
                 }
             }
             this.tracing = tracing;
