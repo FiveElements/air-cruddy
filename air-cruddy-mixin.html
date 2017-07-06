@@ -851,7 +851,11 @@
 
             let tracing = {
                 processing: false,
-                error
+                error: {
+                    message: error.message,
+                    status: error.status
+
+                }
             }
             this.tracing = tracing;
             return error;
