@@ -262,7 +262,7 @@
         // --- ---------------------
         _dataChangeObserver(changeRecord) {
             // https://github.com/FiveElements/air-cruddy/blob/iron-ajax/air-cruddy-dirty-behaviour.html
-            if (this.debug) console.log('### ', changeRecord.path + ' changed to ', changeRecord.value, ' // ', changeRecord);
+            if (this.debug) console.log('... ', changeRecord.path + ' changed to ', changeRecord.value, ' // ', changeRecord);
             if (!this._dataDirty) {
                 return;
             }
@@ -822,6 +822,7 @@
             }
             // define
             this.tracing = tracing;
+            console.log('------------------', JSON.stringify(tracing));
             return tracing;
         }
 
@@ -837,11 +838,11 @@
                 tracing.endDate = now;
                 if (tracing.beginDate) {
                     const processingMs = processingEnd - tracing.processingBegin;
-                    console.log('------------------', processingMs, "ms");
                     tracing.processingMs = processingMs;
                 }
                 // define
                 this.tracing = tracing;
+                console.log('------------------', JSON.stringify(tracing));
             }
             return response;
         }
