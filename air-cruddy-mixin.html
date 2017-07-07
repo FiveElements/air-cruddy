@@ -207,6 +207,19 @@
             this.removeEventListener('focusout', this._boundListenerFocusOut);
         }
 
+        // --- Marking interface
+        // --- ---------------------------
+        /**
+         * Making method in order to find the AirCruddy implementations
+         */
+        airCruddyElements() {
+            return {
+                save: this.save,
+                delete: this.delete
+
+            };
+        }
+
 
         // --- Listener
         // --- ---------------------------
