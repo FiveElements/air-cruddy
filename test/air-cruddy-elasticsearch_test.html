@@ -19,7 +19,7 @@
 <test-fixture id="BasicTestFixture">
     <template is="dom-template">
         <air-cruddy-elasticsearch url="/FiveElements/air">
-            <paper-input label="User" value="Liloo"  required   maxlength="20"></paper-input>
+            <paper-input label="User" value="Liloo" required maxlength="20"></paper-input>
         </air-cruddy-elasticsearch>
     </template>
 </test-fixture>
@@ -48,7 +48,7 @@
             var updateResponseEs = {
                 status: 200,
                 statusText: 'OK',
-                response : {
+                response: {
                     "_index": "twitter",
                     "_type": "tweet",
                     "_id": "1",
@@ -75,7 +75,6 @@
         });
         return Promise.resolve(mockResponse);
     };
-
 
 
     suite('air-cruddy-elasticsearch retrieve', function () {
@@ -122,7 +121,7 @@
             let element = fixture('retrieveId404', {url: '/FiveElements/air', entityId: '404'});
             element.addEventListener('air-cruddy-error-retrieve', function (e) {
                 var detail = e.detail;
-                console.log(JSON.stringify(e.detail) );
+                console.log(JSON.stringify(e.detail));
                 assert(detail.status === 404);
                 assert.isUndefined(element.data);
                 assert.isUndefined(element._dataOrigin);
@@ -176,9 +175,6 @@
     });
 
 
-
-
-
     suite('air-cruddy-elasticsearch Delete', function () {
         setup(function () {
             // 1. Initialize the fake server
@@ -191,11 +187,15 @@
                 "_source": {"group": "air"}
             }));
             window.fetch.withArgs('/FiveElements/air/3?version=4').returns(mockResponseJson(200, {
-                "_id": "4",
-                "_version": 8,
-                "_source": {"group": "fire"}
+                "found": true,
+                "_index": "5elements",
+                "_type": "5elements",
+                "_id": "3",
+                "_version": 5,
+                "result": "deleted",
+                "_shards": {"total": 2, "successful": 1, "failed": 0}
             }));
-
+//
         });
         teardown(function () {
             window.fetch.restore();
@@ -212,7 +212,6 @@
                 assert.deepEqual(element.data, response);
                 assert.deepEqual(element._dataOrigin, response);
                 // Call Delete
-//                done();
                 element.delete();
             });
             element.addEventListener('air-cruddy-delete', function (e) {
@@ -221,7 +220,61 @@
             });
         });
 
-    });
+
+        suite('air-cruddy-elasticsearch Update ', function () {
+            setup(function () {
+                // 1. Initialize the fake server
+                // https://rjzaworski.com/2015/06/testing-api-requests-from-window-fetch
+                sinon.stub(window, 'fetch');
+                // 2. Set up auto response rules
+                window.fetch.withArgs('/FiveElements/air/3').returns(mockResponseJson(200, {
+                    "_id": "3",
+                    "_version": 4,
+                    "_source": {"group": "air"}
+                }));
+                window.fetch.withArgs('/FiveElements/air/3?version=4').returns(mockResponseJson(400, {
+                    "error": {
+                        "root_cause": [{
+                            "type": "mapper_parsing_exception",
+                            "reason": "failed to parse [age]"
+                        }],
+                        "type": "mapper_parsing_exception",
+                        "reason": "failed to parse [age]",
+                        "caused_by": {"type": "number_format_exception", "reason": "For input string: \"iiii\""}
+                    }, "status": 400
+                }));
+//
+            });
+            teardown(function () {
+                window.fetch.restore();
+            });
+            test('Fetch Update - Bad Request 404', function (done) {
+                let element = fixture('retrieveId3', {url: '/FiveElements/air', entityId: '3'});
+                // Get
+                element.addEventListener('air-cruddy-retrieve', function (e) {
+                    const response = e.detail.response;
+                    assert(response.id === '3');
+                    assert(response.version === 4);
+                    assert(response.group === 'air');
+                    assert.equal(element.entityId, response.id);
+                    assert.deepEqual(element.data, response);
+                    assert.deepEqual(element._dataOrigin, response);
+                    // Call Delete
+                    element.update();
+                });
+                element.addEventListener('air-cruddy-error-update', function (e) {
+
+                    var detail = e.detail;
+                    console.log(JSON.stringify(e.detail));
+                    assert(detail.status === 400);
+//                    assert.isUndefined(element.data);
+//                    assert.isUndefined(element._dataOrigin);
+                    done();
+                });
+            });
+
+
+        });
 
 </script>
 
