@@ -214,9 +214,9 @@
          */
         airCruddyElements() {
             return {
-                validate: this.validate,
-                save: this.save,
-                delete: this.delete
+                validate: this.validate.bind(this),
+                save: this.save.bind(this),
+                delete: this.delete.bind(this)
 
             };
         }
