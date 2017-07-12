@@ -364,7 +364,6 @@
         /**
          * Send Update request to Server.
          */
-
         update() {
             let entityId = this.data.id || this.entityId;
             return this._fetchPromiseUpdate(entityId, this.data);
@@ -378,6 +377,9 @@
             return this._fetchPromiseDelete(entityId, this.data);
         };
 
+        /**
+         * Send Save request (create or update) to the Server
+         */
         save() {
             if (!this.isDirty) {
                 if (this.debug) console.log('Not Save, Data is NOT Dirty');
