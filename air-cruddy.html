@@ -21,7 +21,7 @@
         <!--<button on-tap="delete">Delete</button>-->
 
         <!--<h2 on-tap="retrieve">Hello [[url]]</h2>-->
-        <air-cascade-validator id="validator">
+        <air-cascade-validator id="validator" invalid-nodes="{{invalidNodes}}">
             <slot id="crudContent"></slot>
         </air-cascade-validator>
     </template>
@@ -38,6 +38,16 @@
         class AirCruddy extends FiveElements.AirCruddyAdapterElasticsearchMixin(FiveElements.AirCruddyMixin(Polymer.Element)) {
             static get is() {
                 return 'air-cruddy';
+            }
+
+            static get properties() {
+                return {
+                    invalidNodes: {
+                        type: Array,
+                        readonly: true,
+                        notify: true
+                    }
+                };
             }
 
         }

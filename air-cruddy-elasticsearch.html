@@ -21,7 +21,7 @@ Polymer Element air-cruddy-elasticsearch
                 display: block;
             }
         </style>
-        <air-cascade-validator id="validator">
+        <air-cascade-validator id="validator" invalid-nodes="{{invalidNodes}}">
             <slot id="crudContent"></slot>
         </air-cascade-validator>
     </template>
@@ -39,6 +39,16 @@ Polymer Element air-cruddy-elasticsearch
         class AirCruddyElasticsearch extends FiveElements.AirCruddyAdapterElasticsearchMixin(FiveElements.AirCruddyMixin(Polymer.Element)) {
             static get is() {
                 return 'air-cruddy-elasticsearch';
+            }
+
+            static get properties() {
+                return {
+                    invalidNodes: {
+                        type: Array,
+                        readonly: true,
+                        notify: true
+                    }
+                };
             }
 
         }
