@@ -553,7 +553,7 @@
                 let validateFunc = node['validate'].bind(node);
                 let isValidNode = validateFunc();
 //                if (this.debug)  console.log('Test to validate a Node :   ', node, '==>',  isValidNode);
-                return isValidNode || acc;
+                return isValidNode && acc;
             }, false);
         };
 
