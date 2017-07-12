@@ -207,6 +207,15 @@
             this.removeEventListener('focusout', this._boundListenerFocusOut);
         }
 
+        // --- Logs
+        // --- ---------------------------
+
+        logDebug() {
+            if (this.debug) {
+                console.log(...arguments);
+            }
+        }
+
         // --- Marking interface
         // --- ---------------------------
         /**
@@ -216,18 +225,21 @@
             return {
                 validate: this.validate.bind(this),
                 save: this.save.bind(this),
-                delete: this.delete.bind(this)
+                delete: this.delete.bind(this),
+                newEntity: this.newEntity.bind(this),
+                reset: this.reset.bind(this)
 
             };
         }
 
 
+
         // --- Listener
         // --- ---------------------------
         _handleFocusOut(e) {
-            if (this.debug) console.log('- - - - - -> focusout :  isDirty(', this.isDirty, ') ');
+            this.logDebug('- - - - - -> focusout :  isDirty(', this.isDirty, ') ');
             if (this.autoSave && this.isDirty) {
-                console.log('request auto-save');
+                this.logDebug('request auto-save');
                 this.save();
             } else if (this.autoSave && !this.isDirty && !this.isValid) {
                 this.validate();
@@ -239,7 +251,7 @@
         _commandChanged(newCommand) {
             if (!newCommand) return;
             let cmdFunc = this[newCommand];
-            if (this.debug) console.log('command : ', newCommand);
+            this.logDebug('command : ', newCommand);
             if (typeof cmdFunc === 'function') {
                 let action = cmdFunc.bind(this);
                 let self = this;
@@ -257,17 +269,17 @@
         _entityIdChangeObserver(entityId) {
             if (entityId) {
                 if ((!this.data) || (this.data.id !== entityId )) {
-                    if (this.debug) console.log('---- set entityId Observer :', entityId);
+                    this.logDebug('---- set entityId Observer :', entityId);
                     this.retrieve(entityId);
                 }
             } else if ((entityId === null) || entityId === this.entityIdForNew) {
                 if ((this._cruddyMode === 'create') && (  Object.keys(this._dataDirty).length === 0)) {
                     return false;
                 }
-                if (this.debug) console.log('---- set entityId Observer : null ==> newEntity');
+                this.logDebug('---- set entityId Observer : null ==> newEntity');
                 return this.newEntity();
             } else {
-                if (this.debug) console.log('---- set entityId Observer : undefined ==> clean');
+                this.logDebug('---- set entityId Observer : undefined ==> clean');
                 return this.clean();
             }
         };
@@ -276,7 +288,7 @@
         // --- ---------------------
         _dataChangeObserver(changeRecord) {
             // https://github.com/FiveElements/air-cruddy/blob/iron-ajax/air-cruddy-dirty-behaviour.html
-            if (this.debug) console.log('... ', changeRecord.path + ' changed to ', changeRecord.value, ' // ', changeRecord);
+            this.logDebug('... ', changeRecord.path + ' changed to ', changeRecord.value, ' // ', changeRecord);
             if (!this._dataDirty) {
                 return;
             }
@@ -331,7 +343,7 @@
 //            if (notifyChange)
             this.status = crudStatus;
             this._fireStatusChanged(crudStatus);
-            if (this.debug) console.log('status : ', crudStatus);
+            this.logDebug('status : ', crudStatus);
         };
 
         _isValueEqual(dataRef, data) {
@@ -342,9 +354,9 @@
         // --- ---------------------------
 
         retrieveById(entityId) {
-            console.log("Request Retrieve: ", entityId);
+            this.logDebug("Request Retrieve: ", entityId);
             this._fetchPromiseRetrieve(entityId).catch(function (error) {
-                console.log('post error', error);
+                this.logDebug('post error', error);
             });
         };
 
@@ -382,17 +394,17 @@
          */
         save() {
             if (!this.isDirty) {
-                if (this.debug) console.log('Not Save, Data is NOT Dirty');
+                this.logDebug('Not Save, Data is NOT Dirty');
                 return new Promise((resolve, reject) => {
                     resolve(false);
                 });
             }
             return this.validatePromise().then((isValid) => {
                 if (!isValid) {
-                    if (this.debug) console.log('Not Save, Data Not valid');
+                    this.logDebug('Not Save, Data Not valid');
                     return false;
                 }
-                console.log('call save', this._cruddyMode);
+                this.logDebug('call save', this._cruddyMode);
                 if (this._cruddyMode === 'create') {
                     return this.create();
                 } else {
@@ -455,7 +467,7 @@
          *  Set Data with Clone When data is retrieve
          */
         _setCrudDataModeCreate(data) {
-            if (this.debug) console.log('~~~~~~~~ Create Mode ~~~~~~~~ ');
+            this.logDebug('~~~~~~~~ Create Mode ~~~~~~~~ ');
             this._cruddyMode = 'create';
             this._dataDirty = {};
             this._dataOrigin = data ? Object.freeze(JSON.parse(JSON.stringify(data))) : data;
@@ -465,7 +477,7 @@
         };
 
         _setCrudDataModeUpdate(data) {
-            if (this.debug) console.log('~~~~~~~~ Update Mode ~~~~~~~~ ');
+            this.logDebug('~~~~~~~~ Update Mode ~~~~~~~~ ');
             this._cruddyMode = 'update';
             this._dataDirty = {};
             this._dataOrigin = data ? Object.freeze(JSON.parse(JSON.stringify(data))) : data;
@@ -477,7 +489,7 @@
         };
 
         _setCrudDataModeUnset() {
-            if (this.debug) console.log('~~~~~~~~ Unset Mode ~~~~~~~~ ');
+            this.logDebug('~~~~~~~~ Unset Mode ~~~~~~~~ ');
             this._cruddyMode = 'unset';
             this._dataDirty = undefined;
             this._dataOrigin = undefined;
@@ -492,7 +504,7 @@
         _createEmptyEntityModel() {
             const formModel = this._callFormElements('createEmptyEntityModel');
             const model = formModel || {};
-            if (this.debug) console.log('_createEmptyEntityModel', model);
+            this.logDebug('_createEmptyEntityModel', model);
             return model;
         };
 
@@ -517,17 +529,17 @@
         // --- Status
         // --- ---------------------------
 
-        computeStatus(data, dataOrigin) {
-            if ((data === null) || (data === undefined)) {
-                return 'unsetMode';
-            } else {
-                if (dataOrigin === null) {
-                    return 'createMode';
-                } else {
-                    return 'updateMode';
-                }
-            }
-        };
+//        computeStatus(data, dataOrigin) {
+//            if ((data === null) || (data === undefined)) {
+//                return 'unsetMode';
+//            } else {
+//                if (dataOrigin === null) {
+//                    return 'createMode';
+//                } else {
+//                    return 'updateMode';
+//                }
+//            }
+//        };
 
         // --- Validation
         // --- ---------------------------
@@ -544,14 +556,14 @@
 
         validateNodes(validateNodes) {
             if (!validateNodes || (Object.keys(validateNodes).length <1)) {
-                console.log('No validateNodes : ==> true '   );
+                this.logDebug('No validateNodes : ==> true '   );
                 return true;
             }
-            if (this.debug) console.log('Test validateNodes :   ', validateNodes   );
+            this.logDebug('Test validateNodes :   ', validateNodes   );
             return validateNodes.reduce(  (acc, node) => {
                 let validateFunc = node['validate'].bind(node);
                 let isValidNode = validateFunc();
-//                if (this.debug)  console.log('Test to validate a Node :   ', node, '==>',  isValidNode);
+//                if (this.debug)  this.logDebug('Test to validate a Node :   ', node, '==>',  isValidNode);
                 return isValidNode && acc;
             }, false);
         };
@@ -842,7 +854,7 @@
             }
             // define
             this.tracing = tracing;
-            console.log('------------------', JSON.stringify(tracing));
+            this.logDebug('------------------', JSON.stringify(tracing));
             return tracing;
         }
 
@@ -862,7 +874,7 @@
                 }
                 // define
                 this.tracing = tracing;
-                console.log('------------------ _handleTracingEnd : ', JSON.stringify(tracing));
+                this.logDebug('------------------ _handleTracingEnd : ', JSON.stringify(tracing));
             }
             return response;
         }
@@ -902,10 +914,10 @@
         // --- Fetch Helper
         // --- ---------------------------
         _fetchRequest(opt) {
-            if (this.debug) console.log('____________ Fetch opt', opt.init.method, ' ____________', opt);
+            this.logDebug('____________ Fetch opt', opt.init.method, ' ____________', opt);
             return window.fetch(opt.url, opt.init).then(response => {
                 response.tracing = opt.tracing;
-                console.log('---  _fetchRequest', response);
+                this.logDebug('---  _fetchRequest', response);
                 return response;
             });
         };
@@ -933,13 +945,13 @@
                 headers: response.headers,
                 tracing: response.tracing
             };
-//            console.log('_transformResponseJson res :', res);
+//            this.logDebug('_transformResponseJson res :', res);
 //            for (var p of response.headers) {
-//                console.log(p); // returns a Headers{} object
+//                this.logDebug(p); // returns a Headers{} object
 //            }
             return response.json().then(responseJson => {
                 res.response = responseJson;
-//                console.log('TODO  response.json() ==>', responseJson);
+//                this.logDebug('TODO  response.json() ==>', responseJson);
                 return res;
             });
         };
@@ -978,7 +990,7 @@
 //                return this._digestPromise(integrityAlgo, content, 'base64')
 //                        .then(function (integrityHash) {
 //                            opt.integrity = integrityHash;
-//                            console.log('integrity : ',opt);
+//                            this.logDebug('integrity : ',opt);
 //                            return opt;
 //                        });
 //            }
@@ -1180,7 +1192,7 @@
          */
         _fireStatusChanged(status) {
             this.dispatchEvent(new CustomEvent('air-cruddy-status', {detail: {status}, bubbles: true, composed: true}));
-            if (this.debug) console.log('air-cruddy-status : ', JSON.stringify(status));
+            this.logDebug('air-cruddy-status : ', JSON.stringify(status));
             return status;
         };
 
@@ -1198,7 +1210,7 @@
                 bubbles: true,
                 composed: true
             }));
-            if (this.debug) console.log('Fire  air-cruddy-retrieve : ', JSON.stringify(response));
+            this.logDebug('Fire  air-cruddy-retrieve : ', JSON.stringify(response));
             return response;
         };
 
