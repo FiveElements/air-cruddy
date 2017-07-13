@@ -21,7 +21,7 @@ Polymer Element air-cruddy-elasticsearch
                 display: block;
             }
         </style>
-        <air-cascade-validator id="validator" invalid-nodes="{{invalidNodes}}">
+        <air-cascade-validator id="validator" invalid-nodes="{{invalidNodes}}" auto-focus="[[autoFocus]]">
             <slot id="crudContent"></slot>
         </air-cascade-validator>
     </template>
@@ -47,6 +47,10 @@ Polymer Element air-cruddy-elasticsearch
                         type: Array,
                         readonly: true,
                         notify: true
+                    },
+                    autoFocus: {
+                      type: Boolean,
+                      value: true
                     }
                 };
             }
