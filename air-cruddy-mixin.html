@@ -885,19 +885,20 @@
         }
 
         _handleTracingEnd(response) {
-            const tracing = this.cloneObject(response.info) || {};
-            if (tracing) {
+            const info = this.cloneObject(response.info) || {};
+            if (info) {
                 // Now
                 const now = new Date().getTime();
                 let processingEnd = performance ? performance.now() : now;
                 //clone
-                tracing.processing = false;
-                tracing.endDate = now;
-                if (tracing.beginDate) {
-                    const processingMs = processingEnd - tracing.processingBegin;
-                    tracing.processingMs = processingMs;
+                info.processing = false;
+                info.endDate = now;
+                if (info.beginDate) {
+                    const processingMs = processingEnd - info.processingBegin;
+                    info.processingMs = processingMs;
                 }
             }
+            response.info = info;
             return response;
         }
 
