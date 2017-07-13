@@ -1088,15 +1088,21 @@
 
         // --- Response Handler
         // --- ---------------------------
+        _handleStoreLastResponse(res) {
+            this.lastResponse = Object.freeze(res);
+            return res;
+        }
 
         _handleResponseRetrieve(res) {
-            let responseJson = res.response;
+            this._handleStoreLastResponse(res);
+            const responseJson = res.response;
             this._setCrudDataModeUpdate(responseJson);
             this.entityId = responseJson.id;
             return res;
         };
 
         _handleResponseCreate(res) {
+            this._handleStoreLastResponse(res);
             let data = this.data;
             let responseJson = res.response;
             let entityId = responseJson.id;
@@ -1123,6 +1129,7 @@
 
 
         _handleResponseUpdate(res) {
+            this._handleStoreLastResponse(res);
             let data = this.data;
             let responseJson = res.response;
             if (responseJson.version) {
@@ -1134,6 +1141,7 @@
         };
 
         _handleResponseDelete(res) {
+            this._handleStoreLastResponse(res);
             this.clean();
             return res;
         };
