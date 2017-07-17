@@ -14,7 +14,7 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
     "ether-lodash": "FiveElements/ether-lodash#^2.0.0",
-    "air-cascade-validator": "FiveElements/air-cascade-validator#^2.0.0"
+    "air-cascade-validator": "FiveElements/air-cascade-validator#master"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",

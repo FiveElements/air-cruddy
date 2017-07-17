@@ -241,7 +241,7 @@
         // --- Listener
         // --- ---------------------------
         _handleFocusOut(e) {
-            this.logDebug('- - - - - -> focusout :  isDirty(', this.isDirty, ') ');
+            this.logDebug('- - - - - -> focusout :  isDirty(', this.isDirty, ') ', e);
             if (this.autoSave && this.isDirty) {
                 this.logDebug('request auto-save');
                 this.save();
@@ -587,16 +587,16 @@
         // --- ---------------------------
 
 
-        validate() {
+        validate(callback) {
 //            let distributed = this.getContentChildren('#crudContent');
             let validateNodes = this._getValidateNodes();
-            let isValid = this.validateNodes(validateNodes);
+            let isValid = this.validateNodes(validateNodes,callback);
             // Change State
             this.isValid = isValid;
             return isValid;
         };
 
-        validateNodes(validateNodes) {
+        validateNodes(validateNodes, callback) {
             if (!validateNodes || (Object.keys(validateNodes).length < 1)) {
                 this.logDebug('No validateNodes : ==> true ');
                 return true;
@@ -604,7 +604,7 @@
             this.logDebug('Test validateNodes :   ', validateNodes);
             return validateNodes.reduce((acc, node) => {
                 let validateFunc = node['validate'].bind(node);
-                let isValidNode = validateFunc();
+                let isValidNode = validateFunc(callback);
 //                if (this.debug)  this.logDebug('Test to validate a Node :   ', node, '==>',  isValidNode);
                 return isValidNode && acc;
             }, true);
