@@ -518,21 +518,23 @@
                 data: this.data,
                 dataOrigin: this._dataOrigin,
                 dataDirty: this._dataDirty,
-                isDirty: this.isDirty,
                 lastResponse: this.lastResponse,
-                cruddyMode: this._cruddyMode
+                cruddyMode: this._cruddyMode,
+                isDirty: this.isDirty,
+                isValid: this.isValid
             };
             return state;
         }
 
         restoreState(state) {
             if (state) {
-                this.isDirty =  state.isDirty;
                 this.data = this.cloneObject(state.data);
                 this._dataOrigin = this.cloneObject(state.dataOrigin);
                 this._dataDirty = this.cloneObject(state.dataDirty);
                 this.lastResponse = this.cloneObject(state.lastResponse);
                 this._cruddyMode = state.cruddyMode;
+                this.isDirty =  state.isDirty;
+                this.isValid =  state.isValid;
             }
             return state;
         }
