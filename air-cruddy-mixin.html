@@ -358,7 +358,7 @@
 
         retrieveById(entityId) {
             this.logDebug("Request Retrieve: ", entityId);
-            this._fetchPromiseRetrieve(entityId).catch(function (error) {
+            return this._fetchPromiseRetrieve(entityId).catch(function (error) {
                 this.logDebug('post error', error);
             });
         };
@@ -369,6 +369,7 @@
         /**
          * Send Retrieve request to the Rest Web Service Server
          * @param entityId The entityId to load or if not defined the entityId deine in the 'air-cruddy' Web-Componnent
+         * @return {Promise}
          */
         retrieve(entityId) {
 //                let loadId = entityId || this.entityId;
@@ -378,6 +379,7 @@
 
         /**
          * Send Update request to Server.
+         * @return {Promise}
          */
         update() {
             let entityId = this.data.id || this.entityId;
@@ -386,6 +388,7 @@
 
         /**
          * Send Delete request to Server.
+         * @return {Promise}
          */
         delete() {
             let entityId = this.data.id || this.entityId;
@@ -394,6 +397,7 @@
 
         /**
          * Send Save request (create or update) to the Server
+         * @return {Promise}
          */
         save() {
             if (!this.isDirty) {
@@ -418,6 +422,7 @@
 
         /**
          * Send Create request to Server.
+         * @return {Promise}
          */
         create() {
             return this._fetchPromiseCreate(null, this.data);
@@ -426,6 +431,7 @@
 
         /**
          * Restore the data from with the last request retrieve.
+         * @return {Promise}
          */
         reset() {
             return new Promise((resolve, reject) => {
@@ -442,6 +448,7 @@
         /**
          * Clean all component State, like data loaded or entityId definition.
          * TO have the save init State
+         * @return {Promise}
          */
         clean() {
             return new Promise((resolve, reject) => {
@@ -454,6 +461,7 @@
 
         /**
          * Create new empty entity in order to be saved
+         * @return {Promise}
          */
         newEntity() {
             return new Promise((resolve, reject) => {
@@ -598,6 +606,10 @@
             }, true);
         };
 
+        /**
+         *
+         * @return {Promise}
+         */
         validatePromise() {
             return new Promise((resolve, reject) => {
                 let valid = this.validate();
@@ -800,6 +812,7 @@
          *   data: {}
          * }
          * ```
+         * @return {Promise}
          */
         _fetchInitRetrieve(entityId, data) {
             return new Promise((resolve, reject) => {
@@ -821,6 +834,7 @@
          *   data: {}
          * }
          * ```
+         * @return {Promise}
          */
         _fetchInitUpdate(entityId, data) {
             return new Promise((resolve, reject) => {
@@ -841,6 +855,7 @@
          *   data: {}
          * }
          * ```
+         * @return {Promise}
          */
         _fetchInitDelete(entityId, data) {
             return new Promise((resolve, reject) => {
@@ -861,6 +876,7 @@
          *   data: {}
          * }
          * ```
+         * @return {Promise}
          */
         _fetchInitCreate(entityId, data) {
             return new Promise((resolve, reject) => {
@@ -933,6 +949,12 @@
 
         // --- Fetch Helper
         // --- ---------------------------
+
+        /**
+         * Fetch the request
+         * @param opt The fetch option {url, init}
+         * @return {Promise}
+         */
         _fetchRequest(opt) {
             this.logDebug('____________ Fetch opt', opt.init.method, ' ____________', opt);
             return window.fetch(opt.url, opt.init).then(response => {
