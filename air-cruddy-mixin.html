@@ -518,6 +518,7 @@
                 data: this.data,
                 dataOrigin: this._dataOrigin,
                 dataDirty: this._dataDirty,
+                isDirty: this.isDirty,
                 lastResponse: this.lastResponse,
                 cruddyMode: this._cruddyMode
             };
@@ -526,6 +527,7 @@
 
         restoreState(state) {
             if (state) {
+                this.isDirty =  state.isDirty;
                 this.data = this.cloneObject(state.data);
                 this._dataOrigin = this.cloneObject(state.dataOrigin);
                 this._dataDirty = this.cloneObject(state.dataDirty);
