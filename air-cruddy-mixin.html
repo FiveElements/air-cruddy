@@ -203,8 +203,8 @@
         }
 
         connectedCallback() {
-            this.addEventListener('focusout', this._boundListenerFocusOut);
             super.connectedCallback();
+            this.addEventListener('focusout', this._boundListenerFocusOut);
         }
 
         disconnectedCallback() {
