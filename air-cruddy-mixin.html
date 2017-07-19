@@ -468,7 +468,9 @@
                 this.lastResponse = undefined;
                 let data = this._createEmptyEntityModel();
                 this._setCrudDataModeCreate(data);
-                this.entityId = null;
+                if ((this.entityId !=null) ||( this.entityId !== this.entityIdForNew)) {
+                    this.entityId = this.entityIdForNew;
+                }
                 resolve(data);
             });
 
@@ -552,7 +554,8 @@
 
 
         _callFormElements(funcName) {
-            const formNodes = this._computeFilterNodes(this.$.crudContent, (node) => {
+            const crudContentNode = this.$.crudContent;
+            const formNodes = this._computeFilterNodes(crudContentNode, (node) => {
                 if (node[funcName]) {
                     return true;
                 }
