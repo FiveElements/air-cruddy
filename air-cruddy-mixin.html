@@ -271,12 +271,12 @@
         };
 
         _entityIdChangeObserver(entityId) {
-            if (entityId) {
+            if (entityId && (entityId !== this.entityIdForNew)) {
                 if ((!this.data) || (this.data.id !== entityId )) {
                     this.logDebug('---- set entityId Observer :', entityId);
                     this.retrieve(entityId);
                 }
-            } else if ((entityId === null) || entityId === this.entityIdForNew) {
+            } else if ((entityId === null) || (entityId === this.entityIdForNew)) {
                 if ((this._cruddyMode === 'create') && (  Object.keys(this._dataDirty).length === 0)) {
                     return false;
                 }
