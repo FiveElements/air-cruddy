@@ -11,9 +11,9 @@
 `air-cruddy-elasticsearch`
 Polymer Element air-cruddy-elasticsearch
 
+@group Air Elements
 @demo demo/index.html 
 -->
-
 <dom-module id="air-cruddy-elasticsearch">
     <template strip-whitespace>
         <style>
@@ -28,14 +28,6 @@ Polymer Element air-cruddy-elasticsearch
 
 
     <script>
-        /**
-         * `air-cruddy`
-         *
-         *
-         * @customElement
-         * @polymer
-         * @demo demo/index.html
-         */
         class AirCruddyElasticsearch extends FiveElements.AirCruddyAdapterElasticsearchMixin(FiveElements.AirCruddyMixin(Polymer.Element)) {
             static get is() {
                 return 'air-cruddy-elasticsearch';
