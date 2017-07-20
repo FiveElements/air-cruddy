@@ -249,7 +249,7 @@
                 window.fetch.restore();
             });
 
-            test('Fetch Update - Bad Request 404', function (done) {
+            test('Fetch Update - Bad Request 400', function (done) {
                 let element = fixture('retrieveId3', {url: '/FiveElements/air', entityId: '3'});
                 // Get
                 element.addEventListener('air-cruddy-retrieve', function (e) {
@@ -271,6 +271,10 @@
 //                    assert.isUndefined(element._dataOrigin);
                     done();
                 });
+
+                element.data.age = 'kkkill';
+                element.save();
+
             });
         });
 
