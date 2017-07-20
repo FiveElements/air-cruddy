@@ -106,7 +106,7 @@
         test('Fetch Retrieve - Request 3', function (done) {
             let element = fixture('retrieveId3', {url: '/FiveElements/air', entityId: '3'});
             element.addEventListener('air-cruddy-retrieve', function (e) {
-                var response = e.detail.response;
+                const response = e.detail.response;
                 assert(response.id === '3');
                 assert(response.version === 4);
                 assert(response.group === 'air');
@@ -118,7 +118,7 @@
         });
 
         test('Fetch Retrieve - 404 Error', function (done) {
-            let element = fixture('retrieveId404', {url: '/FiveElements/air', entityId: '404'});
+            const element = fixture('retrieveId404', {url: '/FiveElements/air', entityId: '404'});
             element.addEventListener('air-cruddy-error-retrieve', function (e) {
                 var detail = e.detail;
                 console.log(JSON.stringify(e.detail));

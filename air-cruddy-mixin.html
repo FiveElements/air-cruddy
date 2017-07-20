@@ -949,7 +949,7 @@
 //        };
 
         _isResponseJson(response) {
-            let contentType = response.headers.get('content-type');
+            const contentType = response.headers.get('content-type');
             return (contentType && contentType.indexOf('application/json') !== -1)
         };
 
@@ -973,14 +973,24 @@
 
         _checkResponseStatus(response) {
             if (!response.ok) {
+                const error = new Error(response.status + ' (' + response.statusText + ')');
+                error.status = response.status;
+                error.statusText = response.statusText;
+                // Manage
+                if (this._isResponseJson(response)) {
+                    return response.json().then(function (json) {
+                        error.responseJson = json;
+                        error.responseText = JSON.stringify(text);
+                        return Promise.reject(error);
+                    });
+                } else {
+                    return response.text().then(function (text) {
+                        error.responseText = text;
+                        return Promise.reject(error);
+                    });
+                }
 
-                return response.text().then(function (text) {
-                    let error = new Error(response.status + ' (' + response.statusText + ')');
-                    error.status = response.status;
-                    error.statusText = response.statusText;
-                    error.responseText = text;
-                    return Promise.reject(error);
-                });
+
             }
             return response;
         };
@@ -1016,13 +1026,13 @@
         };
 
         _fetchInitDataContentRegister(opt) {
-            let init = opt.init;
-            let content = opt.content;
+            const init = opt.init;
+            const content = opt.content;
             if (content) {
-                let contentLength = content.length;
+                const contentLength = content.length;
                 init.body = content;
                 // Complete Headers
-                let myHeaders = init.headers || new Headers();
+                const myHeaders = init.headers || new Headers();
                 myHeaders.append("Content-Length", contentLength.toString());
                 init.headers = myHeaders;
             }
@@ -1132,9 +1142,9 @@
 
         _handleResponseCreate(res) {
             this._handleStoreLastResponse(res);
-            let data = this.data;
-            let responseJson = res.response;
-            let entityId = responseJson.id;
+            const data = this.data;
+            const responseJson = res.response;
+            const entityId = responseJson.id;
             // Hydrate
             if (this.reloadOnCreate) {
                 return this._fetchPromiseRetrieveRequest(entityId)
@@ -1159,8 +1169,8 @@
 
         _handleResponseUpdate(res) {
             this._handleStoreLastResponse(res);
-            let data = this.data;
-            let responseJson = res.response;
+            const data = this.data;
+            const responseJson = res.response;
             if (responseJson.version) {
                 data.version = responseJson.version;
             }
@@ -1186,7 +1196,7 @@
         _handleErrorRetrieve(error) {
             this._logError(error);
             this._handleTracingError(error, 'retrieve');
-            let handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorRetrieve', error);
+            const handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorRetrieve', error);
             if (handlerStatus) {
                 return handlerStatus(error);
             }
@@ -1198,7 +1208,7 @@
         _handleErrorUpdate(error) {
             this._logError(error);
             this._handleTracingError(error, 'update');
-            let handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorUpdate', error);
+            const handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorUpdate', error);
             if (handlerStatus) {
                 return handlerStatus(error);
             }
@@ -1209,7 +1219,7 @@
         _handleErrorCreate(error) {
             this._logError(error);
             this._handleTracingError(error, 'create');
-            let handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorCreate', error);
+            const handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorCreate', error);
             if (handlerStatus) {
                 return handlerStatus(error);
             }
@@ -1220,7 +1230,7 @@
         _handleErrorDelete(error) {
             this._logError(error);
             this._handleTracingError(error, 'delete');
-            let handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorDelete', error);
+            const handlerStatus = this._getHandlerResponseWithSpecificStatus('_handleErrorDelete', error);
             if (handlerStatus) {
                 return handlerStatus(error);
             }
@@ -1243,10 +1253,10 @@
          * @return the function
          */
         _getHandlerResponseWithSpecificStatus(baseErrorFuncName, response) {
-            let status = response.status;
+            const status = response.status;
             if (status) {
-                let errorStatusFunc = baseErrorFuncName + status;
-                let handlerForStatus = this[errorStatusFunc];
+                const errorStatusFunc = baseErrorFuncName + status;
+                const handlerForStatus = this[errorStatusFunc];
                 if (typeof  handlerForStatus === 'function') {
                     // Manage Method Like : _handleErrorUpdate409
                     return handlerForStatus;
