@@ -980,7 +980,7 @@
                 if (this._isResponseJson(response)) {
                     return response.json().then(function (json) {
                         error.responseJson = json;
-                        error.responseText = JSON.stringify(text);
+                        error.responseText = JSON.stringify(json);
                         return Promise.reject(error);
                     });
                 } else {
