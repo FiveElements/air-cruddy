@@ -15,7 +15,11 @@
      */
     window.FiveElements = window.FiveElements || {};
 
-
+    /**
+     * Air Cruddy Mixin implement the all logic for man,aging the CRUD request/response.
+     * To use with your custom server format, you could extends @see air-cruddy-adapter-elasticsearch-mixin.html
+     * @polymerMixin
+     */
     FiveElements.AirCruddyMixin = superclass => class extends superclass {
 
         static get properties() {

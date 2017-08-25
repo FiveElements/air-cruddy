@@ -6,14 +6,6 @@
 <link rel="import" href="air-cruddy-adapter-elasticsearch-mixin.html">
 
 
-<!--
-`air-cruddy`
-Polymer Element air-cruddy
-
-@group Air Elements
-@demo demo/index.html
--->
-
 <dom-module id="air-cruddy">
     <template strip-whitespace>
         <style>
@@ -36,6 +28,14 @@ Polymer Element air-cruddy
     </template>
 
     <script>
+        /**
+         * `air-cruddy` manage all crud server request (Create / Retrieve / Update / Delete) with a backend server.
+         *
+         * @customElement
+         * @group Air Elements
+         *
+         * @demo demo/index.html
+         */
         class AirCruddy extends FiveElements.AirCruddyAdapterElasticsearchMixin(FiveElements.AirCruddyMixin(Polymer.Element)) {
             static get is() {
                 return 'air-cruddy';
