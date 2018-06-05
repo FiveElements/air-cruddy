@@ -4,7 +4,7 @@ dist: trusty
 addons:
   firefox: latest
   code_climate:
-      repo_token: '69f06f136147eb4298ea1cd428d58d009b52dac1'
+    repo_token: 69f06f136147eb4298ea1cd428d58d009b52dac1
   apt:
     sources:
       - google-chrome
@@ -12,12 +12,10 @@ addons:
       - google-chrome-stable
 node_js: '8'
 cache: yarn
-before_script:
-  - npm install -g bower polymer-cli
-  - bower install
+before_script: npm install -g polymer-cli
 after_success:
   - codeclimate-test-reporter < lcov.info
 after_failure:
   - for file in *.log; do echo $file; echo "======================"; cat $file; done || true
-script:
-  - xvfb-run polymer test
+script: xvfb-run polymer test --module-resolution=node --npm
+

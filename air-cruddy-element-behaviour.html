@@ -1,57 +1,55 @@
-<link rel="import" href="../polymer/polymer-element.html">
+<script type="module" src="../@polymer/polymer/polymer-element.js"></script>
 
-<script>
-    'use strict';
+<script type="module">
+import '@polymer/polymer/polymer-element.js';
+import { beforeNextRender } from '@polymer/polymer/lib/utils/render-status.js';
+
+/**
+ * FiveElements Namespace definition
+ */
+window.FiveElements = window.FiveElements || {};
+
+
+FiveElements.AirCruddyElementMixin  = superclass => class extends superclass {
+
+    static get properties() {
+        return {
+            /**
+             * The form that the element is registered to.
+             */
+            _parentForm: {
+                type: Object
+            }
+        };
+    }
+    // --- Life Cycle
+    // --- ---------------------------
+    /**
+     * Fired when the element is added to an `iron-form`.
+     *
+     * @event air-cruddy-element-register
+     */
+    attached() {
+        // 1st argument to beforeNextRender is used as the "this"
+        // value when the callback is invoked.
+        beforeNextRender(this, function() {
+            this.dispatchEvent(new CustomEvent('air-cruddy-element-register', { bubbles: true, composed: true }));
+//                this.fire('air-cruddy-element-register');
+        });
+    }
 
     /**
-     * FiveElements Namespace definition
+     * Fired when the element is removed from an `iron-form`.
+     *
+     * @event air-cruddy-element-unregister
      */
-    window.FiveElements = window.FiveElements || {};
-
-
-    FiveElements.AirCruddyElementMixin  = superclass => class extends superclass {
-
-        static get properties() {
-            return {
-                /**
-                 * The form that the element is registered to.
-                 */
-                _parentForm: {
-                    type: Object
-                }
-            };
-        }
-        // --- Life Cycle
-        // --- ---------------------------
-        /**
-         * Fired when the element is added to an `iron-form`.
-         *
-         * @event air-cruddy-element-register
-         */
-        attached() {
-            // 1st argument to beforeNextRender is used as the "this"
-            // value when the callback is invoked.
-            Polymer.RenderStatus.beforeNextRender(this, function() {
-                this.dispatchEvent(new CustomEvent('air-cruddy-element-register', { bubbles: true, composed: true }));
-//                this.fire('air-cruddy-element-register');
-            });
-        }
-
-        /**
-         * Fired when the element is removed from an `iron-form`.
-         *
-         * @event air-cruddy-element-unregister
-         */
-        detached() {
-            if (this._parentForm) {
-                this.dispatchEvent(new CustomEvent('air-cruddy-element-unregister', { detail: {target: this}, bubbles: true, composed: true }));
+    detached() {
+        if (this._parentForm) {
+            this.dispatchEvent(new CustomEvent('air-cruddy-element-unregister', { detail: {target: this}, bubbles: true, composed: true }));
 //                this._parentForm.fire('air-cruddy-element-unregister', {target: this});
-                this._parentForm = undefined;
-            }
+            this._parentForm = undefined;
         }
+    }
 
-    };
-
-
-
+};
 </script>

@@ -1,103 +1,103 @@
-<link rel="import" href="../polymer/polymer-element.html">
+<script type="module" src="../@polymer/polymer/polymer-element.js"></script>
 
-<link rel="import" href="../ether-lodash/ether-lodash-core.html">
+<script type="module" src="../ether-lodash/ether-lodash-core.js"></script>
 
-<script>
-    'use strict';
+<script type="module">
+import '@polymer/polymer/polymer-element.js';
+import 'ether-lodash/ether-lodash-core.js';
 
-    /**
-     * FiveElements Namespace definition
-     */
-    window.FiveElements = window.FiveElements || {};
+/**
+ * FiveElements Namespace definition
+ */
+window.FiveElements = window.FiveElements || {};
 
-    /**
-     * @polymerMixin
-     */
-    FiveElements.AirCruddyError409Mixin = (superclass) => class extends superclass {
-        _handleErrorUpdate409  (error) {
+/**
+ * @polymerMixin
+ */
+FiveElements.AirCruddyError409Mixin = (superclass) => class extends superclass {
+    _handleErrorUpdate409  (error) {
 
-            // TODO
-            let request = this._fetchPromiseRetrieveRequest(entityId).then(function (res) {
-                console.log('response to merge : ', res);
+        // TODO
+        let request = this._fetchPromiseRetrieveRequest(entityId).then(function (res) {
+            console.log('response to merge : ', res);
 
-                let conflictData = {
-                    dataUser: this.data,
-                    dataOrigin: this._dataOrigin,
-                    dataServer: res.response
-                };
-                return conflictData;
-                // compute user diff
-                // diff between _dataOrigin and data
-
-                // Compute diff
-            }).then(this._conflictResolution.bind(this))
-                .catch(function (err) {
-                    console.error(err);
-                });
-
-        };
-
-
-        _conflictResolution  (conflictData) {
-            // Need to compute
-            let userChange; // diff dataUser <>  dataOrigin
-            let serverChange; // diff dataServer <>  dataOrigin
-            //
-
-        };
-
-
-        _computeDifferential (a, b) {
-            let self = this;
-            let result = {
-                different: [],
-                missing_from_first: [],
-                missing_from_second: []
+            let conflictData = {
+                dataUser: this.data,
+                dataOrigin: this._dataOrigin,
+                dataServer: res.response
             };
+            return conflictData;
+            // compute user diff
+            // diff between _dataOrigin and data
 
-            _.reduce(a, function (result, value, key) {
-                if (b[key] != undefined) {
-                    if (_.isEqual(value, b[key])) {
-                        return result;
-                    } else {
-                        if (typeof (a[key]) != typeof ({}) || typeof (b[key]) != typeof ({})) {
-                            //dead end.
-                            result.different.push(key);
-                            return result;
-                        } else {
-                            let deeper = self._computeDifferential(a[key], b[key]);
-                            result.different = result.different.concat(_.map(deeper.different, (sub_path) => {
-                                return key + "." + sub_path;
-                            }));
-
-                            result.missing_from_second = result.missing_from_second.concat(_.map(deeper.missing_from_second, (sub_path) => {
-                                return key + "." + sub_path;
-                            }));
-
-                            result.missing_from_first = result.missing_from_first.concat(_.map(deeper.missing_from_first, (sub_path) => {
-                                return key + "." + sub_path;
-                            }));
-                            return result;
-                        }
-                    }
-                } else {
-                    result.missing_from_second.push(key);
-                    return result;
-                }
-            }, result);
-
-            _.reduce(b, function (result, value, key) {
-                if (a[key] != undefined) {
-                    return result;
-                } else {
-                    result.missing_from_first.push(key);
-                    return result;
-                }
-            }, result);
-
-            return result;
-        };
+            // Compute diff
+        }).then(this._conflictResolution.bind(this))
+            .catch(function (err) {
+                console.error(err);
+            });
 
     };
 
+
+    _conflictResolution  (conflictData) {
+        // Need to compute
+        let userChange; // diff dataUser <>  dataOrigin
+        let serverChange; // diff dataServer <>  dataOrigin
+        //
+
+    };
+
+
+    _computeDifferential (a, b) {
+        let self = this;
+        let result = {
+            different: [],
+            missing_from_first: [],
+            missing_from_second: []
+        };
+
+        _.reduce(a, function (result, value, key) {
+            if (b[key] != undefined) {
+                if (_.isEqual(value, b[key])) {
+                    return result;
+                } else {
+                    if (typeof (a[key]) != typeof ({}) || typeof (b[key]) != typeof ({})) {
+                        //dead end.
+                        result.different.push(key);
+                        return result;
+                    } else {
+                        let deeper = self._computeDifferential(a[key], b[key]);
+                        result.different = result.different.concat(_.map(deeper.different, (sub_path) => {
+                            return key + "." + sub_path;
+                        }));
+
+                        result.missing_from_second = result.missing_from_second.concat(_.map(deeper.missing_from_second, (sub_path) => {
+                            return key + "." + sub_path;
+                        }));
+
+                        result.missing_from_first = result.missing_from_first.concat(_.map(deeper.missing_from_first, (sub_path) => {
+                            return key + "." + sub_path;
+                        }));
+                        return result;
+                    }
+                }
+            } else {
+                result.missing_from_second.push(key);
+                return result;
+            }
+        }, result);
+
+        _.reduce(b, function (result, value, key) {
+            if (a[key] != undefined) {
+                return result;
+            } else {
+                result.missing_from_first.push(key);
+                return result;
+            }
+        }, result);
+
+        return result;
+    };
+
+};
 </script>

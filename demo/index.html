@@ -4,21 +4,22 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <title>air-cruddy demo</title>
+    <title>demo-app demo</title>
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
 
-    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <script type="module">
+        import '@polymer/iron-demo-helpers/demo-pages-shared-styles';
+        import '@polymer/iron-demo-helpers/demo-snippet';
+        import '@polymer/polymer/lib/elements/dom-bind.js';
+    </script>
 
-    <link rel="import" href="../../air-cascade-validator/air-cascade-validator.html">
+    <script type="module" src="../air-cruddy-elasticsearch.js"></script>
 
-    <link rel="import" href="../air-cruddy-elasticsearch.html">
-
-    <link rel="import" href="demo-editor-tweet.html">
-    <link rel="import" href="demo-control.html">
-    <link rel="import" href="demo-event-catcher.html">
-    <link rel="import" href="demo-status-display.html">
+    <script type="module" src="./demo-editor-tweet.js"></script>
+    <script type="module" src="./demo-control.js"></script>
+    <script type="module" src="./demo-event-catcher.js"></script>
+    <script type="module" src="./demo-status-display.js"></script>
 
 
     <custom-style>
@@ -28,24 +29,27 @@
 </head>
 <body>
 <div class="vertical-section-container centered">
-    <h3>Basic air-cruddy demo</h3>
+    <h3>Basic demo-app demo</h3>
     <demo-snippet>
         <dom-bind>
+
             <template>
                 <demo-event-catcher>
                     <demo-control status="{{status}}" debug="{{debug}}" auto-save="{{autoSave}}"
                                   command="{{command}}"></demo-control>
 
-                    <air-cruddy-elasticsearch debug="[[debug]]" auto-save="[[autoSave]]" status="{{status}}" command="{{command}}"
-                                data="{{data}}" url="http://localhost:9200/twitter/tweet" entity-id="new">
-                                <demo-editor-tweet data="{{data}}"></demo-editor-tweet>
+                    <air-cruddy-elasticsearch debug="[[debug]]" auto-save="[[autoSave]]" status="{{status}}"
+                                              command="{{command}}" data="{{data}}"
+                                              url="http://localhost:9200/twitter/tweet" entity-id="new">
+                        <demo-editor-tweet data="{{data}}"></demo-editor-tweet>
                     </air-cruddy-elasticsearch>
 
-                </demo-event-catcher>
+                 </demo-event-catcher>
                 <demo-status-display status="[[status]]"></demo-status-display>
             </template>
         </dom-bind>
     </demo-snippet>
+
 </div>
 </body>
 </html>

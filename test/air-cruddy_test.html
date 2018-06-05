@@ -6,10 +6,10 @@
 
     <title>air-cruddy test</title>
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script src="../../wct-browser-legacy/browser.js"></script>
 
-    <link rel="import" href="../air-cruddy.html">
+    <script type="module" src="../air-cruddy.js"></script>
 </head>
 <body>
 
@@ -25,60 +25,59 @@
     </template>
 </test-fixture>
 
-<script>
-    suite('air-cruddy', function () {
+<script type="module">
+import '../air-cruddy.js';
+suite('air-cruddy', function () {
 
-        test('instantiating the element with default properties works', function () {
-            var element = fixture('BasicTestFixture');
-            assert.equal(element.debug, false);
+    test('instantiating the element with default properties works', function () {
+        var element = fixture('BasicTestFixture');
+        assert.equal(element.debug, false);
 
 //          var elementShadowRoot = element.shadowRoot;
 //          var elementHeader = elementShadowRoot.querySelector('h2');
 //          assert.equal(elementHeader.innerHTML, 'Hello air-cruddy!');
-        });
+    });
 
-        test('setting a property on the element works', function () {
-            // Create a test fixture
-            var element = fixture('ChangedPropertyTestFixture', {url: '/FiveElements/air'});
-            assert.equal(element.debug, true);
+    test('setting a property on the element works', function () {
+        // Create a test fixture
+        var element = fixture('ChangedPropertyTestFixture', {url: '/FiveElements/air'});
+        assert.equal(element.debug, true);
 //            assert.equal(element.url, '/FiveElements/air');
-        });
-
     });
 
-    suite('air-cruddy-mixin Utility', function () {
+});
 
-        test('_setCrudDataModeUpdate', function () {
-            let element = fixture('BasicTestFixture');
-            let data = {
-                id: 'dataToClone',
-                version: 1,
-                lastname: 'Leeloominaï Lekatariba Lamina-Tchaï Ekbat De Sebat',
-                firstname: 'Leeloo'
-            };
-            element._setCrudDataModeUpdate(data);
-            assert.equal(element.data, data );
-            assert.notEqual(element.data, element._dataOrigin, 'the data need to be cloned');
-            assert.deepEqual(element.data, element._dataOrigin, 'the data need to be cloned but the same');
-            assert.frozen(element._dataOrigin);
-            assert.isFalse(element.isDirty );
-            assert.equal('update', element._cruddyMode);
-        });
+suite('air-cruddy-mixin Utility', function () {
 
-        test('_setCrudDataModeUnset with undefined', function () {
-            let element = fixture('BasicTestFixture');
-            let data = undefined;
-            element._setCrudDataModeUnset(data);
-            assert.equal(element.data, data );
-            assert.equal(element.data, element._dataOrigin, 'the data need to be cloned');
-            assert.frozen(element._dataOrigin);
-            assert.isFalse(element.isDirty );
-            assert.equal('unset', element._cruddyMode);
-        });
-
+    test('_setCrudDataModeUpdate', function () {
+        let element = fixture('BasicTestFixture');
+        let data = {
+            id: 'dataToClone',
+            version: 1,
+            lastname: 'Leeloominaï Lekatariba Lamina-Tchaï Ekbat De Sebat',
+            firstname: 'Leeloo'
+        };
+        element._setCrudDataModeUpdate(data);
+        assert.equal(element.data, data );
+        assert.notEqual(element.data, element._dataOrigin, 'the data need to be cloned');
+        assert.deepEqual(element.data, element._dataOrigin, 'the data need to be cloned but the same');
+        assert.frozen(element._dataOrigin);
+        assert.isFalse(element.isDirty );
+        assert.equal('update', element._cruddyMode);
     });
 
+    test('_setCrudDataModeUnset with undefined', function () {
+        let element = fixture('BasicTestFixture');
+        let data = undefined;
+        element._setCrudDataModeUnset(data);
+        assert.equal(element.data, data );
+        assert.equal(element.data, element._dataOrigin, 'the data need to be cloned');
+        assert.frozen(element._dataOrigin);
+        assert.isFalse(element.isDirty );
+        assert.equal('unset', element._cruddyMode);
+    });
 
+});
 </script>
 
 </body>

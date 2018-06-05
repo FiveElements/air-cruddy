@@ -6,13 +6,13 @@
 
     <title>air-cruddy test</title>
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script src="../../wct-browser-legacy/browser.js"></script>
 
 
-    <link rel="import" href="../air-cruddy-elasticsearch.html">
+    <script type="module" src="../air-cruddy-elasticsearch.js"></script>
 
-    <link rel="import" href="../../paper-input/paper-input.html">
+    <script type="module" src="../../@polymer/paper-input/paper-input.js"></script>
 </head>
 <body>
 
@@ -40,190 +40,192 @@
     </template>
 </test-fixture>
 
-<script>
-    suite('air-cruddy-elasticsearch', function () {
+<script type="module">
+import '../air-cruddy-elasticsearch.js';
+import '@polymer/paper-input/paper-input.js';
+suite('air-cruddy-elasticsearch', function () {
 
-        test('instantiating the element with default properties works', function () {
-            var element = fixture('BasicTestFixture');
-            assert.equal(element.debug, false);
-        });
-
-        test('_adapterResponseUpdate', function () {
-            var element = fixture('BasicTestFixture');
-            var updateResponseEs = {
-                status: 200,
-                statusText: 'OK',
-                response: {
-                    "_index": "twitter",
-                    "_type": "tweet",
-                    "_id": "1",
-                    "_version": 13,
-                    "result": "updated",
-                    "_shards": {"total": 2, "successful": 1, "failed": 0},
-                    "created": false
-                }
-            };
-            var adaptResponse = element._adapterResponseUpdate(updateResponseEs);
-            assert.equal('1', adaptResponse.response.id);
-            assert.equal('13', adaptResponse.response.version);
-        });
-
+    test('instantiating the element with default properties works', function () {
+        var element = fixture('BasicTestFixture');
+        assert.equal(element.debug, false);
     });
 
-
-    var mockResponseJson = function (status, body) {
-        var mockResponse = new window.Response(JSON.stringify(body), {
-            status: status,
-            headers: {
-                'Content-type': 'application/json'
-            }
-        });
-        return Promise.resolve(mockResponse);
-    };
-
-
-    suite('air-cruddy-elasticsearch retrieve', function () {
-        setup(function () {
-            // 1. Initialize the fake server
-            // https://rjzaworski.com/2015/06/testing-api-requests-from-window-fetch
-            sinon.stub(window, 'fetch');
-            // 2. Set up auto response rules
-            window.fetch.withArgs('/FiveElements/air/3').returns(mockResponseJson(200, {
-                "_id": "3",
-                "_version": 4,
-                "_source": {"group": "air"}
-            }));
-            window.fetch.withArgs('/FiveElements/air/4').returns(mockResponseJson(200, {
-                "_id": "4",
-                "_version": 8,
-                "_source": {"group": "fire"}
-            }));
-            window.fetch.withArgs('/FiveElements/air/404').returns(mockResponseJson(404, {
+    test('_adapterResponseUpdate', function () {
+        var element = fixture('BasicTestFixture');
+        var updateResponseEs = {
+            status: 200,
+            statusText: 'OK',
+            response: {
                 "_index": "twitter",
                 "_type": "tweet",
-                "_id": "404",
-                "found": false
-            }));
-        });
-        teardown(function () {
-            window.fetch.restore();
-        });
-        test('Fetch Retrieve - Request 3', function (done) {
-            let element = fixture('retrieveId3', {url: '/FiveElements/air', entityId: '3'});
-            element.addEventListener('air-cruddy-retrieve', function (e) {
-                const response = e.detail.response;
-                assert(response.id === '3');
-                assert(response.version === 4);
-                assert(response.group === 'air');
-                assert.equal(element.entityId, response.id);
-                assert.deepEqual(element.data, response);
-                assert.deepEqual(element._dataOrigin, response);
-                done();
-            });
-        });
-
-        test('Fetch Retrieve - 404 Error', function (done) {
-            const element = fixture('retrieveId404', {url: '/FiveElements/air', entityId: '404'});
-            element.addEventListener('air-cruddy-error-retrieve', function (e) {
-                var detail = e.detail;
-                console.log(JSON.stringify(e.detail));
-                assert(detail.status === 404);
-                assert.isUndefined(element.data);
-                assert.isUndefined(element._dataOrigin);
-                done();
-            });
-        });
-    });
-
-
-    suite('air-cruddy-elasticsearch create', function () {
-        setup(function () {
-            // 1. Initialize the fake server
-            // https://rjzaworski.com/2015/06/testing-api-requests-from-window-fetch
-            sinon.stub(window, 'fetch');
-            // 2. Set up auto response rules
-            window.fetch.withArgs('/FiveElements/air').returns(mockResponseJson(201, {
-                "_index": "fiveelements",
-                "_type": "air",
-                "_id": "AVoGAVbVMjpzN-u2C7AB",
-                "_version": 1,
-                "result": "created",
+                "_id": "1",
+                "_version": 13,
+                "result": "updated",
                 "_shards": {"total": 2, "successful": 1, "failed": 0},
-                "created": true
-            }));
-        });
-        teardown(function () {
-            window.fetch.restore();
-        });
-        test('Fetch Create - Request 201', function (done) {
-            var element = fixture('BasicTestFixture', {url: '/FiveElements/air'});
-            element.addEventListener('air-cruddy-create', function (e) {
-                var response = e.detail.response;
-                assert(response.id === 'AVoGAVbVMjpzN-u2C7AB');
-                assert(response.version === 1);
-                assert.equal(element.entityId, response.id);
-                assert.equal(element.data.id, response.id);
-                assert.equal(element.data.version, response.version);
-                assert.equal(element._dataOrigin.id, response.id);
-                done();
-            });
-            let promise = element.newEntity().then(function (data) {
-                data.name = 'air-cruddy';
-                data.group = 'air';
-                element.isDirty = true; //TODO a better way
-                return element.save();
-            }).then(function (result) {
-                console.log('save ok', result);
-                return result;
-            });
+                "created": false
+            }
+        };
+        var adaptResponse = element._adapterResponseUpdate(updateResponseEs);
+        assert.equal('1', adaptResponse.response.id);
+        assert.equal('13', adaptResponse.response.version);
+    });
+
+});
+
+
+var mockResponseJson = function (status, body) {
+    var mockResponse = new window.Response(JSON.stringify(body), {
+        status: status,
+        headers: {
+            'Content-type': 'application/json'
+        }
+    });
+    return Promise.resolve(mockResponse);
+};
+
+
+suite('air-cruddy-elasticsearch retrieve', function () {
+    setup(function () {
+        // 1. Initialize the fake server
+        // https://rjzaworski.com/2015/06/testing-api-requests-from-window-fetch
+        sinon.stub(window, 'fetch');
+        // 2. Set up auto response rules
+        window.fetch.withArgs('/FiveElements/air/3').returns(mockResponseJson(200, {
+            "_id": "3",
+            "_version": 4,
+            "_source": {"group": "air"}
+        }));
+        window.fetch.withArgs('/FiveElements/air/4').returns(mockResponseJson(200, {
+            "_id": "4",
+            "_version": 8,
+            "_source": {"group": "fire"}
+        }));
+        window.fetch.withArgs('/FiveElements/air/404').returns(mockResponseJson(404, {
+            "_index": "twitter",
+            "_type": "tweet",
+            "_id": "404",
+            "found": false
+        }));
+    });
+    teardown(function () {
+        window.fetch.restore();
+    });
+    test('Fetch Retrieve - Request 3', function (done) {
+        let element = fixture('retrieveId3', {url: '/FiveElements/air', entityId: '3'});
+        element.addEventListener('air-cruddy-retrieve', function (e) {
+            const response = e.detail.response;
+            assert(response.id === '3');
+            assert(response.version === 4);
+            assert(response.group === 'air');
+            assert.equal(element.entityId, response.id);
+            assert.deepEqual(element.data, response);
+            assert.deepEqual(element._dataOrigin, response);
+            done();
         });
     });
 
+    test('Fetch Retrieve - 404 Error', function (done) {
+        const element = fixture('retrieveId404', {url: '/FiveElements/air', entityId: '404'});
+        element.addEventListener('air-cruddy-error-retrieve', function (e) {
+            var detail = e.detail;
+            console.log(JSON.stringify(e.detail));
+            assert(detail.status === 404);
+            assert.isUndefined(element.data);
+            assert.isUndefined(element._dataOrigin);
+            done();
+        });
+    });
+});
 
-    suite('air-cruddy-elasticsearch Delete', function () {
-        setup(function () {
-            // 1. Initialize the fake server
-            // https://rjzaworski.com/2015/06/testing-api-requests-from-window-fetch
-            sinon.stub(window, 'fetch');
-            // 2. Set up auto response rules
-            window.fetch.withArgs('/FiveElements/air/3').returns(mockResponseJson(200, {
-                "_id": "3",
-                "_version": 4,
-                "_source": {"group": "air"}
-            }));
-            window.fetch.withArgs('/FiveElements/air/3?version=4').returns(mockResponseJson(200, {
-                "found": true,
-                "_index": "5elements",
-                "_type": "5elements",
-                "_id": "3",
-                "_version": 5,
-                "result": "deleted",
-                "_shards": {"total": 2, "successful": 1, "failed": 0}
-            }));
+
+suite('air-cruddy-elasticsearch create', function () {
+    setup(function () {
+        // 1. Initialize the fake server
+        // https://rjzaworski.com/2015/06/testing-api-requests-from-window-fetch
+        sinon.stub(window, 'fetch');
+        // 2. Set up auto response rules
+        window.fetch.withArgs('/FiveElements/air').returns(mockResponseJson(201, {
+            "_index": "fiveelements",
+            "_type": "air",
+            "_id": "AVoGAVbVMjpzN-u2C7AB",
+            "_version": 1,
+            "result": "created",
+            "_shards": {"total": 2, "successful": 1, "failed": 0},
+            "created": true
+        }));
+    });
+    teardown(function () {
+        window.fetch.restore();
+    });
+    test('Fetch Create - Request 201', function (done) {
+        var element = fixture('BasicTestFixture', {url: '/FiveElements/air'});
+        element.addEventListener('air-cruddy-create', function (e) {
+            var response = e.detail.response;
+            assert(response.id === 'AVoGAVbVMjpzN-u2C7AB');
+            assert(response.version === 1);
+            assert.equal(element.entityId, response.id);
+            assert.equal(element.data.id, response.id);
+            assert.equal(element.data.version, response.version);
+            assert.equal(element._dataOrigin.id, response.id);
+            done();
+        });
+        let promise = element.newEntity().then(function (data) {
+            data.name = 'air-cruddy';
+            data.group = 'air';
+            element.isDirty = true; //TODO a better way
+            return element.save();
+        }).then(function (result) {
+            console.log('save ok', result);
+            return result;
+        });
+    });
+});
+
+
+suite('air-cruddy-elasticsearch Delete', function () {
+    setup(function () {
+        // 1. Initialize the fake server
+        // https://rjzaworski.com/2015/06/testing-api-requests-from-window-fetch
+        sinon.stub(window, 'fetch');
+        // 2. Set up auto response rules
+        window.fetch.withArgs('/FiveElements/air/3').returns(mockResponseJson(200, {
+            "_id": "3",
+            "_version": 4,
+            "_source": {"group": "air"}
+        }));
+        window.fetch.withArgs('/FiveElements/air/3?version=4').returns(mockResponseJson(200, {
+            "found": true,
+            "_index": "5elements",
+            "_type": "5elements",
+            "_id": "3",
+            "_version": 5,
+            "result": "deleted",
+            "_shards": {"total": 2, "successful": 1, "failed": 0}
+        }));
 //
+    });
+    teardown(function () {
+        window.fetch.restore();
+    });
+    test('Fetch Delete - Request 3', function (done) {
+        let element = fixture('retrieveId3', {url: '/FiveElements/air', entityId: '3'});
+        // Get
+        element.addEventListener('air-cruddy-retrieve', function (e) {
+            const response = e.detail.response;
+            assert(response.id === '3');
+            assert(response.version === 4);
+            assert(response.group === 'air');
+            assert.equal(element.entityId, response.id);
+            assert.deepEqual(element.data, response);
+            assert.deepEqual(element._dataOrigin, response);
+            // Call Delete
+            element.delete();
         });
-        teardown(function () {
-            window.fetch.restore();
+        element.addEventListener('air-cruddy-delete', function (e) {
+            const response = e.detail.response;
+            done();
         });
-        test('Fetch Delete - Request 3', function (done) {
-            let element = fixture('retrieveId3', {url: '/FiveElements/air', entityId: '3'});
-            // Get
-            element.addEventListener('air-cruddy-retrieve', function (e) {
-                const response = e.detail.response;
-                assert(response.id === '3');
-                assert(response.version === 4);
-                assert(response.group === 'air');
-                assert.equal(element.entityId, response.id);
-                assert.deepEqual(element.data, response);
-                assert.deepEqual(element._dataOrigin, response);
-                // Call Delete
-                element.delete();
-            });
-            element.addEventListener('air-cruddy-delete', function (e) {
-                const response = e.detail.response;
-                done();
-            });
-        });
+    });
 
 
 //        suite('air-cruddy-elasticsearch Update ', function () {
@@ -284,7 +286,7 @@
 //        });
 
 
-    });
+});
 </script>
 
 </body>
