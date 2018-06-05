@@ -25,7 +25,7 @@ http.cors.allow-origin: http://localhost:3000
  
 #### Insert Data 
 ``` 
-curl -XPUT 'http://localhost:9200/twitter/tweet/1?pretty' -d'{ "user" : "kimchy", "post_date" : "2009-11-15T14:12:12",  "message" : "trying out Elasticsearch" }'
+curl -XPUT 'http://localhost:9200/twitter/tweet/1?pretty'  -H 'Content-Type: application/json' -d'{ "user" : "kimchy", "post_date" : "2009-11-15T14:12:12",  "message" : "trying out Elasticsearch" }'
 
 ``` 
 
